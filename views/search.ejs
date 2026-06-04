@@ -1,0 +1,94 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<div style="padding-top:calc(var(--nav-height) + 3rem);padding-bottom:4rem;">
+<div class="container">
+  <div style="max-width:700px;margin:0 auto 3rem;text-align:center;">
+    <h1 style="font-family:var(--font-display);font-size:2rem;font-weight:800;margin-bottom:1rem;">Search Articles</h1>
+    <form action="/search" method="GET" class="search-form-big">
+      <div class="search-form-wrap">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="position:absolute;left:1.25rem;top:50%;transform:translateY(-50%);color:var(--gray-500);"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" name="q" value="<%= query %>" placeholder="Search tax topics, IRS updates, deductions..." class="search-input-big" autofocus>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <% if (query) { %>
+  <div class="section-header" style="margin-bottom:1.5rem;">
+    <div class="section-title">
+      <div class="section-title-accent"></div>
+      <%= results.length %> result<%= results.length !== 1 ? 's' : '' %> for &ldquo;<%= query %>&rdquo;
+    </div>
+  </div>
+
+  <% if (results.length === 0) { %>
+  <div class="empty-state" style="text-align:center;padding:4rem;">
+    <div style="font-size:3rem;margin-bottom:1rem;">🔍</div>
+    <h2 style="font-family:var(--font-display);margin-bottom:0.5rem;">No results found</h2>
+    <p style="color:var(--gray-500);">Try different keywords or browse our categories below.</p>
+  </div>
+  <% } else { %>
+  <div class="article-feed">
+    <% results.forEach(article => { %>
+    <article class="article-card reveal">
+      <a href="/article/<%= article.slug %>" class="article-card-img-link">
+        <div class="article-card-img">
+          <% if (article.featured_image) { %>
+          <img src="<%= article.featured_image %>" alt="<%= article.title %>" loading="lazy">
+          <% } else { %>
+          <div class="article-card-placeholder">📋</div>
+          <% } %>
+        </div>
+      </a>
+      <div class="article-card-body">
+        <div class="article-card-meta">
+          <span class="article-card-cat" style="background:<%= article.category_color %>22;color:<%= article.category_color %>"><%= article.category_name || 'Tax' %></span>
+          <span class="article-card-date"><%= new Date(article.publish_date||article.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) %></span>
+        </div>
+        <h2 class="article-card-title"><a href="/article/<%= article.slug %>"><%= article.title %></a></h2>
+        <p class="article-card-excerpt"><%= article.excerpt %></p>
+        <div class="article-card-footer">
+          <span class="article-card-views">👁 <%= (article.views||0).toLocaleString() %></span>
+          <a href="/article/<%= article.slug %>" class="read-more-btn">Read More →</a>
+        </div>
+      </div>
+    </article>
+    <% }); %>
+  </div>
+  <% } %>
+  <% } %>
+
+  <!-- Browse Categories -->
+  <div style="margin-top:4rem;">
+    <div class="section-title" style="margin-bottom:1.5rem;"><div class="section-title-accent"></div>Browse by Category</div>
+    <div class="cat-grid">
+      <% categories.forEach(cat => { %>
+      <a href="/category/<%= cat.slug %>" class="cat-grid-card">
+        <span class="cat-grid-icon" style="background:<%= cat.color %>22;color:<%= cat.color %>"><%= cat.icon %></span>
+        <span class="cat-grid-name"><%= cat.name %></span>
+        <span class="cat-grid-count"><%= cat.article_count||0 %> articles</span>
+      </a>
+      <% }); %>
+    </div>
+  </div>
+</div>
+</div>
+
+<style>
+.search-form-big { width:100%; }
+.search-form-wrap { position:relative;display:flex;gap:0.75rem;align-items:center; }
+.search-input-big { flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--radius-full);padding:0.875rem 1.25rem 0.875rem 3.5rem;color:var(--white);font-size:1rem;outline:none;transition:var(--transition); }
+.search-input-big:focus { border-color:var(--indigo);background:rgba(99,102,241,0.06); }
+.search-input-big::placeholder { color:var(--gray-500); }
+.cat-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem; }
+.cat-grid-card { display:flex;flex-direction:column;align-items:center;gap:0.5rem;padding:1.25rem;background:var(--navy-700);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-lg);transition:var(--transition);text-align:center; }
+.cat-grid-card:hover { transform:translateY(-3px);border-color:rgba(99,102,241,0.3);box-shadow:var(--shadow-lg); }
+.cat-grid-icon { width:48px;height:48px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:1.3rem; }
+.cat-grid-name { font-size:0.875rem;font-weight:600;color:var(--white); }
+.cat-grid-count { font-size:0.75rem;color:var(--gray-500); }
+.article-feed { display:flex;flex-direction:column;gap:1.25rem;max-width:860px; }
+</style>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

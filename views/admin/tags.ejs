@@ -1,0 +1,53 @@
+<% locals.adminPage = 'tags'; %>
+<%- include('../partials/admin-head') %>
+
+<div class="admin-two-col">
+  <div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Name</th><th>Slug</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% if (tags.length === 0) { %>
+          <tr><td colspan="3" style="text-align:center;color:var(--gray-500);padding:2rem;">No tags yet.</td></tr>
+          <% } %>
+          <% tags.forEach(tag => { %>
+          <tr>
+            <td style="font-weight:600;color:var(--white);"><%= tag.name %></td>
+            <td style="color:var(--gray-500);font-size:0.82rem;">#<%= tag.slug %></td>
+            <td>
+              <button class="admin-action-btn admin-action-danger" onclick="deleteTag(<%= tag.id %>)">Delete</button>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div>
+    <div class="editor-card">
+      <div class="editor-card-title">➕ Add Tag</div>
+      <div class="editor-field">
+        <label>Tag Name</label>
+        <input type="text" id="tagName" class="editor-input" placeholder="e.g. Schedule C">
+      </div>
+      <button type="button" class="btn btn-primary" style="width:100%;" onclick="addTag()">Add Tag</button>
+    </div>
+  </div>
+</div>
+
+<script>
+async function addTag() {
+  const name = document.getElementById('tagName').value.trim();
+  if (!name) return;
+  const res = await fetch('/admin/tags/save', {method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'name='+encodeURIComponent(name)});
+  const data = await res.json();
+  if (data.success) { alert('Tag added!'); location.reload(); }
+}
+async function deleteTag(id) {
+  if (!confirm('Delete this tag?')) return;
+  await fetch('/admin/tags/'+id+'/delete',{method:'POST'});
+  location.reload();
+}
+</script>
+
+<%- include('../partials/admin-foot') %>

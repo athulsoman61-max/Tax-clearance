@@ -1,0 +1,199 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<!-- About Hero -->
+<div class="about-hero">
+  <div class="container about-hero-inner">
+    <div class="about-hero-text">
+      <div class="about-pretitle">👤 About the Author</div>
+      <h1 class="about-title"><%= settings.ea_name || 'Your Tax Expert' %></h1>
+      <div class="about-credentials">
+        <span class="cred-badge">⚖️ Enrolled Agent (EA)</span>
+        <span class="cred-badge">🏛️ IRS Authorized</span>
+        <span class="cred-badge">📚 Tax Educator</span>
+      </div>
+      <p class="about-bio"><%= settings.ea_bio || 'Dedicated to providing free, high-quality US tax education.' %></p>
+      <div class="about-hero-actions">
+        <a href="/contact" class="btn btn-primary btn-lg">📅 Book Consultation</a>
+        <a href="/contact#ask" class="btn btn-outline btn-lg">💬 Ask a Question</a>
+      </div>
+    </div>
+    <div class="about-hero-visual">
+      <div class="about-avatar-wrap">
+        <div class="about-avatar">⚖️</div>
+        <div class="about-avatar-ring"></div>
+      </div>
+      <div class="about-stats-grid">
+        <div class="about-stat">
+          <div class="about-stat-num"><%= stats.articles %></div>
+          <div class="about-stat-label">Articles</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num"><%= stats.categories %></div>
+          <div class="about-stat-label">Topics</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num"><%= (stats.readers/1000).toFixed(0) %>K</div>
+          <div class="about-stat-label">Readers</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num">100%</div>
+          <div class="about-stat-label">Free</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- What is an EA section -->
+<div class="container" style="margin-top:4rem;">
+  <div class="about-grid">
+    <div class="about-main">
+
+      <div class="about-section reveal">
+        <h2 class="about-section-title">What is an Enrolled Agent?</h2>
+        <p>An Enrolled Agent (EA) is a federally-licensed tax practitioner who has demonstrated technical competence in tax law. EAs are the only tax professionals who are licensed directly by the <strong>Internal Revenue Service (IRS)</strong>, giving them unlimited representation rights before the IRS.</p>
+        <p>Unlike CPAs or attorneys, EAs specialize exclusively in taxation — it's not just a part of their practice, it's everything they do.</p>
+        <div class="ea-features-grid">
+          <div class="ea-feature">
+            <div class="ea-feature-icon">🎓</div>
+            <h3>IRS Certified</h3>
+            <p>Passed the rigorous 3-part IRS Special Enrollment Examination (SEE)</p>
+          </div>
+          <div class="ea-feature">
+            <div class="ea-feature-icon">🔄</div>
+            <h3>Continuing Education</h3>
+            <p>Required 72 hours of continuing education every 3 years to stay current</p>
+          </div>
+          <div class="ea-feature">
+            <div class="ea-feature-icon">🏛️</div>
+            <h3>IRS Representation</h3>
+            <p>Can represent taxpayers before all IRS departments — audits, collections, appeals</p>
+          </div>
+          <div class="ea-feature">
+            <div class="ea-feature-icon">⚖️</div>
+            <h3>Ethics Standards</h3>
+            <p>Subject to strict NAEA Code of Ethics and IRS Circular 230</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-section reveal">
+        <h2 class="about-section-title">My Mission</h2>
+        <p>The US tax code is incredibly complex — more than <strong>70,000 pages</strong> of rules, regulations, and exceptions. Most Americans don't have the time or resources to navigate it alone. That's why I created Tax Clearance.</p>
+        <p>My mission is simple: <strong>make free, accurate, and actionable tax education available to every American</strong> — whether you're a first-time filer, a freelancer, a small business owner, or someone dealing with a tax problem.</p>
+        <blockquote style="font-style:italic;border-left:4px solid var(--amber);padding:1rem 1.5rem;background:rgba(245,158,11,0.06);border-radius:0 var(--radius-md) var(--radius-md) 0;margin:1.5rem 0;">
+          "Every taxpayer deserves to understand their rights and obligations. My goal is to be the trusted resource you turn to first — before you panic."
+        </blockquote>
+      </div>
+
+      <div class="about-section reveal">
+        <h2 class="about-section-title">Services I Offer</h2>
+        <div class="services-grid">
+          <% const services = [
+            { icon: '📋', name: 'Individual Tax Prep', desc: 'Federal and state tax return preparation for individuals and families.' },
+            { icon: '🏢', name: 'Business Tax Returns', desc: 'S-Corp, C-Corp, Partnership, and LLC tax preparation.' },
+            { icon: '🔍', name: 'IRS Audit Representation', desc: 'Professional representation before IRS during audits.' },
+            { icon: '💰', name: 'Tax Planning', desc: 'Strategic planning to minimize your tax liability legally.' },
+            { icon: '🛡️', name: 'IRS Problem Resolution', desc: 'Offer in Compromise, payment plans, penalty abatement.' },
+            { icon: '💼', name: 'Self-Employed Taxes', desc: 'Quarterly estimated taxes, Schedule C, deductions.' },
+          ]; %>
+          <% services.forEach(s => { %>
+          <div class="service-card">
+            <div class="service-icon"><%= s.icon %></div>
+            <h3><%= s.name %></h3>
+            <p><%= s.desc %></p>
+          </div>
+          <% }); %>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="about-sidebar">
+      <!-- Contact CTA -->
+      <div class="sidebar-widget" style="background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.08));border-color:rgba(99,102,241,0.25);">
+        <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:0.5rem;">Ready to Get Help?</h3>
+        <p style="font-size:0.85rem;color:var(--gray-400);margin-bottom:1rem;line-height:1.5;">Schedule a free initial consultation to discuss your tax situation.</p>
+        <a href="/contact" class="btn btn-primary" style="width:100%;display:flex;margin-bottom:0.75rem;">📅 Book Consultation</a>
+        <a href="mailto:<%= settings.ea_email||'contact@taxclearance.com' %>" class="btn btn-ghost" style="width:100%;display:flex;">📧 Send Email</a>
+        <% if (settings.ea_phone) { %><a href="tel:<%= settings.ea_phone %>" class="btn btn-ghost" style="width:100%;display:flex;margin-top:0.5rem;">📞 <%= settings.ea_phone %></a><% } %>
+      </div>
+
+      <!-- Quick Facts -->
+      <div class="sidebar-widget">
+        <div class="section-title" style="font-size:1rem;margin-bottom:1rem;"><div class="section-title-accent"></div>Quick Facts</div>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <% const facts = [
+            ['License', 'Enrolled Agent (EA)'],
+            ['Licensed by', 'Internal Revenue Service'],
+            ['Specialization', 'US Federal & State Taxation'],
+            ['Contact', settings.ea_email||'contact@taxclearance.com'],
+          ]; %>
+          <% facts.forEach(([k,v]) => { %>
+          <div style="display:flex;flex-direction:column;gap:0.15rem;padding:0.625rem;background:rgba(255,255,255,0.02);border-radius:var(--radius-sm);">
+            <span style="font-size:0.72rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;"><%= k %></span>
+            <span style="font-size:0.875rem;color:var(--white);"><%= v %></span>
+          </div>
+          <% }); %>
+        </div>
+      </div>
+
+      <!-- Browse Categories -->
+      <div class="sidebar-widget">
+        <div class="section-title" style="font-size:1rem;margin-bottom:1rem;"><div class="section-title-accent"></div>Browse Articles</div>
+        <div class="sidebar-cats">
+          <% categories.slice(0,8).forEach(cat => { %>
+          <a href="/category/<%= cat.slug %>" class="sidebar-cat">
+            <span class="sidebar-cat-icon" style="background:<%= cat.color %>22;color:<%= cat.color %>"><%= cat.icon %></span>
+            <span class="sidebar-cat-name"><%= cat.name %></span>
+            <span class="sidebar-cat-count"><%= cat.article_count||0 %></span>
+          </a>
+          <% }); %>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<style>
+.about-hero { padding:calc(var(--nav-height)+3rem) 0 3rem;background:linear-gradient(135deg,rgba(99,102,241,0.08) 0%,transparent 60%); }
+.about-hero-inner { display:grid;grid-template-columns:1fr 380px;gap:3rem;align-items:center; }
+.about-pretitle { font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--indigo-400);font-weight:700;margin-bottom:0.75rem; }
+.about-title { font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);font-weight:800;margin-bottom:1rem; }
+.about-credentials { display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.25rem; }
+.cred-badge { padding:0.35rem 0.875rem;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:var(--radius-full);font-size:0.78rem;font-weight:600;color:var(--indigo-400); }
+.about-bio { font-size:1rem;color:var(--gray-300);line-height:1.75;margin-bottom:1.5rem;max-width:560px; }
+.about-hero-actions { display:flex;gap:0.75rem;flex-wrap:wrap; }
+.about-avatar-wrap { position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem; }
+.about-avatar { width:140px;height:140px;background:var(--gradient-accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:4rem;box-shadow:var(--shadow-glow);z-index:1; }
+.about-avatar-ring { position:absolute;width:160px;height:160px;border:2px solid rgba(99,102,241,0.3);border-radius:50%;animation:pulse 3s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.05);opacity:1} }
+.about-stats-grid { display:grid;grid-template-columns:1fr 1fr;gap:0.75rem; }
+.about-stat { background:var(--navy-700);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-md);padding:1rem;text-align:center; }
+.about-stat-num { font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:var(--indigo-400); }
+.about-stat-label { font-size:0.75rem;color:var(--gray-500);margin-top:0.15rem; }
+.about-grid { display:grid;grid-template-columns:1fr 300px;gap:2.5rem;align-items:start;padding-bottom:5rem; }
+.about-main { display:flex;flex-direction:column;gap:0;  }
+.about-section { margin-bottom:3rem; }
+.about-section p { color:var(--gray-300);line-height:1.8;margin-bottom:1rem;font-size:0.95rem; }
+.about-section-title { font-family:var(--font-display);font-size:1.5rem;font-weight:700;margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.07); }
+.ea-features-grid { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem; }
+.ea-feature { background:var(--navy-700);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-lg);padding:1.25rem; }
+.ea-feature-icon { font-size:1.5rem;margin-bottom:0.6rem; }
+.ea-feature h3 { font-family:var(--font-display);font-size:0.9rem;font-weight:700;margin-bottom:0.35rem; }
+.ea-feature p { font-size:0.82rem;color:var(--gray-400);margin:0;line-height:1.5; }
+.services-grid { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem; }
+.service-card { background:var(--navy-700);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-lg);padding:1.25rem;transition:var(--transition); }
+.service-card:hover { border-color:rgba(99,102,241,0.3);transform:translateY(-2px); }
+.service-icon { font-size:1.5rem;margin-bottom:0.5rem; }
+.service-card h3 { font-family:var(--font-display);font-size:0.9rem;font-weight:700;margin-bottom:0.35rem;color:var(--white); }
+.service-card p { font-size:0.82rem;color:var(--gray-400);margin:0;line-height:1.5; }
+.about-sidebar { position:sticky;top:calc(var(--nav-height)+1.5rem);display:flex;flex-direction:column;gap:1.5rem; }
+@media(max-width:1100px){.about-hero-inner{grid-template-columns:1fr}.about-hero-visual{display:none}.about-grid{grid-template-columns:1fr}.about-sidebar{position:static}}
+@media(max-width:600px){.ea-features-grid,.services-grid{grid-template-columns:1fr}}
+</style>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

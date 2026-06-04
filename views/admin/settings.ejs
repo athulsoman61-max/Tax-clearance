@@ -1,0 +1,116 @@
+<% locals.adminPage = 'settings'; %>
+<%- include('../partials/admin-head') %>
+
+<% if (success) { %><div class="admin-alert admin-alert-success" style="margin-bottom:1.5rem;">✅ Settings saved successfully!</div><% } %>
+
+<div class="settings-grid">
+
+  <!-- Site Settings -->
+  <div class="editor-card">
+    <div class="editor-card-title">🌐 Site Settings</div>
+    <form action="/admin/settings/save" method="POST">
+      <div class="editor-field">
+        <label>Site Name</label>
+        <input type="text" name="site_name" class="editor-input" value="<%= settings.site_name||'' %>">
+      </div>
+      <div class="editor-field">
+        <label>Tagline</label>
+        <input type="text" name="site_tagline" class="editor-input" value="<%= settings.site_tagline||'' %>">
+      </div>
+      <div class="editor-field">
+        <label>Site Description (SEO)</label>
+        <textarea name="site_description" class="editor-input" rows="2"><%= settings.site_description||'' %></textarea>
+      </div>
+      <div class="editor-field">
+        <label>Articles Per Page</label>
+        <input type="number" name="articles_per_page" class="editor-input" value="<%= settings.articles_per_page||10 %>" min="1" max="50">
+      </div>
+      <div class="editor-field">
+        <label>Google Analytics ID</label>
+        <input type="text" name="google_analytics_id" class="editor-input" value="<%= settings.google_analytics_id||'' %>" placeholder="G-XXXXXXXXXX">
+      </div>
+      <div class="editor-field">
+        <label>Footer Text</label>
+        <input type="text" name="footer_text" class="editor-input" value="<%= settings.footer_text||'' %>">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">💾 Save Site Settings</button>
+    </form>
+  </div>
+
+  <!-- EA Profile -->
+  <div class="editor-card">
+    <div class="editor-card-title">⚖️ Enrolled Agent Profile</div>
+    <form action="/admin/settings/save" method="POST">
+      <div class="editor-field">
+        <label>Your Full Name</label>
+        <input type="text" name="ea_name" class="editor-input" value="<%= settings.ea_name||'' %>" placeholder="John Smith, EA">
+      </div>
+      <div class="editor-field">
+        <label>Credentials Line</label>
+        <input type="text" name="ea_credentials" class="editor-input" value="<%= settings.ea_credentials||'' %>" placeholder="Enrolled Agent (EA) | IRS Authorized">
+      </div>
+      <div class="editor-field">
+        <label>Bio</label>
+        <textarea name="ea_bio" class="editor-input" rows="4"><%= settings.ea_bio||'' %></textarea>
+      </div>
+      <div class="editor-field">
+        <label>Email</label>
+        <input type="email" name="ea_email" class="editor-input" value="<%= settings.ea_email||'' %>">
+      </div>
+      <div class="editor-field">
+        <label>Phone</label>
+        <input type="tel" name="ea_phone" class="editor-input" value="<%= settings.ea_phone||'' %>" placeholder="(555) 000-0000">
+      </div>
+      <div class="editor-field">
+        <label>Calendly URL</label>
+        <input type="url" name="ea_calendly" class="editor-input" value="<%= settings.ea_calendly||'' %>" placeholder="https://calendly.com/yourname">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">💾 Save EA Profile</button>
+    </form>
+  </div>
+
+  <!-- Social -->
+  <div class="editor-card">
+    <div class="editor-card-title">📱 Social Media</div>
+    <form action="/admin/settings/save" method="POST">
+      <div class="editor-field">
+        <label>Twitter / X Handle</label>
+        <input type="text" name="twitter_handle" class="editor-input" value="<%= settings.twitter_handle||'' %>" placeholder="@taxclearance">
+      </div>
+      <div class="editor-field">
+        <label>Facebook URL</label>
+        <input type="url" name="facebook_url" class="editor-input" value="<%= settings.facebook_url||'' %>">
+      </div>
+      <div class="editor-field">
+        <label>LinkedIn URL</label>
+        <input type="url" name="linkedin_url" class="editor-input" value="<%= settings.linkedin_url||'' %>">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">💾 Save Social Links</button>
+    </form>
+  </div>
+
+  <!-- Change Password -->
+  <div class="editor-card">
+    <div class="editor-card-title">🔐 Change Password</div>
+    <form action="/admin/change-password" method="POST">
+      <div class="editor-field">
+        <label>Current Password</label>
+        <input type="password" name="current_password" class="editor-input" required placeholder="Current password">
+      </div>
+      <div class="editor-field">
+        <label>New Password</label>
+        <input type="password" name="new_password" class="editor-input" required placeholder="New password (min 8 chars)" minlength="8">
+      </div>
+      <button type="submit" class="btn btn-amber" style="width:100%;">🔐 Update Password</button>
+    </form>
+    <p style="font-size:0.75rem;color:var(--gray-600);margin-top:0.75rem;text-align:center;">Changing password will log you out.</p>
+  </div>
+
+</div>
+
+<style>
+.settings-grid { display:grid;grid-template-columns:1fr 1fr;gap:1.5rem; }
+@media(max-width:900px){.settings-grid{grid-template-columns:1fr}}
+</style>
+
+<%- include('../partials/admin-foot') %>

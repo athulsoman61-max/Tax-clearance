@@ -1,0 +1,12 @@
+node_modules/
+.env
+database/taxclearance.db
+database/taxclearance.db.lock
+database/*.db-wal
+database/*.db-shm
+public/uploads/*
+!public/uploads/.gitkeep
+npm-debug.log*
+*.log
+.DS_Store
+Thumbs.db

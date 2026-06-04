@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | Tax Clearance</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    body { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--navy); }
+    .login-card {
+      width:100%; max-width:420px; padding:2.5rem;
+      background:var(--navy-700);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow-xl);
+    }
+    .login-logo { text-align:center; margin-bottom:2rem; }
+    .login-logo-icon { width:56px;height:56px;background:var(--gradient-accent);border-radius:var(--radius-lg);display:inline-flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:0.75rem;box-shadow:var(--shadow-glow); }
+    .login-title { font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--white); }
+    .login-sub { font-size:0.82rem;color:var(--gray-500);margin-top:0.25rem; }
+    .login-form .form-group { margin-bottom:1rem; }
+    .login-form label { display:block;font-size:0.8rem;font-weight:600;color:var(--gray-300);margin-bottom:0.4rem; }
+    .login-form input {
+      width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+      border-radius:var(--radius-md);padding:0.75rem 1rem;color:var(--white);
+      font-family:var(--font-sans);font-size:0.9rem;outline:none;transition:var(--transition);
+    }
+    .login-form input:focus { border-color:var(--indigo);background:rgba(99,102,241,0.06); }
+    .login-form input::placeholder { color:var(--gray-600); }
+    .login-btn { width:100%;padding:0.875rem;background:var(--gradient-accent);color:var(--white);border:none;border-radius:var(--radius-full);font-size:0.95rem;font-weight:700;cursor:pointer;transition:var(--transition);margin-top:0.5rem; }
+    .login-btn:hover { transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,0.5); }
+    .login-error { background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.25);border-radius:var(--radius-md);padding:0.75rem 1rem;font-size:0.85rem;color:#f87171;margin-bottom:1rem; }
+    .login-footer { text-align:center;margin-top:1.5rem;font-size:0.78rem;color:var(--gray-600); }
+    .change-notice { background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:var(--radius-md);padding:0.75rem 1rem;font-size:0.85rem;color:var(--emerald);margin-bottom:1rem; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">⚖️</div>
+      <div class="login-title">Tax Clearance</div>
+      <div class="login-sub">Admin Panel Login</div>
+    </div>
+    <% if (locals.changed) { %><div class="change-notice">✅ Password changed successfully. Please log in again.</div><% } %>
+    <% if (error) { %><div class="login-error">⚠️ <%= error %></div><% } %>
+    <form action="/admin/login" method="POST" class="login-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input id="username" type="text" name="username" required autocomplete="username" placeholder="admin">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="••••••••••">
+      </div>
+      <button type="submit" class="login-btn">Sign In →</button>
+    </form>
+    <div class="login-footer">
+      <a href="/" style="color:var(--indigo-400);">← Back to Tax Clearance</a>
+    </div>
+  </div>
+</body>
+</html>

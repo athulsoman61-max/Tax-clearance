@@ -1,0 +1,49 @@
+<% locals.adminPage = 'comments'; %>
+<%- include('../partials/admin-head') %>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Author</th><th>Comment</th><th>Article</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% if (comments.length === 0) { %>
+      <tr><td colspan="6" style="text-align:center;color:var(--gray-500);padding:3rem;">No comments yet.</td></tr>
+      <% } %>
+      <% comments.forEach(c => { %>
+      <tr>
+        <td>
+          <div style="font-weight:600;color:var(--white);font-size:0.875rem;"><%= c.author_name %></div>
+          <div style="font-size:0.75rem;color:var(--gray-500);"><%= c.author_email %></div>
+        </td>
+        <td style="color:var(--gray-300);font-size:0.85rem;max-width:280px;"><%= (c.content||'').substring(0,100) %><%= c.content?.length>100?'...':'' %></td>
+        <td><a href="/article/<%= c.article_slug %>" target="_blank" style="color:var(--indigo-400);font-size:0.82rem;"><%= (c.article_title||'').substring(0,40) %>...</a></td>
+        <td style="color:var(--gray-500);font-size:0.8rem;"><%= new Date(c.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) %></td>
+        <td><span class="admin-status-badge admin-status-<%= c.status %>"><%= c.status %></span></td>
+        <td>
+          <div class="admin-row-actions">
+            <% if (c.status !== 'approved') { %>
+            <button type="button" class="admin-action-btn" onclick="approveComment(<%= c.id %>)">Approve</button>
+            <% } %>
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteComment(<%= c.id %>)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<script>
+async function approveComment(id) {
+  if(!confirm('Approve this comment?')) return;
+  await fetch('/admin/comments/'+id+'/approve',{method:'POST'});
+  location.reload();
+}
+async function deleteComment(id) {
+  if(!confirm('Delete this comment permanently?')) return;
+  await fetch('/admin/comments/'+id+'/delete',{method:'POST'});
+  document.getElementById('comment-'+id)?.remove();
+  location.reload();
+}
+</script>
+
+<%- include('../partials/admin-foot') %>

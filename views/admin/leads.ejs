@@ -1,0 +1,26 @@
+<% locals.adminPage = 'leads'; %>
+<%- include('../partials/admin-head') %>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Service</th><th>Message</th><th>Date</th><th>Status</th></tr></thead>
+    <tbody>
+      <% if (leads.length === 0) { %>
+      <tr><td colspan="7" style="text-align:center;color:var(--gray-500);padding:3rem;">No leads yet. Leads from your contact form will appear here.</td></tr>
+      <% } %>
+      <% leads.forEach(lead => { %>
+      <tr>
+        <td style="font-weight:600;color:var(--white);"><%= lead.name %></td>
+        <td><a href="mailto:<%= lead.email %>" style="color:var(--indigo-400);font-size:0.85rem;"><%= lead.email %></a></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;"><%= lead.phone||'—' %></td>
+        <td><span class="admin-cat-badge" style="background:rgba(99,102,241,0.12);color:var(--indigo-400);"><%= (lead.service_type||'General').replace(/-/g,' ') %></span></td>
+        <td style="color:var(--gray-400);font-size:0.82rem;max-width:250px;"><span title="<%= lead.message %>"><%= (lead.message||'').substring(0,80) %><%= lead.message?.length>80?'...':'' %></span></td>
+        <td style="color:var(--gray-500);font-size:0.8rem;white-space:nowrap;"><%= new Date(lead.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) %></td>
+        <td><span class="admin-status-badge admin-status-<%= lead.status %>"><%= lead.status %></span></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/admin-foot') %>

@@ -1,0 +1,62 @@
+<% const siteName = settings?.site_name || 'Tax Clearance'; %>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="nav-logo" style="margin-bottom:1rem;display:inline-flex">
+          <div class="nav-logo-icon">⚖️</div>
+          <span><%= siteName %></span>
+        </a>
+        <p class="footer-desc"><%= settings?.site_description || 'Free US tax education by a licensed Enrolled Agent.' %></p>
+        <div class="footer-social">
+          <% if (settings?.twitter_handle) { %><a href="https://twitter.com/<%= settings.twitter_handle.replace('@','') %>" target="_blank" rel="noopener" aria-label="Twitter">𝕏</a><% } %>
+          <% if (settings?.facebook_url) { %><a href="<%= settings.facebook_url %>" target="_blank" rel="noopener" aria-label="Facebook">f</a><% } %>
+          <% if (settings?.linkedin_url) { %><a href="<%= settings.linkedin_url %>" target="_blank" rel="noopener" aria-label="LinkedIn">in</a><% } %>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Categories</div>
+        <div class="footer-links">
+          <a href="/category/tax-deductions">💰 Tax Deductions</a>
+          <a href="/category/tax-credits">✅ Tax Credits</a>
+          <a href="/category/irs-updates">📢 IRS Updates</a>
+          <a href="/category/small-business-taxes">🏢 Small Business</a>
+          <a href="/category/self-employed-taxes">💼 Self-Employed</a>
+          <a href="/category/crypto-tax">₿ Crypto Tax</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">More Topics</div>
+        <div class="footer-links">
+          <a href="/category/tax-planning">📊 Tax Planning</a>
+          <a href="/category/international-tax">🌍 International Tax</a>
+          <a href="/category/state-taxes">🗺️ State Taxes</a>
+          <a href="/category/tax-filing-tips">📝 Filing Tips</a>
+          <a href="/category/tax-deadlines">📅 Deadlines</a>
+          <a href="/category/tax-relief-programs">🛡️ Tax Relief</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Enrolled Agent</div>
+        <div class="footer-links">
+          <a href="/about">About the EA</a>
+          <a href="/contact">Book Consultation</a>
+          <a href="/sitemap.xml" target="_blank">Sitemap</a>
+        </div>
+        <div style="margin-top:1.25rem">
+          <div class="footer-col-title">Free Newsletter</div>
+          <form class="newsletter-form" id="footerNewsletter" style="flex-direction:column;max-width:100%">
+            <input type="email" class="newsletter-input" placeholder="your@email.com" name="email" required>
+            <button type="submit" class="btn btn-primary btn-sm" style="margin-top:0.5rem">Subscribe Free</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy"><%= settings?.footer_text || `© ${new Date().getFullYear()} ${siteName}. All rights reserved.` %></div>
+      <div class="footer-disclaimer">Educational content only — not legal or financial advice.</div>
+    </div>
+  </div>
+</footer>
+<div class="toast-container" id="toastContainer"></div>
+<script src="/js/main.js"></script>

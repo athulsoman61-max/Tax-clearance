@@ -1,0 +1,351 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<!-- Hero / Featured Article -->
+<% if (featured) { %>
+<section class="hero-section">
+  <div class="hero-bg" <% if (featured.featured_image) { %>style="background-image: url('<%= featured.featured_image %>')"<% } %>>
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content container">
+    <div class="hero-badge">
+      <span class="badge" style="background: <%= featured.category_color %>22; color: <%= featured.category_color %>; border: 1px solid <%= featured.category_color %>44">
+        <%= featured.category_icon || '📋' %> <%= featured.category_name %>
+      </span>
+      <span class="hero-featured-label">✦ Featured</span>
+    </div>
+    <h1 class="hero-title"><%= featured.title %></h1>
+    <p class="hero-excerpt"><%= featured.excerpt %></p>
+    <div class="hero-meta">
+      <span class="hero-date"><%= new Date(featured.publish_date || featured.created_at).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) %></span>
+      <span class="hero-dot">·</span>
+      <span class="hero-read"><%= featured.reading_time %> min read</span>
+      <span class="hero-dot">·</span>
+      <span class="hero-views">👁 <%= (featured.views || 0).toLocaleString() %> views</span>
+    </div>
+    <a href="/article/<%= featured.slug %>" class="btn btn-primary btn-lg hero-cta">Read Article →</a>
+  </div>
+</section>
+<% } %>
+
+<!-- IRS Updates Ticker -->
+<% if (irsUpdates && irsUpdates.length > 0) { %>
+<div class="container" style="margin-top: 1.5rem;">
+  <div class="irs-ticker">
+    <span class="ticker-label">🔴 IRS</span>
+    <div class="ticker-items">
+      <div class="ticker-track">
+        <% irsUpdates.forEach(u => { %>
+        <a href="/article/<%= u.slug %>" class="ticker-item"><%= u.title %></a>
+        <% }); %>
+        <% irsUpdates.forEach(u => { %>
+        <a href="/article/<%= u.slug %>" class="ticker-item"><%= u.title %></a>
+        <% }); %>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<!-- Category Pills -->
+<div class="container" style="margin-top:2rem;">
+  <div class="cat-pills">
+    <a href="/" class="cat-pill <%= !locals.activeCat ? 'active' : '' %>">All</a>
+    <% categories.slice(0, 10).forEach(cat => { %>
+    <a href="/category/<%= cat.slug %>" class="cat-pill" style="--cat-color: <%= cat.color %>">
+      <%= cat.icon %> <%= cat.name %>
+    </a>
+    <% }); %>
+  </div>
+</div>
+
+<!-- Main Layout: Feed + Sidebar -->
+<div class="container home-layout" style="margin-top: 2.5rem;">
+
+  <!-- Article Feed -->
+  <div class="feed-column">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-title-accent"></div>
+        Latest Articles
+      </div>
+      <span class="text-muted" style="font-size:0.82rem;"><%= totalArticles.toLocaleString() %> articles</span>
+    </div>
+
+    <div class="article-feed" id="articleFeed">
+      <% articles.forEach((article, i) => { %>
+      <article class="article-card reveal" data-i="<%= i %>">
+        <a href="/article/<%= article.slug %>" class="article-card-img-link">
+          <div class="article-card-img">
+            <% if (article.featured_image) { %>
+            <img src="<%= article.featured_image %>" alt="<%= article.title %>" loading="lazy">
+            <% } else { %>
+            <div class="article-card-placeholder"><%= article.category_icon || '📋' %></div>
+            <% } %>
+          </div>
+        </a>
+        <div class="article-card-body">
+          <div class="article-card-meta">
+            <span class="article-card-cat" style="background:<%= article.category_color %>22;color:<%= article.category_color %>">
+              <%= article.category_name || 'Tax' %>
+            </span>
+            <span class="article-card-date"><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) %></span>
+            <span class="article-card-read">⏱ <%= article.reading_time %> min</span>
+          </div>
+          <h2 class="article-card-title">
+            <a href="/article/<%= article.slug %>"><%= article.title %></a>
+          </h2>
+          <p class="article-card-excerpt"><%= article.excerpt %></p>
+          <div class="article-card-footer">
+            <span class="article-card-views">👁 <%= (article.views || 0).toLocaleString() %></span>
+            <a href="/article/<%= article.slug %>" class="read-more-btn">Read More →</a>
+          </div>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+
+    <!-- Load More / Infinite Scroll -->
+    <div class="load-more-container" id="loadMoreContainer">
+      <% if (hasMore) { %>
+      <div class="spinner" id="feedSpinner" style="display:none;"></div>
+      <button class="btn btn-outline" id="loadMoreBtn">Load More Articles</button>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+
+    <!-- EA CTA -->
+    <div class="ea-cta-banner reveal" style="margin-bottom:1.5rem;">
+      <div class="ea-cta-avatar">⚖️</div>
+      <div class="ea-cta-content">
+        <div class="ea-cta-title">Need Tax Help?</div>
+        <div class="ea-cta-sub"><%= settings?.ea_name || 'Our Enrolled Agent' %> is here to help with your tax questions.</div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <a href="/contact" class="btn btn-primary btn-sm">Book Consultation</a>
+          <a href="/about" class="btn btn-ghost btn-sm">Learn More</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trending -->
+    <div class="sidebar-widget reveal">
+      <div class="section-header">
+        <div class="section-title" style="font-size:1rem;">
+          <div class="section-title-accent" style="background:var(--gradient-amber)"></div>
+          🔥 Trending
+        </div>
+      </div>
+      <div class="trending-list">
+        <% trending.forEach((a, idx) => { %>
+        <a href="/article/<%= a.slug %>" class="trending-item">
+          <span class="trending-num"><%= (idx + 1).toString().padStart(2, '0') %></span>
+          <div class="trending-info">
+            <div class="trending-title"><%= a.title %></div>
+            <div class="trending-meta">
+              <span style="color:<%= a.category_color %>;font-size:0.72rem;font-weight:600"><%= a.category_name %></span>
+              <span class="text-muted" style="font-size:0.72rem">· 👁 <%= (a.views||0).toLocaleString() %></span>
+            </div>
+          </div>
+        </a>
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="sidebar-widget reveal newsletter-widget">
+      <div class="newsletter-icon">📬</div>
+      <h3 class="newsletter-title">Free Tax Updates</h3>
+      <p class="newsletter-sub">Get the latest IRS changes and tax tips delivered to your inbox — free.</p>
+      <form class="newsletter-form-vertical" id="sidebarNewsletter">
+        <input type="text" name="name" placeholder="Your name" class="newsletter-input" style="margin-bottom:0.5rem;">
+        <input type="email" name="email" placeholder="your@email.com" class="newsletter-input" required>
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5rem;">Subscribe Free</button>
+        <p style="font-size:0.72rem;color:var(--gray-600);text-align:center;margin-top:0.5rem;">No spam. Unsubscribe anytime.</p>
+      </form>
+    </div>
+
+    <!-- Categories -->
+    <div class="sidebar-widget reveal">
+      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;">
+        <div class="section-title-accent"></div>
+        Browse Categories
+      </div>
+      <div class="sidebar-cats">
+        <% categories.forEach(cat => { %>
+        <a href="/category/<%= cat.slug %>" class="sidebar-cat">
+          <span class="sidebar-cat-icon" style="background:<%= cat.color %>22;color:<%= cat.color %>"><%= cat.icon %></span>
+          <span class="sidebar-cat-name"><%= cat.name %></span>
+          <span class="sidebar-cat-count"><%= cat.article_count || 0 %></span>
+        </a>
+        <% }); %>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<style>
+/* Home page specific styles */
+.hero-section {
+  position: relative;
+  min-height: 75vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-hero);
+  background-size: cover;
+  background-position: center;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10,14,26,0.97) 0%, rgba(10,14,26,0.6) 50%, rgba(10,14,26,0.3) 100%);
+}
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 4rem;
+  max-width: 800px;
+}
+.hero-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.hero-featured-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+  color: var(--white);
+}
+.hero-excerpt {
+  font-size: 1rem;
+  color: var(--gray-300);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  max-width: 600px;
+}
+.hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--gray-400);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.hero-dot { color: var(--gray-600); }
+.hero-cta { font-size: 1rem; padding: 0.75rem 2rem; }
+
+.cat-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.cat-pill {
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--gray-300);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.cat-pill:hover, .cat-pill.active {
+  background: var(--indigo-light);
+  border-color: var(--indigo);
+  color: var(--indigo-400);
+}
+
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2.5rem;
+  align-items: start;
+  padding-bottom: 4rem;
+}
+
+.article-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar { position: sticky; top: calc(var(--nav-height) + 1.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
+
+.sidebar-widget {
+  background: var(--navy-700);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+
+.newsletter-widget {
+  background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.08) 100%);
+  border-color: rgba(99,102,241,0.2);
+  text-align: center;
+}
+.newsletter-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.newsletter-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+.newsletter-sub { font-size: 0.82rem; color: var(--gray-400); margin-bottom: 1rem; line-height: 1.5; }
+.newsletter-form-vertical { display: flex; flex-direction: column; }
+
+.trending-list { display: flex; flex-direction: column; gap: 0; }
+.trending-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: var(--transition);
+}
+.trending-item:last-child { border-bottom: none; }
+.trending-item:hover .trending-title { color: var(--indigo-400); }
+.trending-num { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: rgba(255,255,255,0.1); min-width: 2rem; }
+.trending-title { font-size: 0.86rem; font-weight: 500; color: var(--white); line-height: 1.4; margin-bottom: 0.3rem; transition: var(--transition); }
+.trending-meta { display: flex; align-items: center; gap: 0.25rem; }
+
+.sidebar-cats { display: flex; flex-direction: column; gap: 0.25rem; }
+.sidebar-cat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  color: var(--gray-300);
+  font-size: 0.875rem;
+}
+.sidebar-cat:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+.sidebar-cat-icon { width: 30px; height: 30px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+.sidebar-cat-name { flex: 1; font-weight: 500; }
+.sidebar-cat-count { font-size: 0.75rem; color: var(--gray-600); }
+
+@media (max-width: 1100px) {
+  .home-layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+}
+</style>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

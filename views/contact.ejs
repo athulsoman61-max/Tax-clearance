@@ -1,0 +1,210 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<div style="padding-top:calc(var(--nav-height)+3rem);padding-bottom:5rem;">
+<div class="container contact-layout">
+
+  <!-- Left: Forms -->
+  <div class="contact-forms">
+
+    <!-- Success / Error Messages -->
+    <% if (success) { %>
+    <div class="alert-success">
+      ✅ <strong>Message received!</strong> Thank you for reaching out. I'll get back to you within 1-2 business days.
+    </div>
+    <% } %>
+
+    <!-- Main Contact / Consultation Form -->
+    <div class="contact-card reveal" id="consultation">
+      <div class="contact-card-header">
+        <div class="contact-card-icon">📅</div>
+        <div>
+          <h2 class="contact-card-title">Book a Consultation</h2>
+          <p class="contact-card-sub">Free initial consultation — no commitment required</p>
+        </div>
+      </div>
+      <form action="/contact" method="POST" class="contact-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cf_name">Full Name *</label>
+            <input id="cf_name" type="text" name="name" required class="form-input" placeholder="John Smith">
+          </div>
+          <div class="form-group">
+            <label for="cf_email">Email Address *</label>
+            <input id="cf_email" type="email" name="email" required class="form-input" placeholder="john@example.com">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cf_phone">Phone Number</label>
+            <input id="cf_phone" type="tel" name="phone" class="form-input" placeholder="(555) 000-0000">
+          </div>
+          <div class="form-group">
+            <label for="cf_date">Preferred Date</label>
+            <input id="cf_date" type="date" name="preferred_date" class="form-input">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label for="cf_service">Service Type</label>
+          <select id="cf_service" name="service_type" class="form-input">
+            <option value="">Select a service...</option>
+            <option value="individual-tax-prep">Individual Tax Preparation</option>
+            <option value="small-business-taxes">Small Business Tax Return</option>
+            <option value="irs-audit">IRS Audit Representation</option>
+            <option value="tax-planning">Tax Planning / Strategy</option>
+            <option value="irs-problem">IRS Problem Resolution</option>
+            <option value="self-employed">Self-Employed / Freelancer Taxes</option>
+            <option value="crypto-tax">Cryptocurrency Tax</option>
+            <option value="other">Other / General Question</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label for="cf_message">Tell me about your situation *</label>
+          <textarea id="cf_message" name="message" required class="form-input" rows="5" placeholder="Briefly describe your tax situation, any issues you're facing, or questions you have..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Send Message & Request Consultation →</button>
+        <p style="font-size:0.75rem;color:var(--gray-600);text-align:center;margin-top:0.75rem;">Your information is kept strictly confidential.</p>
+      </form>
+    </div>
+
+    <!-- Ask a Quick Question -->
+    <div class="contact-card reveal" id="ask" style="margin-top:1.5rem;">
+      <div class="contact-card-header">
+        <div class="contact-card-icon">💬</div>
+        <div>
+          <h2 class="contact-card-title">Ask a Quick Question</h2>
+          <p class="contact-card-sub">Have a quick tax question? Submit it and I may feature the answer in a future article.</p>
+        </div>
+      </div>
+      <form action="/contact" method="POST" class="contact-form">
+        <input type="hidden" name="service_type" value="quick-question">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name *</label>
+            <input type="text" name="name" required class="form-input" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" name="email" required class="form-input" placeholder="your@email.com">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label>Your Question *</label>
+          <textarea name="message" required class="form-input" rows="3" placeholder="e.g., Can I deduct home office expenses if I'm an employee?"></textarea>
+        </div>
+        <button type="submit" class="btn btn-outline">Submit Question →</button>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Right: Info Sidebar -->
+  <aside class="contact-sidebar">
+    <!-- EA Card -->
+    <div class="ea-info-card reveal">
+      <div class="ea-info-avatar">⚖️</div>
+      <h3 class="ea-info-name"><%= settings.ea_name || 'Your EA' %></h3>
+      <div class="ea-info-title"><%= settings.ea_credentials || 'Enrolled Agent (EA) | IRS Authorized' %></div>
+      <p class="ea-info-bio"><%= settings.ea_bio?.substring(0,200) || '' %>...</p>
+      <a href="/about" class="btn btn-ghost btn-sm" style="width:100%;display:flex;margin-top:0.75rem;">View Full Profile →</a>
+    </div>
+
+    <!-- Contact Details -->
+    <div class="sidebar-widget reveal">
+      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;"><div class="section-title-accent"></div>Contact Info</div>
+      <div style="display:flex;flex-direction:column;gap:0.875rem;">
+        <% if (settings.ea_email) { %>
+        <a href="mailto:<%= settings.ea_email %>" class="contact-detail">
+          <span class="contact-detail-icon">📧</span>
+          <div>
+            <div style="font-size:0.72rem;color:var(--gray-500);text-transform:uppercase;font-weight:700;">Email</div>
+            <div style="font-size:0.875rem;color:var(--indigo-400);"><%= settings.ea_email %></div>
+          </div>
+        </a>
+        <% } %>
+        <% if (settings.ea_phone) { %>
+        <a href="tel:<%= settings.ea_phone %>" class="contact-detail">
+          <span class="contact-detail-icon">📞</span>
+          <div>
+            <div style="font-size:0.72rem;color:var(--gray-500);text-transform:uppercase;font-weight:700;">Phone</div>
+            <div style="font-size:0.875rem;color:var(--white);"><%= settings.ea_phone %></div>
+          </div>
+        </a>
+        <% } %>
+        <% if (settings.ea_calendly) { %>
+        <a href="<%= settings.ea_calendly %>" target="_blank" rel="noopener" class="contact-detail">
+          <span class="contact-detail-icon">📅</span>
+          <div>
+            <div style="font-size:0.72rem;color:var(--gray-500);text-transform:uppercase;font-weight:700;">Schedule Online</div>
+            <div style="font-size:0.875rem;color:var(--indigo-400);">Book via Calendly</div>
+          </div>
+        </a>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- What to Expect -->
+    <div class="sidebar-widget reveal">
+      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;"><div class="section-title-accent" style="background:var(--gradient-amber)"></div>What to Expect</div>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <% const steps = [
+          ['1', 'Submit your inquiry below'],
+          ['2', 'Receive a response within 1-2 business days'],
+          ['3', 'Schedule a free 15-min call to discuss your needs'],
+          ['4', 'Get a tailored plan and professional assistance'],
+        ]; %>
+        <% steps.forEach(([n, s]) => { %>
+        <div style="display:flex;align-items:center;gap:0.875rem;">
+          <span style="width:28px;height:28px;background:var(--gradient-accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;flex-shrink:0;"><%= n %></span>
+          <span style="font-size:0.875rem;color:var(--gray-300);"><%= s %></span>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div class="sidebar-widget reveal">
+      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;"><div class="section-title-accent"></div>Services Offered</div>
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
+        <% ['Individual Tax Prep', 'Small Business Returns', 'IRS Audit Representation', 'Tax Planning & Strategy', 'IRS Problem Resolution', 'Self-Employed Taxes', 'Crypto Tax', 'FBAR & International Tax'].forEach(s => { %>
+        <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--gray-300);padding:0.3rem 0;"><span style="color:var(--emerald);">✓</span> <%= s %></div>
+        <% }); %>
+      </div>
+    </div>
+  </aside>
+
+</div>
+</div>
+
+<style>
+.contact-layout { display:grid;grid-template-columns:1fr 340px;gap:2.5rem;align-items:start; }
+.contact-forms { display:flex;flex-direction:column; }
+.contact-card { background:var(--navy-700);border:1px solid rgba(255,255,255,0.07);border-radius:var(--radius-xl);padding:2rem; }
+.contact-card-header { display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.75rem; }
+.contact-card-icon { width:48px;height:48px;background:var(--gradient-accent);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0; }
+.contact-card-title { font-family:var(--font-display);font-size:1.2rem;font-weight:700;margin-bottom:0.25rem; }
+.contact-card-sub { font-size:0.82rem;color:var(--gray-500); }
+.alert-success { background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:var(--radius-md);padding:1rem 1.25rem;font-size:0.9rem;color:var(--emerald);margin-bottom:1.25rem; }
+.contact-sidebar { position:sticky;top:calc(var(--nav-height)+1.5rem);display:flex;flex-direction:column;gap:1.25rem; }
+.ea-info-card { background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.06));border:1px solid rgba(99,102,241,0.2);border-radius:var(--radius-xl);padding:1.75rem;text-align:center; }
+.ea-info-avatar { width:80px;height:80px;background:var(--gradient-accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem;box-shadow:var(--shadow-glow); }
+.ea-info-name { font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:0.25rem; }
+.ea-info-title { font-size:0.78rem;color:var(--indigo-400);margin-bottom:0.875rem;font-weight:600; }
+.ea-info-bio { font-size:0.82rem;color:var(--gray-400);line-height:1.6;margin:0; }
+.contact-detail { display:flex;align-items:center;gap:0.875rem;padding:0.625rem;border-radius:var(--radius-md);transition:var(--transition); }
+.contact-detail:hover { background:rgba(255,255,255,0.04); }
+.contact-detail-icon { width:36px;height:36px;border-radius:var(--radius-sm);background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0; }
+.form-group { margin-bottom:0; }
+.form-row { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem; }
+.form-group { display:flex;flex-direction:column;gap:0.4rem; }
+.form-group label { font-size:0.8rem;font-weight:600;color:var(--gray-300); }
+.form-input { background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-md);padding:0.7rem 1rem;color:var(--white);font-family:var(--font-sans);font-size:0.9rem;outline:none;transition:var(--transition);width:100%; }
+.form-input:focus { border-color:var(--indigo);background:rgba(99,102,241,0.05); }
+.form-input::placeholder { color:var(--gray-600); }
+select.form-input option { background:var(--navy-800);color:var(--white); }
+@media(max-width:1000px){.contact-layout{grid-template-columns:1fr}.contact-sidebar{position:static}}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+</style>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

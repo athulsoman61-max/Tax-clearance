@@ -1,0 +1,383 @@
+<% locals.adminPage = article ? 'articles' : 'new-article'; %>
+<%- include('../partials/admin-head') %>
+
+<link rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">
+
+<div class="editor-layout">
+
+  <!-- Editor Main -->
+  <div class="editor-main">
+
+    <!-- Title -->
+    <div class="editor-title-wrap">
+      <input type="text" id="articleTitle" class="editor-title-input" placeholder="Article Title..." value="<%= article?.title || '' %>">
+    </div>
+
+    <!-- SEO Score -->
+    <div class="seo-score-bar">
+      <div class="seo-score-label">SEO Score</div>
+      <div class="seo-score-track">
+        <div class="seo-score-fill" id="seoScoreFill" style="width:0%"></div>
+      </div>
+      <div class="seo-score-num" id="seoScoreNum">0</div>
+      <div class="seo-score-tag" id="seoScoreTag">—</div>
+    </div>
+
+    <!-- Rich Text Editor -->
+    <div class="quill-editor-wrap">
+      <div id="quillEditor" style="min-height:500px;"><%= article?.content ? article.content : '' %></div>
+    </div>
+
+  </div>
+
+  <!-- Sidebar Panel -->
+  <aside class="editor-sidebar">
+
+    <!-- Publish Card -->
+    <div class="editor-card">
+      <div class="editor-card-title">📤 Publish</div>
+      <form id="editorForm" action="/admin/articles/save" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="<%= article?.id || '' %>">
+        <input type="hidden" name="content" id="articleContent" value="">
+        <input type="hidden" name="existing_featured_image" value="<%= article?.featured_image || '' %>">
+        <input type="hidden" name="existing_og_image" value="<%= article?.og_image || '' %>">
+
+        <div class="editor-field">
+          <label>Status</label>
+          <select name="status" id="statusSelect" class="editor-input">
+            <option value="draft" <%= article?.status==='draft'||!article?'selected':'' %>>Draft</option>
+            <option value="published" <%= article?.status==='published'?'selected':'' %>>Published</option>
+            <option value="scheduled" <%= article?.status==='scheduled'?'selected':'' %>>Scheduled</option>
+          </select>
+        </div>
+
+        <div class="editor-field" id="scheduleField" style="display:<%= article?.status==='scheduled'?'block':'none' %>">
+          <label>Publish Date & Time</label>
+          <input type="datetime-local" name="publish_date" class="editor-input" value="<%= article?.publish_date?.replace(' ','T') || '' %>">
+        </div>
+
+        <div class="editor-field">
+          <label>Category</label>
+          <select name="category_id" class="editor-input">
+            <option value="">— No Category —</option>
+            <% categories.forEach(cat => { %>
+            <option value="<%= cat.id %>" <%= article?.category_id==cat.id?'selected':'' %>><%= cat.icon %> <%= cat.name %></option>
+            <% }); %>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;">
+          <label class="editor-checkbox"><input type="checkbox" name="is_featured" value="1" <%= article?.is_featured?'checked':'' %>> Featured</label>
+          <label class="editor-checkbox"><input type="checkbox" name="is_trending" value="1" <%= article?.is_trending?'checked':'' %>> Trending</label>
+        </div>
+
+        <div style="display:flex;gap:0.5rem;">
+          <button type="submit" class="btn btn-primary" style="flex:1;" id="saveBtn">
+            <span id="saveBtnText">💾 Save</span>
+          </button>
+          <% if (article) { %>
+          <a href="/admin/articles/<%= article.id %>/preview" target="_blank" class="btn btn-ghost">👁 Preview</a>
+          <% } %>
+        </div>
+      </form>
+    </div>
+
+    <!-- Slug Card -->
+    <div class="editor-card">
+      <div class="editor-card-title">🔗 URL Slug</div>
+      <div class="editor-field">
+        <label>Permalink</label>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <input type="text" name="slug" id="slugInput" class="editor-input" value="<%= article?.slug || '' %>" placeholder="auto-generated" form="editorForm">
+          <button type="button" id="regenSlug" class="btn btn-ghost btn-sm" title="Regenerate">↺</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Image Card -->
+    <div class="editor-card">
+      <div class="editor-card-title">🖼️ Featured Image</div>
+      <% if (article?.featured_image) { %>
+      <img src="<%= article.featured_image %>" alt="Featured" style="width:100%;border-radius:var(--radius-md);margin-bottom:0.75rem;aspect-ratio:16/9;object-fit:cover;">
+      <% } %>
+      <div class="editor-field">
+        <label>Upload Image</label>
+        <input type="file" name="featured_image" accept="image/*" class="editor-input" form="editorForm" style="padding:0.4rem;">
+      </div>
+      <div class="editor-field">
+        <label>Alt Text</label>
+        <input type="text" name="featured_image_alt" class="editor-input" value="<%= article?.featured_image_alt || '' %>" placeholder="Describe the image..." form="editorForm">
+      </div>
+    </div>
+
+    <!-- Excerpt -->
+    <div class="editor-card">
+      <div class="editor-card-title">📝 Excerpt</div>
+      <div class="editor-field">
+        <textarea name="excerpt" id="excerptInput" class="editor-input" rows="3" placeholder="Short summary (150-160 chars ideal)..." form="editorForm"><%= article?.excerpt || '' %></textarea>
+        <div style="font-size:0.72rem;color:var(--gray-600);margin-top:0.25rem;" id="excerptCount">0 chars</div>
+      </div>
+    </div>
+
+    <!-- SEO Card -->
+    <div class="editor-card">
+      <div class="editor-card-title">🔍 SEO Settings</div>
+      <div class="editor-field">
+        <label>SEO Title <span id="seoTitleCount" style="font-weight:400;color:var(--gray-600);">(0/60)</span></label>
+        <input type="text" name="seo_title" id="seoTitle" class="editor-input" value="<%= article?.seo_title || '' %>" placeholder="Defaults to article title..." form="editorForm" maxlength="70">
+        <div class="seo-length-bar"><div class="seo-length-fill" id="seoTitleBar"></div></div>
+      </div>
+      <div class="editor-field">
+        <label>Meta Description <span id="seoDescCount" style="font-weight:400;color:var(--gray-600);">(0/160)</span></label>
+        <textarea name="seo_description" id="seoDesc" class="editor-input" rows="3" placeholder="155-160 characters ideal..." form="editorForm"><%= article?.seo_description || '' %></textarea>
+        <div class="seo-length-bar"><div class="seo-length-fill" id="seoDescBar"></div></div>
+      </div>
+      <div class="editor-field">
+        <label>Keywords <span style="font-weight:400;color:var(--gray-600);">(comma separated)</span></label>
+        <input type="text" name="seo_keywords" id="seoKeywords" class="editor-input" value="<%= article?.seo_keywords || '' %>" placeholder="tax deductions, IRS updates..." form="editorForm">
+      </div>
+    </div>
+
+    <!-- Tags Card -->
+    <div class="editor-card">
+      <div class="editor-card-title">🔖 Tags</div>
+      <div class="tags-selector">
+        <% tags.forEach(tag => { %>
+        <label class="tag-check-label">
+          <input type="checkbox" name="tags" value="<%= tag.id %>" form="editorForm" <%= (article?.selectedTags||[]).includes(tag.id)?'checked':'' %>>
+          <%= tag.name %>
+        </label>
+        <% }); %>
+      </div>
+      <div style="margin-top:0.75rem;display:flex;gap:0.5rem;">
+        <input type="text" id="newTagInput" class="editor-input" placeholder="New tag..." style="flex:1;">
+        <button type="button" id="addTagBtn" class="btn btn-ghost btn-sm">Add</button>
+      </div>
+    </div>
+
+    <!-- Delete -->
+    <% if (article) { %>
+    <form action="/admin/articles/<%= article.id %>/delete" method="POST">
+      <button type="submit" class="btn" style="width:100%;background:rgba(244,63,94,0.1);color:var(--rose);border:1px solid rgba(244,63,94,0.2);" data-confirm="Are you sure you want to permanently delete this article?">🗑️ Delete Article</button>
+    </form>
+    <% } %>
+
+  </aside>
+</div>
+
+<style>
+.editor-layout { display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start; }
+.editor-main { display:flex;flex-direction:column;gap:1rem; }
+.editor-title-input {
+  width:100%;background:var(--admin-card);border:1px solid var(--admin-border);border-radius:var(--radius-lg);
+  padding:1rem 1.25rem;color:var(--white);font-family:var(--font-display);font-size:1.3rem;font-weight:700;
+  outline:none;transition:var(--transition);
+}
+.editor-title-input:focus { border-color:var(--indigo);background:rgba(99,102,241,0.04); }
+.editor-title-input::placeholder { color:var(--gray-600); }
+.seo-score-bar { display:flex;align-items:center;gap:0.75rem;background:var(--admin-card);border:1px solid var(--admin-border);border-radius:var(--radius-md);padding:0.625rem 1rem;font-size:0.8rem; }
+.seo-score-label { color:var(--gray-400);font-weight:600;white-space:nowrap; }
+.seo-score-track { flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden; }
+.seo-score-fill { height:100%;background:var(--gradient-accent);border-radius:3px;transition:width 0.4s ease; }
+.seo-score-num { font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--white);min-width:2rem;text-align:center; }
+.seo-score-tag { font-size:0.75rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:var(--radius-full);white-space:nowrap; }
+.quill-editor-wrap { background:var(--admin-card);border:1px solid var(--admin-border);border-radius:var(--radius-lg);overflow:hidden; }
+.ql-toolbar { background:rgba(255,255,255,0.03)!important;border:none!important;border-bottom:1px solid var(--admin-border)!important;padding:0.75rem 1rem!important; }
+.ql-container { background:transparent!important;border:none!important;font-family:var(--font-serif)!important;font-size:1rem!important;color:var(--gray-200)!important; }
+.ql-editor { min-height:500px!important;padding:1.5rem!important;line-height:1.8!important; }
+.ql-editor::before { color:var(--gray-600)!important; }
+.ql-toolbar .ql-stroke { stroke:var(--gray-400)!important; }
+.ql-toolbar .ql-fill { fill:var(--gray-400)!important; }
+.ql-toolbar button:hover .ql-stroke, .ql-toolbar button.ql-active .ql-stroke { stroke:var(--indigo-400)!important; }
+.ql-toolbar .ql-picker { color:var(--gray-400)!important; }
+.ql-toolbar .ql-picker-options { background:var(--navy-800)!important;border:1px solid var(--admin-border)!important;border-radius:var(--radius-md)!important; }
+.editor-sidebar { position:sticky;top:calc(70px + 1rem);display:flex;flex-direction:column;gap:1rem;max-height:calc(100vh - 100px);overflow-y:auto;padding-bottom:2rem; }
+.editor-card { background:var(--admin-card);border:1px solid var(--admin-border);border-radius:var(--radius-lg);padding:1.25rem; }
+.editor-card-title { font-family:var(--font-display);font-size:0.85rem;font-weight:700;color:var(--white);margin-bottom:0.875rem;padding-bottom:0.625rem;border-bottom:1px solid var(--admin-border); }
+.editor-field { margin-bottom:0.75rem; }
+.editor-field label { display:block;font-size:0.75rem;font-weight:600;color:var(--gray-400);margin-bottom:0.3rem; }
+.editor-input {
+  width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-md);
+  padding:0.55rem 0.875rem;color:var(--white);font-family:var(--font-sans);font-size:0.85rem;outline:none;transition:var(--transition);
+}
+.editor-input:focus { border-color:var(--indigo);background:rgba(99,102,241,0.05); }
+.editor-input::placeholder { color:var(--gray-600); }
+select.editor-input option { background:var(--navy-800); }
+.editor-checkbox { display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:var(--gray-300);cursor:pointer;padding:0.35rem 0.625rem;border-radius:var(--radius-sm);border:1px solid var(--admin-border); }
+.editor-checkbox input { accent-color:var(--indigo); }
+.seo-length-bar { height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-top:0.3rem; }
+.seo-length-fill { height:100%;background:var(--gradient-accent);border-radius:2px;transition:width 0.3s; }
+.tags-selector { display:flex;flex-wrap:wrap;gap:0.4rem; }
+.tag-check-label { display:flex;align-items:center;gap:0.3rem;font-size:0.78rem;padding:0.25rem 0.625rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-full);cursor:pointer;transition:var(--transition);color:var(--gray-400); }
+.tag-check-label:has(input:checked) { background:var(--indigo-light);border-color:var(--indigo);color:var(--indigo-400); }
+.tag-check-label input { display:none; }
+@media(max-width:1100px){.editor-layout{grid-template-columns:1fr}.editor-sidebar{position:static;max-height:none}}
+</style>
+
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+// Init Quill
+const quill = new Quill('#quillEditor', {
+  theme: 'snow',
+  placeholder: 'Start writing your article here...',
+  modules: {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      ['link', 'image'],
+      ['clean'],
+      [{ 'align': [] }],
+      ['table']
+    ]
+  }
+});
+
+// Sync title to slug
+const titleInput = document.getElementById('articleTitle');
+const slugInput = document.getElementById('slugInput');
+const titleHidden = document.querySelector('[name="title"]') || (() => {
+  const i = document.createElement('input');
+  i.type = 'hidden'; i.name = 'title'; i.id = 'hiddenTitle';
+  document.getElementById('editorForm').appendChild(i);
+  return i;
+})();
+
+function slugify(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
+titleInput.addEventListener('input', () => {
+  titleHidden.value = titleInput.value;
+  if (!slugInput.dataset.manual) {
+    slugInput.value = slugify(titleInput.value);
+  }
+  updateSeoScore();
+});
+
+slugInput.addEventListener('input', () => { slugInput.dataset.manual = '1'; });
+
+document.getElementById('regenSlug').addEventListener('click', () => {
+  delete slugInput.dataset.manual;
+  slugInput.value = slugify(titleInput.value);
+});
+
+// Excerpt counter
+const excerptInput = document.getElementById('excerptInput');
+const excerptCount = document.getElementById('excerptCount');
+excerptInput?.addEventListener('input', () => {
+  excerptCount.textContent = excerptInput.value.length + ' chars';
+});
+excerptCount.textContent = (excerptInput?.value?.length||0) + ' chars';
+
+// SEO title bar
+const seoTitle = document.getElementById('seoTitle');
+const seoTitleBar = document.getElementById('seoTitleBar');
+const seoTitleCount = document.getElementById('seoTitleCount');
+seoTitle.addEventListener('input', () => {
+  const l = seoTitle.value.length;
+  seoTitleCount.textContent = `(${l}/60)`;
+  seoTitleBar.style.width = Math.min(100, (l/60)*100)+'%';
+  seoTitleBar.style.background = l > 60 ? 'var(--rose)' : l > 50 ? 'var(--amber)' : 'var(--gradient-accent)';
+  updateSeoScore();
+});
+// init
+const initTitleLen = seoTitle.value.length;
+seoTitleCount.textContent = `(${initTitleLen}/60)`;
+seoTitleBar.style.width = Math.min(100,(initTitleLen/60)*100)+'%';
+
+// SEO desc bar
+const seoDesc = document.getElementById('seoDesc');
+const seoDescBar = document.getElementById('seoDescBar');
+const seoDescCount = document.getElementById('seoDescCount');
+seoDesc.addEventListener('input', () => {
+  const l = seoDesc.value.length;
+  seoDescCount.textContent = `(${l}/160)`;
+  seoDescBar.style.width = Math.min(100, (l/160)*100)+'%';
+  seoDescBar.style.background = l > 160 ? 'var(--rose)' : l > 140 ? 'var(--amber)' : 'var(--gradient-accent)';
+  updateSeoScore();
+});
+const initDescLen = seoDesc.value.length;
+seoDescCount.textContent = `(${initDescLen}/160)`;
+seoDescBar.style.width = Math.min(100,(initDescLen/160)*100)+'%';
+
+document.getElementById('seoKeywords').addEventListener('input', updateSeoScore);
+
+// SEO Score Calculator
+function updateSeoScore() {
+  let score = 0;
+  const title = titleInput.value;
+  const st = seoTitle.value;
+  const sd = seoDesc.value;
+  const sk = document.getElementById('seoKeywords').value;
+  const content = quill.getText();
+  const words = content.trim().split(/\s+/).filter(Boolean).length;
+
+  if (title.length > 10) score += 15;
+  if (st.length >= 30 && st.length <= 60) score += 15;
+  if (sd.length >= 120 && sd.length <= 160) score += 15;
+  if (sk.trim()) score += 10;
+  if (words > 300) score += 15;
+  if (words > 800) score += 10;
+  if (document.querySelector('input[name="featured_image"]')?.value ||
+      document.querySelector('input[name="existing_featured_image"]')?.value) score += 10;
+  if (excerptInput.value.length > 50) score += 10;
+
+  const fill = document.getElementById('seoScoreFill');
+  const num = document.getElementById('seoScoreNum');
+  const tag = document.getElementById('seoScoreTag');
+
+  fill.style.width = score + '%';
+  num.textContent = score;
+
+  if (score >= 80) {
+    fill.style.background = 'var(--emerald)';
+    tag.textContent = '🟢 Great';
+    tag.style.background = 'rgba(16,185,129,0.15)';
+    tag.style.color = 'var(--emerald)';
+  } else if (score >= 50) {
+    fill.style.background = 'var(--amber)';
+    tag.textContent = '🟡 Good';
+    tag.style.background = 'rgba(245,158,11,0.15)';
+    tag.style.color = 'var(--amber)';
+  } else {
+    fill.style.background = 'var(--rose)';
+    tag.textContent = '🔴 Needs Work';
+    tag.style.background = 'rgba(244,63,94,0.1)';
+    tag.style.color = 'var(--rose)';
+  }
+}
+quill.on('text-change', updateSeoScore);
+updateSeoScore();
+
+// Status toggle for schedule field
+document.getElementById('statusSelect').addEventListener('change', function() {
+  document.getElementById('scheduleField').style.display = this.value === 'scheduled' ? 'block' : 'none';
+});
+
+// Form submit — inject quill content and title
+document.getElementById('editorForm').addEventListener('submit', function(e) {
+  document.getElementById('articleContent').value = quill.root.innerHTML;
+  // Inject title
+  let ti = document.getElementById('hiddenTitle');
+  if (!ti) { ti = document.createElement('input'); ti.type='hidden'; ti.name='title'; ti.id='hiddenTitle'; this.appendChild(ti); }
+  ti.value = titleInput.value;
+});
+
+// Add tag
+document.getElementById('addTagBtn').addEventListener('click', async () => {
+  const name = document.getElementById('newTagInput').value.trim();
+  if (!name) return;
+  const res = await fetch('/admin/tags/save', {
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:'name='+encodeURIComponent(name)
+  });
+  const data = await res.json();
+  if (data.success) { alert('Tag added! Please save the article and re-open to see it.'); document.getElementById('newTagInput').value=''; }
+});
+</script>
+
+<%- include('../partials/admin-foot') %>

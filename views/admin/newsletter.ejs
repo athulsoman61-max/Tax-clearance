@@ -1,0 +1,33 @@
+<% locals.adminPage = 'newsletter'; %>
+<%- include('../partials/admin-head') %>
+
+<div style="margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;">
+  <div class="dash-stat-card" style="flex:none;">
+    <div class="dash-stat-icon" style="background:rgba(99,102,241,0.15);color:var(--indigo);">📬</div>
+    <div class="dash-stat-body">
+      <div class="dash-stat-num"><%= subscribers.length %></div>
+      <div class="dash-stat-label">Total Subscribers</div>
+    </div>
+  </div>
+</div>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Email</th><th>Name</th><th>Subscribed</th><th>Status</th></tr></thead>
+    <tbody>
+      <% if (subscribers.length === 0) { %>
+      <tr><td colspan="4" style="text-align:center;color:var(--gray-500);padding:3rem;">No subscribers yet. Share your newsletter signup to grow your list!</td></tr>
+      <% } %>
+      <% subscribers.forEach(s => { %>
+      <tr>
+        <td><a href="mailto:<%= s.email %>" style="color:var(--indigo-400);font-size:0.875rem;"><%= s.email %></a></td>
+        <td style="color:var(--gray-300);font-size:0.875rem;"><%= s.name||'—' %></td>
+        <td style="color:var(--gray-500);font-size:0.8rem;"><%= new Date(s.subscribed_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) %></td>
+        <td><span class="admin-status-badge admin-status-<%= s.status %>"><%= s.status %></span></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/admin-foot') %>

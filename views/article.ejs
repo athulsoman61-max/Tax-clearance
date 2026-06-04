@@ -1,0 +1,751 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<% if (locals.isPreview) { %>
+<div style="position:fixed;top:var(--nav-height);left:0;right:0;z-index:100;background:var(--amber);color:var(--navy);padding:0.5rem;text-align:center;font-weight:700;font-size:0.85rem;">
+  ⚠️ PREVIEW MODE — This article is not yet published
+  <a href="/admin/articles/<%= article.id %>/edit" style="margin-left:1rem;text-decoration:underline">Edit Article</a>
+</div>
+<% } %>
+
+<!-- Reading Progress Bar -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<!-- Article Hero -->
+<div class="article-hero">
+  <% if (article.featured_image) { %>
+  <div class="article-hero-img-wrap">
+    <img src="<%= article.featured_image %>" alt="<%= article.featured_image_alt || article.title %>" class="article-hero-img" loading="eager">
+    <div class="article-hero-overlay"></div>
+  </div>
+  <% } %>
+  <div class="article-hero-content container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span>›</span>
+      <% if (article.category_slug) { %>
+      <a href="/category/<%= article.category_slug %>"><%= article.category_name %></a>
+      <span>›</span>
+      <% } %>
+      <span><%= article.title.substring(0, 40) %>...</span>
+    </nav>
+    <div class="article-meta-top">
+      <% if (article.category_name) { %>
+      <a href="/category/<%= article.category_slug %>" class="badge" style="background:<%= article.category_color %>22;color:<%= article.category_color %>;border:1px solid <%= article.category_color %>44">
+        <%= article.category_icon %> <%= article.category_name %>
+      </a>
+      <% } %>
+    </div>
+    <h1 class="article-title"><%= article.title %></h1>
+    <p class="article-excerpt"><%= article.excerpt %></p>
+    <div class="article-byline">
+      <div class="article-author-chip">
+        <div class="author-chip-avatar">⚖️</div>
+        <div>
+          <div class="author-chip-name"><%= article.author_name || 'Tax Clearance EA' %></div>
+          <div class="author-chip-cred">Enrolled Agent (EA)</div>
+        </div>
+      </div>
+      <div class="article-byline-meta">
+        <span>📅 <%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) %></span>
+        <span>⏱ <%= article.reading_time %> min read</span>
+        <span>👁 <%= (article.views || 0).toLocaleString() %> views</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Article Body Layout -->
+<div class="container article-layout" style="margin-top: 2.5rem; padding-bottom: 4rem;">
+
+  <!-- Sticky Share Bar (left) -->
+  <div class="share-bar">
+    <div class="share-bar-inner" id="shareBar">
+      <span class="share-bar-label">Share</span>
+      <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent((process.env.SITE_URL||'') + '/article/' + article.slug) %>&text=<%= encodeURIComponent(article.title) %>" target="_blank" rel="noopener" class="share-btn share-twitter" aria-label="Share on Twitter">𝕏</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent((process.env.SITE_URL||'') + '/article/' + article.slug) %>" target="_blank" rel="noopener" class="share-btn share-fb" aria-label="Share on Facebook">f</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= encodeURIComponent((process.env.SITE_URL||'') + '/article/' + article.slug) %>" target="_blank" rel="noopener" class="share-btn share-li" aria-label="Share on LinkedIn">in</a>
+      <button class="share-btn share-copy" onclick="copyLink()" aria-label="Copy link">🔗</button>
+    </div>
+  </div>
+
+  <!-- Main Article Content -->
+  <article class="article-main">
+
+    <!-- Table of Contents (auto-generated) -->
+    <div class="toc-box" id="tocBox">
+      <div class="toc-header">
+        <span>📋</span>
+        <strong>Table of Contents</strong>
+        <button class="toc-toggle" id="tocToggle">−</button>
+      </div>
+      <nav class="toc-nav" id="tocNav"></nav>
+    </div>
+
+    <!-- Article Body -->
+    <div class="article-body" id="articleBody">
+      <%- article.content %>
+    </div>
+
+    <!-- Tags -->
+    <% if (tags && tags.length > 0) { %>
+    <div class="article-tags">
+      <span class="tags-label">Tags:</span>
+      <% tags.forEach(tag => { %>
+      <a href="/search?q=<%= tag.slug %>" class="tag-pill">#<%= tag.name %></a>
+      <% }); %>
+    </div>
+    <% } %>
+
+    <!-- EA CTA Box -->
+    <div class="article-ea-cta">
+      <div class="ea-cta-icon">⚖️</div>
+      <div class="ea-cta-body">
+        <h3>Have Questions About Your Taxes?</h3>
+        <p>As an <strong>Enrolled Agent (EA)</strong> licensed by the IRS, I can help you apply these concepts to your specific situation. Book a free initial consultation — no obligation.</p>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem;">
+          <a href="/contact" class="btn btn-primary">📅 Book Consultation</a>
+          <a href="/contact#ask" class="btn btn-outline">💬 Ask a Question</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Author Bio -->
+    <div class="author-bio-box">
+      <div class="author-bio-avatar">⚖️</div>
+      <div class="author-bio-content">
+        <div class="author-bio-name"><%= article.author_name || 'Tax Clearance EA' %></div>
+        <div class="author-bio-cred">Enrolled Agent (EA) — IRS Authorized Tax Professional</div>
+        <p class="author-bio-text"><%= article.author_bio || settings?.ea_bio || 'Dedicated to providing free, high-quality US tax education to help individuals and small businesses navigate the tax system with confidence.' %></p>
+        <a href="/about" class="btn btn-ghost btn-sm">View Full Profile →</a>
+      </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section" id="comments">
+      <h2 class="comments-title">Comments (<%= comments.length %>)</h2>
+
+      <% if (locals.query && locals.query.commented) { %>
+      <div class="comment-success-msg">✅ Your comment was submitted and is pending moderation. Thank you!</div>
+      <% } %>
+
+      <% if (comments.length > 0) { %>
+      <div class="comments-list">
+        <% comments.forEach(comment => { %>
+        <div class="comment-item">
+          <div class="comment-avatar"><%= comment.author_name.charAt(0).toUpperCase() %></div>
+          <div class="comment-body">
+            <div class="comment-header">
+              <span class="comment-author"><%= comment.author_name %></span>
+              <span class="comment-date"><%= new Date(comment.created_at).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}) %></span>
+            </div>
+            <p class="comment-text"><%= comment.content %></p>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+      <% } else { %>
+      <p style="color:var(--gray-500);font-size:0.875rem;">Be the first to leave a comment!</p>
+      <% } %>
+
+      <!-- Comment Form -->
+      <div class="comment-form-wrap">
+        <h3 class="comment-form-title">Leave a Comment</h3>
+        <form action="/article/<%= article.slug %>/comment" method="POST" class="comment-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Name *</label>
+              <input type="text" name="name" required class="form-input" placeholder="Your name">
+            </div>
+            <div class="form-group">
+              <label>Email * <span style="color:var(--gray-600);font-size:0.75rem;">(not published)</span></label>
+              <input type="email" name="email" required class="form-input" placeholder="your@email.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Comment *</label>
+            <textarea name="content" required class="form-input" rows="4" placeholder="Share your thoughts or questions..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Post Comment →</button>
+        </form>
+      </div>
+    </div>
+
+  </article>
+
+  <!-- Article Sidebar -->
+  <aside class="article-sidebar">
+
+    <!-- Related Articles -->
+    <% if (related && related.length > 0) { %>
+    <div class="sidebar-widget">
+      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;">
+        <div class="section-title-accent"></div>
+        Related Articles
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <% related.forEach(r => { %>
+        <a href="/article/<%= r.slug %>" class="related-card">
+          <% if (r.featured_image) { %>
+          <img src="<%= r.featured_image %>" alt="<%= r.title %>" class="related-card-img" loading="lazy">
+          <% } %>
+          <div class="related-card-body">
+            <span class="article-card-cat" style="background:<%= r.category_color %>22;color:<%= r.category_color %>;font-size:0.68rem;padding:0.15rem 0.5rem"><%= r.category_name %></span>
+            <div class="related-card-title"><%= r.title %></div>
+            <div class="related-card-meta">⏱ <%= r.reading_time %> min</div>
+          </div>
+        </a>
+        <% }); %>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- EA Consult CTA -->
+    <div class="sidebar-widget" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));border-color:rgba(99,102,241,0.2);text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">⚖️</div>
+      <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:0.5rem;">Get Professional Help</h3>
+      <p style="font-size:0.82rem;color:var(--gray-400);margin-bottom:1rem;line-height:1.5;">Work directly with an <strong>Enrolled Agent</strong> for your specific tax situation.</p>
+      <a href="/contact" class="btn btn-primary" style="width:100%;display:flex;">Book Free Consult →</a>
+    </div>
+
+    <!-- Categories -->
+    <div class="sidebar-widget">
+      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;">
+        <div class="section-title-accent"></div>
+        Browse Topics
+      </div>
+      <div class="sidebar-cats">
+        <% categories.slice(0, 8).forEach(cat => { %>
+        <a href="/category/<%= cat.slug %>" class="sidebar-cat">
+          <span class="sidebar-cat-icon" style="background:<%= cat.color %>22;color:<%= cat.color %>"><%= cat.icon %></span>
+          <span class="sidebar-cat-name"><%= cat.name %></span>
+          <span class="sidebar-cat-count"><%= cat.article_count || 0 %></span>
+        </a>
+        <% }); %>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<style>
+.reading-progress {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  height: 3px;
+  background: var(--gradient-accent);
+  z-index: 999;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+.article-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.article-hero-img-wrap {
+  position: relative;
+  height: 55vh;
+  min-height: 350px;
+}
+
+.article-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.article-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10,14,26,1) 0%, rgba(10,14,26,0.5) 60%, rgba(10,14,26,0.2) 100%);
+}
+
+.article-hero-content {
+  position: relative;
+  margin-top: -120px;
+  z-index: 1;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--gray-500);
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.breadcrumb a { color: var(--gray-400); transition: var(--transition); }
+.breadcrumb a:hover { color: var(--indigo-400); }
+
+.article-meta-top { margin-bottom: 0.75rem; }
+
+.article-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+.article-excerpt {
+  font-size: 1.05rem;
+  color: var(--gray-300);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  max-width: 700px;
+}
+
+.article-byline {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.article-author-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.author-chip-avatar {
+  width: 38px; height: 38px;
+  background: var(--gradient-accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+
+.author-chip-name { font-size: 0.875rem; font-weight: 600; }
+.author-chip-cred { font-size: 0.72rem; color: var(--indigo-400); }
+
+.article-byline-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.82rem;
+  color: var(--gray-500);
+  flex-wrap: wrap;
+}
+
+.article-layout {
+  display: grid;
+  grid-template-columns: 60px 1fr 300px;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Share bar */
+.share-bar { position: sticky; top: calc(var(--nav-height) + 2rem); }
+.share-bar-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--navy-700);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-lg);
+  padding: 0.875rem 0.6rem;
+}
+
+.share-bar-label { font-size: 0.65rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.1em; }
+
+.share-btn {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: var(--transition);
+  color: var(--gray-400);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.share-btn:hover { transform: scale(1.08); }
+.share-twitter:hover { background: #1da1f2; color: white; border-color: #1da1f2; }
+.share-fb:hover { background: #1877f2; color: white; border-color: #1877f2; }
+.share-li:hover { background: #0077b5; color: white; border-color: #0077b5; }
+.share-copy:hover { background: var(--emerald); border-color: var(--emerald); }
+
+/* TOC */
+.toc-box {
+  background: rgba(99,102,241,0.06);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.toc-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid rgba(99,102,241,0.15);
+  font-size: 0.875rem;
+}
+
+.toc-toggle {
+  margin-left: auto;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  color: var(--gray-400);
+  font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.toc-nav {
+  padding: 0.875rem 1.25rem;
+}
+
+.toc-nav a {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--gray-400);
+  padding: 0.25rem 0;
+  border-left: 2px solid rgba(255,255,255,0.06);
+  padding-left: 0.75rem;
+  margin-bottom: 0.25rem;
+  transition: var(--transition);
+}
+
+.toc-nav a.h3 { padding-left: 1.5rem; font-size: 0.78rem; }
+.toc-nav a:hover, .toc-nav a.active { color: var(--indigo-400); border-left-color: var(--indigo); }
+
+/* Article Body Typography */
+.article-body {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--gray-200);
+}
+
+.article-body h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 2rem 0 1rem;
+  padding-top: 1rem;
+}
+
+.article-body h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--white);
+  margin: 1.5rem 0 0.75rem;
+}
+
+.article-body p { margin-bottom: 1.25rem; }
+
+.article-body a { color: var(--indigo-400); text-decoration: underline; text-decoration-color: rgba(99,102,241,0.4); }
+.article-body a:hover { color: var(--indigo); }
+
+.article-body strong { color: var(--white); font-weight: 700; }
+.article-body em { color: var(--gray-300); }
+
+.article-body blockquote {
+  border-left: 4px solid var(--indigo);
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background: rgba(99,102,241,0.06);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-style: italic;
+  color: var(--gray-300);
+}
+
+.article-body ul, .article-body ol {
+  margin: 1rem 0 1.25rem 1.5rem;
+  list-style: disc;
+}
+
+.article-body ol { list-style: decimal; }
+.article-body li { margin-bottom: 0.4rem; }
+
+.article-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.article-body th {
+  background: rgba(99,102,241,0.15);
+  color: var(--white);
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.article-body td {
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--gray-300);
+}
+
+.article-body tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+.article-body img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  margin: 1.5rem 0;
+}
+
+/* Tags */
+.article-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.tags-label { font-size: 0.82rem; color: var(--gray-500); }
+
+.tag-pill {
+  padding: 0.3rem 0.75rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  color: var(--gray-400);
+  transition: var(--transition);
+}
+
+.tag-pill:hover { background: var(--indigo-light); color: var(--indigo-400); border-color: var(--indigo); }
+
+/* EA CTA */
+.article-ea-cta {
+  display: flex;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(245,158,11,0.06));
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  margin: 2.5rem 0;
+}
+
+.ea-cta-icon { font-size: 2.5rem; flex-shrink: 0; }
+.ea-cta-body h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--white); }
+.ea-cta-body p { font-family: var(--font-sans); font-size: 0.9rem; color: var(--gray-400); line-height: 1.6; margin: 0; }
+
+/* Author Bio */
+.author-bio-box {
+  display: flex;
+  gap: 1.25rem;
+  background: var(--navy-700);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  margin: 2rem 0;
+}
+
+.author-bio-avatar {
+  width: 64px; height: 64px;
+  background: var(--gradient-accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.author-bio-name { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+.author-bio-cred { font-size: 0.78rem; color: var(--indigo-400); margin-bottom: 0.5rem; }
+.author-bio-text { font-size: 0.875rem; color: var(--gray-400); line-height: 1.6; margin-bottom: 0.75rem; }
+
+/* Comments */
+.comments-section { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.07); }
+.comments-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; }
+.comment-success-msg { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); border-radius: var(--radius-md); padding: 0.875rem 1rem; font-size: 0.875rem; color: var(--emerald); margin-bottom: 1rem; }
+
+.comment-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.comment-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--gradient-accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.comment-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem; }
+.comment-author { font-size: 0.875rem; font-weight: 600; color: var(--white); }
+.comment-date { font-size: 0.75rem; color: var(--gray-500); }
+.comment-text { font-size: 0.9rem; color: var(--gray-300); line-height: 1.6; margin: 0; }
+
+.comment-form-wrap { margin-top: 2rem; }
+.comment-form-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.form-group label { font-size: 0.8rem; font-weight: 600; color: var(--gray-300); }
+
+.form-input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  padding: 0.7rem 1rem;
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.form-input:focus { border-color: var(--indigo); background: rgba(99,102,241,0.05); }
+.form-input::placeholder { color: var(--gray-600); }
+
+/* Related Card */
+.related-card {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+  background: rgba(255,255,255,0.02);
+  border: 1px solid transparent;
+}
+
+.related-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(99,102,241,0.2); }
+
+.related-card-img {
+  width: 70px; height: 52px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--navy-600);
+}
+
+.related-card-title { font-size: 0.82rem; font-weight: 500; color: var(--white); line-height: 1.35; margin: 0.25rem 0; }
+.related-card-meta { font-size: 0.72rem; color: var(--gray-500); }
+
+.article-sidebar { position: sticky; top: calc(var(--nav-height) + 1.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
+
+@media (max-width: 1100px) {
+  .article-layout { grid-template-columns: 1fr; }
+  .share-bar { display: none; }
+  .article-sidebar { position: static; }
+}
+
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+  .article-ea-cta { flex-direction: column; }
+  .author-bio-box { flex-direction: column; }
+  .article-hero-img-wrap { height: 40vh; }
+  .article-hero-content { margin-top: -80px; }
+}
+</style>
+
+<script>
+// Reading progress bar
+const progressBar = document.getElementById('readingProgress');
+const articleBody = document.getElementById('articleBody');
+window.addEventListener('scroll', () => {
+  if (!articleBody || !progressBar) return;
+  const rect = articleBody.getBoundingClientRect();
+  const bodyHeight = articleBody.offsetHeight;
+  const scrolled = Math.max(0, -rect.top);
+  const progress = Math.min(100, (scrolled / bodyHeight) * 100);
+  progressBar.style.width = progress + '%';
+}, { passive: true });
+
+// Table of Contents generation
+function buildTOC() {
+  const body = document.getElementById('articleBody');
+  const nav = document.getElementById('tocNav');
+  const box = document.getElementById('tocBox');
+  if (!body || !nav) return;
+  const headings = body.querySelectorAll('h2, h3');
+  if (headings.length < 2) { if (box) box.style.display = 'none'; return; }
+  headings.forEach((h, i) => {
+    const id = 'heading-' + i;
+    h.id = id;
+    const a = document.createElement('a');
+    a.href = '#' + id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.classList.add('h3');
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    nav.appendChild(a);
+  });
+}
+buildTOC();
+
+// TOC toggle
+document.getElementById('tocToggle')?.addEventListener('click', function() {
+  const nav = document.getElementById('tocNav');
+  const isOpen = nav.style.display !== 'none';
+  nav.style.display = isOpen ? 'none' : 'block';
+  this.textContent = isOpen ? '+' : '−';
+});
+
+// Active TOC highlight
+const tocLinks = document.querySelectorAll('.toc-nav a');
+const headings2 = document.querySelectorAll('.article-body h2, .article-body h3');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(a => a.classList.remove('active'));
+      const activeLink = document.querySelector(`.toc-nav a[href="#${entry.target.id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+headings2.forEach(h => observer.observe(h));
+
+// Copy link
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    showToast('Link copied to clipboard!', 'success');
+  });
+}
+
+// Reveal animation
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }});
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+function showToast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(100%)'; t.style.transition='0.3s ease'; setTimeout(()=>t.remove(),300); }, 3500);
+}
+</script>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

@@ -1,0 +1,118 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<!-- Category Hero -->
+<div class="category-hero">
+  <div class="category-hero-bg" style="background: linear-gradient(135deg, <%= category.color %>18 0%, transparent 60%)"></div>
+  <div class="container category-hero-inner">
+    <div class="category-hero-icon" style="background:<%= category.color %>22;color:<%= category.color %>"><%= category.icon %></div>
+    <div>
+      <div class="category-hero-label">Category</div>
+      <h1 class="category-hero-title"><%= category.name %></h1>
+      <p class="category-hero-desc"><%= category.description || '' %></p>
+      <div class="category-hero-meta"><span style="color:<%= category.color %>; font-weight:600"><%= total %> articles</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="container category-layout" style="margin-top:2.5rem; padding-bottom:4rem;">
+  <div class="feed-column">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-title-accent" style="background:<%= category.color %>"></div>
+        Latest in <%= category.name %>
+      </div>
+    </div>
+
+    <% if (articles.length === 0) { %>
+    <div class="empty-state">
+      <div style="font-size:3rem;margin-bottom:1rem;"><%= category.icon %></div>
+      <h2 style="font-family:var(--font-display);margin-bottom:0.5rem;">No articles yet</h2>
+      <p style="color:var(--gray-500);">Check back soon for new content in this category.</p>
+      <a href="/" class="btn btn-primary" style="margin-top:1rem;">← Back to Home</a>
+    </div>
+    <% } %>
+
+    <div class="article-feed">
+      <% articles.forEach(article => { %>
+      <article class="article-card reveal">
+        <a href="/article/<%= article.slug %>" class="article-card-img-link">
+          <div class="article-card-img">
+            <% if (article.featured_image) { %>
+            <img src="<%= article.featured_image %>" alt="<%= article.title %>" loading="lazy">
+            <% } else { %>
+            <div class="article-card-placeholder"><%= article.category_icon || category.icon %></div>
+            <% } %>
+          </div>
+        </a>
+        <div class="article-card-body">
+          <div class="article-card-meta">
+            <span class="article-card-cat" style="background:<%= category.color %>22;color:<%= category.color %>"><%= category.name %></span>
+            <span class="article-card-date"><%= new Date(article.publish_date||article.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) %></span>
+            <span class="article-card-read">⏱ <%= article.reading_time %> min</span>
+          </div>
+          <h2 class="article-card-title"><a href="/article/<%= article.slug %>"><%= article.title %></a></h2>
+          <p class="article-card-excerpt"><%= article.excerpt %></p>
+          <div class="article-card-footer">
+            <span class="article-card-views">👁 <%= (article.views||0).toLocaleString() %></span>
+            <a href="/article/<%= article.slug %>" class="read-more-btn">Read More →</a>
+          </div>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+
+    <!-- Pagination -->
+    <% if (totalPages > 1) { %>
+    <div class="pagination">
+      <% if (currentPage > 1) { %><a href="/category/<%= category.slug %>?page=<%= currentPage-1 %>" class="page-btn">← Prev</a><% } %>
+      <% for(let p = Math.max(1,currentPage-2); p <= Math.min(totalPages,currentPage+2); p++) { %>
+      <a href="/category/<%= category.slug %>?page=<%= p %>" class="page-btn <%= p===currentPage?'active':'' %>"><%= p %></a>
+      <% } %>
+      <% if (currentPage < totalPages) { %><a href="/category/<%= category.slug %>?page=<%= currentPage+1 %>" class="page-btn">Next →</a><% } %>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-widget">
+      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;"><div class="section-title-accent"></div>All Categories</div>
+      <div class="sidebar-cats">
+        <% categories.forEach(cat => { %>
+        <a href="/category/<%= cat.slug %>" class="sidebar-cat <%= cat.id === category.id ? 'sidebar-cat-active' : '' %>">
+          <span class="sidebar-cat-icon" style="background:<%= cat.color %>22;color:<%= cat.color %>"><%= cat.icon %></span>
+          <span class="sidebar-cat-name"><%= cat.name %></span>
+          <span class="sidebar-cat-count"><%= cat.article_count||0 %></span>
+        </a>
+        <% }); %>
+      </div>
+    </div>
+    <div class="sidebar-widget" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));border-color:rgba(99,102,241,0.2);text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.75rem;">⚖️</div>
+      <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:0.5rem;">Need Tax Help?</h3>
+      <p style="font-size:0.82rem;color:var(--gray-400);margin-bottom:1rem;line-height:1.5;">Get answers from a licensed Enrolled Agent.</p>
+      <a href="/contact" class="btn btn-primary" style="width:100%;display:flex;">Book Free Consult →</a>
+    </div>
+  </aside>
+</div>
+
+<style>
+.category-hero { padding: calc(var(--nav-height) + 3rem) 0 3rem; position:relative; overflow:hidden; }
+.category-hero-bg { position:absolute; inset:0; pointer-events:none; }
+.category-hero-inner { display:flex; align-items:center; gap:1.5rem; }
+.category-hero-icon { width:72px;height:72px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0; }
+.category-hero-label { font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray-500);font-weight:700;margin-bottom:0.25rem; }
+.category-hero-title { font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;margin-bottom:0.5rem; }
+.category-hero-desc { color:var(--gray-400);font-size:1rem;max-width:600px; }
+.category-layout { display:grid;grid-template-columns:1fr 300px;gap:2.5rem;align-items:start; }
+.sidebar-cat-active { background:rgba(255,255,255,0.05)!important;color:var(--white)!important; }
+.pagination { display:flex;align-items:center;gap:0.5rem;justify-content:center;margin-top:2rem; }
+.page-btn { padding:0.5rem 1rem;border-radius:var(--radius-md);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:var(--gray-300);font-size:0.875rem;font-weight:500;transition:var(--transition); }
+.page-btn:hover,.page-btn.active { background:var(--indigo);border-color:var(--indigo);color:var(--white); }
+.empty-state { text-align:center;padding:4rem 2rem;color:var(--gray-400); }
+@media (max-width:900px) { .category-layout { grid-template-columns:1fr; } }
+</style>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

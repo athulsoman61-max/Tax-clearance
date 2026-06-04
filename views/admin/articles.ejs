@@ -1,0 +1,130 @@
+<% locals.adminPage = 'articles'; %>
+<%- include('../partials/admin-head') %>
+
+<!-- Filters -->
+<div class="admin-filters-bar">
+  <form method="GET" action="/admin/articles" class="admin-filters-form">
+    <input type="text" name="search" value="<%= filters.search %>" class="admin-filter-input" placeholder="Search articles...">
+    <select name="status" class="admin-filter-input" style="max-width:140px;">
+      <option value="">All Status</option>
+      <option value="published" <%= filters.status==='published'?'selected':'' %>>Published</option>
+      <option value="draft" <%= filters.status==='draft'?'selected':'' %>>Draft</option>
+      <option value="scheduled" <%= filters.status==='scheduled'?'selected':'' %>>Scheduled</option>
+    </select>
+    <select name="category" class="admin-filter-input" style="max-width:180px;">
+      <option value="">All Categories</option>
+      <% categories.forEach(c => { %>
+      <option value="<%= c.slug %>" <%= filters.category===c.slug?'selected':'' %>><%= c.name %></option>
+      <% }); %>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+    <a href="/admin/articles" class="btn btn-ghost btn-sm">Reset</a>
+  </form>
+  <a href="/admin/articles/new" class="btn btn-primary btn-sm">+ New Article</a>
+</div>
+
+<% if (locals.saved) { %>
+<div class="admin-alert admin-alert-success">✅ Article saved successfully!</div>
+<% } %>
+
+<!-- Bulk Actions Form -->
+<form action="/admin/articles/bulk" method="POST" id="bulkForm">
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th style="width:40px;"><input type="checkbox" id="checkAll" style="accent-color:var(--indigo);"></th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Views</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% articles.forEach(article => { %>
+      <tr>
+        <td><input type="checkbox" name="ids" value="<%= article.id %>" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/<%= article.id %>/edit" class="admin-table-title"><%= article.title %></a>
+            <div class="admin-article-slug">/article/<%= article.slug %></div>
+          </div>
+        </td>
+        <td>
+          <% if (article.category_name) { %>
+          <span class="admin-cat-badge" style="background:<%= article.category_color %>22;color:<%= article.category_color %>"><%= article.category_name %></span>
+          <% } else { %><span style="color:var(--gray-600)">—</span><% } %>
+        </td>
+        <td><span class="admin-status-badge admin-status-<%= article.status %>"><%= article.status %></span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;"><%= (article.views||0).toLocaleString() %></td>
+        <td style="color:var(--gray-500);font-size:0.8rem;"><%= new Date(article.updated_at||article.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) %></td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/<%= article.id %>/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/<%= article.id %>/preview" target="_blank" class="admin-action-btn">Preview</a>
+            <% if (article.status === 'published') { %>
+            <a href="/article/<%= article.slug %>" target="_blank" class="admin-action-btn">View</a>
+            <% } %>
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(<%= article.id %>)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Bulk Bar -->
+<div class="bulk-bar" id="bulkBar" style="display:none;">
+  <span class="bulk-count" id="bulkCount">0 selected</span>
+  <select name="action" class="admin-filter-input" style="max-width:160px;" required>
+    <option value="">Bulk Action...</option>
+    <option value="publish">Publish</option>
+    <option value="draft">Move to Draft</option>
+    <option value="delete">Delete</option>
+  </select>
+  <button type="submit" class="btn btn-amber btn-sm" onclick="return confirm('Apply bulk action?')">Apply</button>
+</div>
+</form>
+
+<!-- Pagination -->
+<% if (totalPages > 1) { %>
+<div class="admin-pagination">
+  <% if (currentPage > 1) { %><a href="?page=<%= currentPage-1 %>" class="page-btn">&larr; Prev</a><% } %>
+  <% for(let p=Math.max(1,currentPage-2);p<=Math.min(totalPages,currentPage+2);p++) { %>
+  <a href="?page=<%= p %>" class="page-btn <%= p===currentPage?'active':'' %>"><%= p %></a>
+  <% } %>
+  <% if (currentPage < totalPages) { %><a href="?page=<%= currentPage+1 %>" class="page-btn">Next &rarr;</a><% } %>
+  <span style="font-size:0.8rem;color:var(--gray-500);"><%= total %> total</span>
+</div>
+<% } %>
+
+<script>
+const checkAll = document.getElementById('checkAll');
+const bulkBar = document.getElementById('bulkBar');
+const bulkCount = document.getElementById('bulkCount');
+const rowChecks = document.querySelectorAll('.row-check');
+
+function updateBulk() {
+  const checked = document.querySelectorAll('.row-check:checked').length;
+  bulkBar.style.display = checked > 0 ? 'flex' : 'none';
+  bulkCount.textContent = checked + ' selected';
+}
+
+checkAll.addEventListener('change', () => {
+  rowChecks.forEach(c => c.checked = checkAll.checked);
+  updateBulk();
+});
+rowChecks.forEach(c => c.addEventListener('change', updateBulk));
+
+function deleteArticle(id) {
+  if (!confirm('Delete this article permanently?')) return;
+  const f = document.createElement('form');
+  f.method = 'POST'; f.action = '/admin/articles/'+id+'/delete';
+  document.body.appendChild(f); f.submit();
+}
+</script>
+
+<%- include('../partials/admin-foot') %>

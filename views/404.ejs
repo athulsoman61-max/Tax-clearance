@@ -1,0 +1,18 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding-top:var(--nav-height);">
+  <div style="text-align:center;padding:2rem;">
+    <div style="font-size:6rem;margin-bottom:1rem;opacity:0.3;">⚖️</div>
+    <h1 style="font-family:var(--font-display);font-size:5rem;font-weight:900;background:var(--gradient-accent);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;">404</h1>
+    <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;margin:1rem 0 0.5rem;">Page Not Found</h2>
+    <p style="color:var(--gray-500);max-width:400px;margin:0 auto 2rem;line-height:1.6;">The page you're looking for doesn't exist or may have been moved. Try searching for what you need.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="/" class="btn btn-primary">← Back to Home</a>
+      <a href="/search" class="btn btn-outline">Search Articles</a>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

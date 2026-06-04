@@ -1,0 +1,94 @@
+<% locals.adminPage = 'categories'; %>
+<%- include('../partials/admin-head') %>
+
+<% if (success) { %><div class="admin-alert admin-alert-success">✅ Category saved!</div><% } %>
+
+<div class="admin-two-col">
+  <!-- Category List -->
+  <div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Articles</th><th>Color</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% categories.forEach(cat => { %>
+          <tr>
+            <td style="font-size:1.2rem;"><%= cat.icon %></td>
+            <td style="font-weight:600;color:var(--white);"><%= cat.name %></td>
+            <td style="color:var(--gray-500);font-size:0.8rem;">/category/<%= cat.slug %></td>
+            <td style="color:var(--gray-400);"><%= cat.article_count||0 %></td>
+            <td><span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:<%= cat.color %>;"></span></td>
+            <td>
+              <div class="admin-row-actions">
+                <button type="button" class="admin-action-btn" onclick="editCat(<%= JSON.stringify(cat) %>)">Edit</button>
+                <form action="/admin/categories/<%= cat.id %>/delete" method="POST" style="display:inline">
+                  <button type="submit" class="admin-action-btn admin-action-danger" data-confirm="Delete this category?">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Category Form -->
+  <div>
+    <div class="editor-card">
+      <div class="editor-card-title" id="catFormTitle">➕ Add Category</div>
+      <form action="/admin/categories/save" method="POST" id="catForm">
+        <input type="hidden" name="id" id="catId">
+        <div class="editor-field">
+          <label>Name *</label>
+          <input type="text" name="name" id="catName" class="editor-input" required placeholder="e.g. Tax Deductions">
+        </div>
+        <div class="editor-field">
+          <label>Slug</label>
+          <input type="text" name="slug" id="catSlug" class="editor-input" placeholder="auto-generated">
+        </div>
+        <div class="editor-field">
+          <label>Description</label>
+          <textarea name="description" id="catDesc" class="editor-input" rows="2" placeholder="Short description..."></textarea>
+        </div>
+        <div class="editor-field">
+          <label>Icon (emoji)</label>
+          <input type="text" name="icon" id="catIcon" class="editor-input" placeholder="📋" maxlength="4">
+        </div>
+        <div class="editor-field">
+          <label>Color</label>
+          <input type="color" name="color" id="catColor" class="editor-input" value="#6366f1" style="height:44px;padding:0.25rem;">
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">Save Category</button>
+          <button type="button" class="btn btn-ghost" onclick="resetForm()">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+.admin-two-col { display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start; }
+@media(max-width:900px){.admin-two-col{grid-template-columns:1fr}}
+</style>
+
+<script>
+function editCat(cat) {
+  document.getElementById('catFormTitle').textContent = '✏️ Edit Category';
+  document.getElementById('catId').value = cat.id;
+  document.getElementById('catName').value = cat.name;
+  document.getElementById('catSlug').value = cat.slug;
+  document.getElementById('catDesc').value = cat.description||'';
+  document.getElementById('catIcon').value = cat.icon||'';
+  document.getElementById('catColor').value = cat.color||'#6366f1';
+  document.getElementById('catForm').scrollIntoView({behavior:'smooth'});
+}
+function resetForm() {
+  document.getElementById('catFormTitle').textContent = '➕ Add Category';
+  document.getElementById('catId').value = '';
+  document.getElementById('catForm').reset();
+}
+document.querySelectorAll('[data-confirm]').forEach(el=>{el.addEventListener('click',e=>{if(!confirm(el.dataset.confirm))e.preventDefault();});});
+</script>
+
+<%- include('../partials/admin-foot') %>

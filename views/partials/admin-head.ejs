@@ -1,0 +1,66 @@
+<%
+const adminSiteName = settings?.site_name || 'Tax Clearance';
+const pageTitle = locals.title || 'Admin | Tax Clearance';
+%><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %></title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-header">
+    <div class="admin-logo">
+      <div class="admin-logo-icon">⚖️</div>
+      <div><div class="admin-logo-name"><%= adminSiteName %></div><div class="admin-logo-sub">Admin Panel</div></div>
+    </div>
+  </div>
+  <nav class="admin-nav">
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Content</div>
+      <a href="/admin" class="admin-nav-link <%= locals.adminPage==='dashboard'?'active':'' %>"><span class="admin-nav-icon">📊</span> Dashboard</a>
+      <a href="/admin/articles/new" class="admin-nav-link <%= locals.adminPage==='new-article'?'active':'' %>"><span class="admin-nav-icon">✏️</span> New Article</a>
+      <a href="/admin/articles" class="admin-nav-link <%= locals.adminPage==='articles'?'active':'' %>"><span class="admin-nav-icon">📰</span> All Articles</a>
+      <a href="/admin/categories" class="admin-nav-link <%= locals.adminPage==='categories'?'active':'' %>"><span class="admin-nav-icon">🏷️</span> Categories</a>
+      <a href="/admin/tags" class="admin-nav-link <%= locals.adminPage==='tags'?'active':'' %>"><span class="admin-nav-icon">🔖</span> Tags</a>
+    </div>
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Media</div>
+      <a href="/admin/media" class="admin-nav-link <%= locals.adminPage==='media'?'active':'' %>"><span class="admin-nav-icon">🖼️</span> Media Library</a>
+    </div>
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Engagement</div>
+      <a href="/admin/comments" class="admin-nav-link <%= locals.adminPage==='comments'?'active':'' %>"><span class="admin-nav-icon">💬</span> Comments</a>
+      <a href="/admin/newsletter" class="admin-nav-link <%= locals.adminPage==='newsletter'?'active':'' %>"><span class="admin-nav-icon">📬</span> Newsletter</a>
+    </div>
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Business</div>
+      <a href="/admin/leads" class="admin-nav-link <%= locals.adminPage==='leads'?'active':'' %>"><span class="admin-nav-icon">🎯</span> Leads</a>
+    </div>
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Config</div>
+      <a href="/admin/settings" class="admin-nav-link <%= locals.adminPage==='settings'?'active':'' %>"><span class="admin-nav-icon">⚙️</span> Settings</a>
+      <a href="/" target="_blank" class="admin-nav-link"><span class="admin-nav-icon">🌐</span> View Site</a>
+      <a href="/admin/logout" class="admin-nav-link admin-logout"><span class="admin-nav-icon">🚪</span> Logout</a>
+    </div>
+  </nav>
+</aside>
+<div class="admin-main" id="adminMain">
+  <header class="admin-topbar">
+    <button class="admin-sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="admin-topbar-title"><%= pageTitle.split('|')[0].trim() %></div>
+    <div class="admin-topbar-right">
+      <a href="/admin/articles/new" class="btn btn-primary btn-sm">+ New Article</a>
+      <div class="admin-user-chip">
+        <div class="admin-user-avatar">⚖️</div>
+        <span class="admin-user-name"><%= locals.admin?.username || 'admin' %></span>
+      </div>
+    </div>
+  </header>
+  <div class="admin-content">

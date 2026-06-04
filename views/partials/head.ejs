@@ -1,0 +1,33 @@
+<%
+const gaId = settings?.google_analytics_id || '';
+const siteName = settings?.site_name || 'Tax Clearance';
+const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+const ogImg = (locals.article?.og_image || locals.article?.featured_image || '');
+const pageTitle = locals.title || siteName;
+const pageDesc = locals.description || settings?.site_description || '';
+%><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %></title>
+  <meta name="description" content="<%= pageDesc %>">
+  <% if (locals.article?.seo_keywords) { %><meta name="keywords" content="<%= locals.article.seo_keywords %>"><% } %>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="<%= locals.article ? 'article' : 'website' %>">
+  <meta property="og:title" content="<%= pageTitle %>">
+  <meta property="og:description" content="<%= pageDesc %>">
+  <% if (ogImg) { %><meta property="og:image" content="<%= siteUrl %><%= ogImg %>"><% } %>
+  <meta property="og:site_name" content="<%= siteName %>">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= pageTitle %>">
+  <meta name="twitter:description" content="<%= pageDesc %>">
+  <% if (ogImg) { %><meta name="twitter:image" content="<%= siteUrl %><%= ogImg %>"><% } %>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>

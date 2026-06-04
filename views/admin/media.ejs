@@ -1,0 +1,108 @@
+<% locals.adminPage = 'media'; %>
+<%- include('../partials/admin-head') %>
+
+<!-- Upload Zone -->
+<div class="media-upload-zone" id="mediaUploadZone">
+  <div style="font-size:2.5rem;margin-bottom:0.75rem;">📁</div>
+  <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:0.5rem;">Drag & drop images here</h3>
+  <p style="font-size:0.85rem;color:var(--gray-500);margin-bottom:1rem;">or click to select files (JPG, PNG, GIF, WebP — max 10MB)</p>
+  <label class="btn btn-primary" for="mediaFileInput">Select Files</label>
+  <input type="file" id="mediaFileInput" accept="image/*" multiple style="display:none;">
+</div>
+
+<!-- Upload Progress -->
+<div id="uploadProgress" style="display:none;margin-bottom:1rem;">
+  <div class="seo-score-bar">
+    <div class="seo-score-label">Uploading...</div>
+    <div class="seo-score-track" style="flex:1;"><div class="seo-score-fill" id="uploadBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- Media Grid -->
+<div class="media-grid" id="mediaGrid">
+  <% media.forEach(m => { %>
+  <div class="media-item" id="media-<%= m.id %>">
+    <div class="media-img-wrap">
+      <img src="/uploads/<%= m.filename %>" alt="<%= m.alt_text||m.original_name %>" loading="lazy">
+      <div class="media-overlay">
+        <button class="media-copy-btn" onclick="copyUrl('/uploads/<%= m.filename %>')" title="Copy URL">🔗 Copy URL</button>
+        <button class="media-delete-btn" onclick="deleteMedia(<%= m.id %>)" title="Delete">🗑️</button>
+      </div>
+    </div>
+    <div class="media-info">
+      <div class="media-filename"><%= m.original_name %></div>
+      <div class="media-meta"><%= m.mime_type %> · <%= Math.round((m.file_size||0)/1024) %>KB</div>
+    </div>
+  </div>
+  <% }); %>
+</div>
+
+<% if (media.length === 0) { %>
+<div style="text-align:center;padding:4rem;color:var(--gray-500);">
+  <div style="font-size:3rem;margin-bottom:1rem;">📁</div>
+  <p>No media uploaded yet. Upload your first image above.</p>
+</div>
+<% } %>
+
+<style>
+.media-upload-zone { border:2px dashed rgba(99,102,241,0.3);border-radius:var(--radius-xl);padding:3rem;text-align:center;background:rgba(99,102,241,0.04);margin-bottom:1.5rem;transition:var(--transition);cursor:pointer; }
+.media-upload-zone:hover,.media-upload-zone.drag-over { border-color:var(--indigo);background:rgba(99,102,241,0.08); }
+.media-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem; }
+.media-item { background:var(--admin-card);border:1px solid var(--admin-border);border-radius:var(--radius-lg);overflow:hidden;transition:var(--transition); }
+.media-item:hover { border-color:rgba(99,102,241,0.3); }
+.media-img-wrap { position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--navy-600); }
+.media-img-wrap img { width:100%;height:100%;object-fit:cover;transition:var(--transition); }
+.media-item:hover .media-img-wrap img { transform:scale(1.04); }
+.media-overlay { position:absolute;inset:0;background:rgba(10,14,26,0.7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;opacity:0;transition:var(--transition); }
+.media-item:hover .media-overlay { opacity:1; }
+.media-copy-btn,.media-delete-btn { padding:0.35rem 0.75rem;border-radius:var(--radius-full);font-size:0.75rem;font-weight:600;cursor:pointer;border:none;transition:var(--transition); }
+.media-copy-btn { background:var(--indigo);color:var(--white); }
+.media-delete-btn { background:var(--rose);color:var(--white); }
+.media-info { padding:0.625rem; }
+.media-filename { font-size:0.78rem;color:var(--gray-300);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.media-meta { font-size:0.7rem;color:var(--gray-600);margin-top:0.15rem; }
+</style>
+
+<script>
+const uploadZone = document.getElementById('mediaUploadZone');
+const fileInput = document.getElementById('mediaFileInput');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('drag-over'); uploadFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', () => uploadFiles(fileInput.files));
+
+async function uploadFiles(files) {
+  for (const file of files) {
+    const fd = new FormData();
+    fd.append('file', file);
+    document.getElementById('uploadProgress').style.display='block';
+    const res = await fetch('/admin/media/upload', { method:'POST', body:fd });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('uploadProgress').style.display='none';
+      // Add to grid
+      const div = document.createElement('div');
+      div.className='media-item';
+      div.innerHTML=`<div class="media-img-wrap"><img src="${data.url}" loading="lazy"><div class="media-overlay"><button class="media-copy-btn" onclick="copyUrl('${data.url}')">🔗 Copy URL</button></div></div><div class="media-info"><div class="media-filename">${data.filename}</div></div>`;
+      document.getElementById('mediaGrid').prepend(div);
+    }
+  }
+}
+
+async function deleteMedia(id) {
+  if (!confirm('Delete this image?')) return;
+  const res = await fetch(`/admin/media/${id}/delete`, { method:'POST' });
+  if ((await res.json()).success) {
+    document.getElementById('media-'+id)?.remove();
+  }
+}
+
+function copyUrl(url) {
+  navigator.clipboard.writeText(window.location.origin + url);
+  alert('URL copied: ' + window.location.origin + url);
+}
+</script>
+
+<%- include('../partials/admin-foot') %>
