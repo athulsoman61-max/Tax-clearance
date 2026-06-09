@@ -5,7 +5,16 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { db } = require('../database/db');
+const {
+  db,
+  getAllSettings,
+  getSetting,
+  clearSettingsCache,
+  getCategories,
+  clearCategoriesCache,
+  getTotalArticles,
+  clearArticlesCache
+} = require('../database/db');
 const { authMiddleware } = require('../middleware/auth');
 
 // Multer config
@@ -30,18 +39,6 @@ const upload = multer({
     else cb(new Error('Only images allowed'));
   }
 });
-
-async function getSetting(key) {
-  const row = await db.get('SELECT value FROM settings WHERE key = ?', [key]);
-  return row?.value || '';
-}
-
-async function getAllSettings() {
-  const rows = await db.all('SELECT key, value FROM settings');
-  const s = {};
-  rows.forEach(r => s[r.key] = r.value);
-  return s;
-}
 
 // ─── Login ───────────────────────────────────────────────────────────────────
 router.get('/login', (req, res) => {
@@ -104,7 +101,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
     `);
     const recentLeads = await db.all(`SELECT * FROM leads ORDER BY created_at DESC LIMIT 5`);
     const topArticles = await db.all(`SELECT id, title, slug, views FROM articles WHERE status='published' ORDER BY views DESC LIMIT 5`);
-    const categories = await db.all('SELECT * FROM categories ORDER BY article_count DESC');
+    const categories = await getCategories();
 
     res.render('admin/dashboard', {
       stats, recentArticles, recentLeads, topArticles, categories, settings,
@@ -145,7 +142,7 @@ router.get('/articles', authMiddleware, async (req, res, next) => {
     `, params);
     const total = totalRow?.cnt || 0;
 
-    const categories = await db.all('SELECT * FROM categories');
+    const categories = await getCategories();
 
     res.render('admin/articles', {
       articles, categories, settings, total,
@@ -164,7 +161,8 @@ router.get('/articles', authMiddleware, async (req, res, next) => {
 router.get('/articles/new', authMiddleware, async (req, res, next) => {
   try {
     const settings = await getAllSettings();
-    const categories = await db.all('SELECT * FROM categories ORDER BY name');
+    const rawCategories = await getCategories();
+    const categories = [...rawCategories].sort((a, b) => a.name.localeCompare(b.name));
     const tags = await db.all('SELECT * FROM tags ORDER BY name');
     const allArticles = await db.all("SELECT id, title, slug FROM articles WHERE status='published' ORDER BY title");
     res.render('admin/editor', {
@@ -183,7 +181,8 @@ router.get('/articles/:id/edit', authMiddleware, async (req, res, next) => {
     const settings = await getAllSettings();
     const article = await db.get('SELECT * FROM articles WHERE id = ?', [req.params.id]);
     if (!article) return res.redirect('/admin/articles');
-    const categories = await db.all('SELECT * FROM categories ORDER BY name');
+    const rawCategories = await getCategories();
+    const categories = [...rawCategories].sort((a, b) => a.name.localeCompare(b.name));
     const tags = await db.all('SELECT * FROM tags ORDER BY name');
     const articleTagsRows = await db.all(`SELECT tag_id FROM article_tags WHERE article_id = ?`, [article.id]);
     const articleTags = articleTagsRows.map(r => r.tag_id);
@@ -291,6 +290,10 @@ router.post('/articles/save', authMiddleware, upload.fields([
 
     // Update category article counts
     await db.exec(`UPDATE categories SET article_count = (SELECT COUNT(*) FROM articles WHERE articles.category_id = categories.id AND articles.status = 'published')`);
+    
+    // Invalidate caches
+    clearArticlesCache();
+    clearCategoriesCache();
 
     res.redirect('/admin/articles?saved=1');
   } catch (err) {
@@ -303,6 +306,11 @@ router.post('/articles/:id/delete', authMiddleware, async (req, res, next) => {
   try {
     await db.run('DELETE FROM articles WHERE id = ?', [req.params.id]);
     await db.exec(`UPDATE categories SET article_count = (SELECT COUNT(*) FROM articles WHERE articles.category_id = categories.id AND articles.status = 'published')`);
+    
+    // Invalidate caches
+    clearArticlesCache();
+    clearCategoriesCache();
+
     res.redirect('/admin/articles');
   } catch (err) {
     next(err);
@@ -329,6 +337,11 @@ router.post('/articles/bulk', authMiddleware, async (req, res, next) => {
       }
     }
     await db.exec(`UPDATE categories SET article_count = (SELECT COUNT(*) FROM articles WHERE articles.category_id = categories.id AND articles.status = 'published')`);
+    
+    // Invalidate caches
+    clearArticlesCache();
+    clearCategoriesCache();
+
     res.redirect('/admin/articles');
   } catch (err) {
     next(err);
@@ -339,7 +352,8 @@ router.post('/articles/bulk', authMiddleware, async (req, res, next) => {
 router.get('/categories', authMiddleware, async (req, res, next) => {
   try {
     const settings = await getAllSettings();
-    const categories = await db.all('SELECT * FROM categories ORDER BY name');
+    const rawCategories = await getCategories();
+    const categories = [...rawCategories].sort((a, b) => a.name.localeCompare(b.name));
     res.render('admin/categories', {
       categories, settings,
       title: 'Categories | Tax Clearance Admin',
@@ -370,6 +384,10 @@ router.post('/categories/save', authMiddleware, async (req, res, next) => {
     } else {
       await db.run('INSERT INTO categories (name, slug, description, color, icon) VALUES (?, ?, ?, ?, ?)', [name, finalSlug, description || '', color || '#6366f1', icon || '📋']);
     }
+    
+    // Invalidate categories cache
+    clearCategoriesCache();
+
     res.redirect('/admin/categories?saved=1');
   } catch (err) {
     next(err);
@@ -379,6 +397,10 @@ router.post('/categories/save', authMiddleware, async (req, res, next) => {
 router.post('/categories/:id/delete', authMiddleware, async (req, res, next) => {
   try {
     await db.run('DELETE FROM categories WHERE id = ?', [req.params.id]);
+    
+    // Invalidate categories cache
+    clearCategoriesCache();
+
     res.redirect('/admin/categories');
   } catch (err) {
     next(err);
@@ -489,6 +511,10 @@ router.post('/settings/save', authMiddleware, async (req, res, next) => {
         await db.run('INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)', [key, req.body[key]]);
       }
     }
+    
+    // Invalidate settings cache
+    clearSettingsCache();
+
     res.redirect('/admin/settings?saved=1');
   } catch (err) {
     next(err);
@@ -568,7 +594,7 @@ router.get('/articles/:id/preview', authMiddleware, async (req, res, next) => {
       WHERE a.id = ?
     `, [req.params.id]);
     if (!article) return res.redirect('/admin/articles');
-    const categories = await db.all('SELECT * FROM categories ORDER BY article_count DESC');
+    const categories = await getCategories();
     res.render('article', {
       article, related: [], comments: [], tags: [], categories, settings,
       page: 'article', title: article.title + ' [PREVIEW]', description: article.excerpt,

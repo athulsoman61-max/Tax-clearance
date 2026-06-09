@@ -46,10 +46,8 @@ app.use('/admin', adminRoutes);
 // 404 handler
 app.use(async (req, res, next) => {
   try {
-    const { db } = require('./database/db');
-    const rows = await db.all('SELECT key, value FROM settings');
-    const settings = {};
-    rows.forEach(r => settings[r.key] = r.value);
+    const { getAllSettings } = require('./database/db');
+    const settings = await getAllSettings();
     res.status(404).render('404', {
       settings,
       page: '404',

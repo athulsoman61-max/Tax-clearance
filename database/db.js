@@ -251,4 +251,69 @@ async function initializeDatabase() {
   console.log('✅ Database initialized successfully');
 }
 
-module.exports = { db, initializeDatabase };
+let settingsCache = null;
+let categoriesCache = null;
+let totalArticlesCache = null;
+
+async function getAllSettings() {
+  if (settingsCache) {
+    return settingsCache;
+  }
+  const rows = await db.all('SELECT key, value FROM settings');
+  const s = {};
+  rows.forEach(r => s[r.key] = r.value);
+  settingsCache = s;
+  console.log('⚙️ Settings cache filled');
+  return settingsCache;
+}
+
+async function getSetting(key) {
+  const settings = await getAllSettings();
+  return settings[key] || '';
+}
+
+function clearSettingsCache() {
+  settingsCache = null;
+  console.log('⚙️ Settings cache invalidated');
+}
+
+async function getCategories() {
+  if (categoriesCache) {
+    return categoriesCache;
+  }
+  categoriesCache = await db.all('SELECT * FROM categories ORDER BY article_count DESC');
+  console.log('📂 Categories cache filled');
+  return categoriesCache;
+}
+
+function clearCategoriesCache() {
+  categoriesCache = null;
+  console.log('📂 Categories cache invalidated');
+}
+
+async function getTotalArticles() {
+  if (totalArticlesCache !== null) {
+    return totalArticlesCache;
+  }
+  const totalRow = await db.get(`SELECT COUNT(*) as cnt FROM articles WHERE status = 'published'`);
+  totalArticlesCache = totalRow?.cnt || 0;
+  console.log('📄 Published articles count cache filled');
+  return totalArticlesCache;
+}
+
+function clearArticlesCache() {
+  totalArticlesCache = null;
+  console.log('📄 Articles count cache invalidated');
+}
+
+module.exports = {
+  db,
+  initializeDatabase,
+  getAllSettings,
+  getSetting,
+  clearSettingsCache,
+  getCategories,
+  clearCategoriesCache,
+  getTotalArticles,
+  clearArticlesCache
+};

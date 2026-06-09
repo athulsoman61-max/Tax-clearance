@@ -1,18 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { db } = require('../database/db');
-
-async function getSetting(key) {
-  const row = await db.get('SELECT value FROM settings WHERE key = ?', [key]);
-  return row?.value || '';
-}
-
-async function getAllSettings() {
-  const rows = await db.all('SELECT key, value FROM settings');
-  const s = {};
-  rows.forEach(r => s[r.key] = r.value);
-  return s;
-}
+const { db, getAllSettings, getSetting, getCategories, getTotalArticles } = require('../database/db');
 
 // Homepage
 router.get('/', async (req, res, next) => {
@@ -56,9 +44,8 @@ router.get('/', async (req, res, next) => {
       ORDER BY a.publish_date DESC LIMIT 1
     `);
 
-    const categories = await db.all(`SELECT * FROM categories ORDER BY article_count DESC`);
-    const totalRow = await db.get(`SELECT COUNT(*) as cnt FROM articles WHERE status = 'published'`);
-    const totalArticles = totalRow?.cnt || 0;
+    const categories = await getCategories();
+    const totalArticles = await getTotalArticles();
 
     res.render('home', {
       articles,
@@ -115,7 +102,7 @@ router.get('/article/:slug', async (req, res, next) => {
       WHERE at.article_id = ?
     `, [article.id]);
 
-    const categories = await db.all('SELECT * FROM categories ORDER BY article_count DESC');
+    const categories = await getCategories();
 
     res.render('article', {
       article,
@@ -158,7 +145,7 @@ router.get('/category/:slug', async (req, res, next) => {
 
     const totalRow = await db.get('SELECT COUNT(*) as cnt FROM articles WHERE status = ? AND category_id = ?', ['published', category.id]);
     const total = totalRow?.cnt || 0;
-    const categories = await db.all('SELECT * FROM categories ORDER BY article_count DESC');
+    const categories = await getCategories();
 
     res.render('category', {
       category,
@@ -182,7 +169,7 @@ router.get('/search', async (req, res, next) => {
   try {
     const settings = await getAllSettings();
     const q = (req.query.q || '').trim();
-    const categories = await db.all('SELECT * FROM categories ORDER BY article_count DESC');
+    const categories = await getCategories();
 
     let results = [];
     if (q.length >= 2) {
@@ -217,12 +204,12 @@ router.get('/search', async (req, res, next) => {
 router.get('/about', async (req, res, next) => {
   try {
     const settings = await getAllSettings();
-    const categories = await db.all('SELECT * FROM categories ORDER BY article_count DESC');
-    const articlesCount = await db.get("SELECT COUNT(*) as cnt FROM articles WHERE status = 'published'");
+    const categories = await getCategories();
+    const articlesCount = await getTotalArticles();
     const categoriesCount = await db.get('SELECT COUNT(*) as cnt FROM categories');
     const readersCount = await db.get('SELECT SUM(views) as total FROM articles');
     const stats = {
-      articles: articlesCount?.cnt || 0,
+      articles: articlesCount,
       categories: categoriesCount?.cnt || 0,
       readers: readersCount?.total || 0,
     };
@@ -243,7 +230,7 @@ router.get('/about', async (req, res, next) => {
 router.get('/contact', async (req, res, next) => {
   try {
     const settings = await getAllSettings();
-    const categories = await db.all('SELECT * FROM categories ORDER BY article_count DESC');
+    const categories = await getCategories();
     res.render('contact', {
       settings,
       categories,
@@ -301,7 +288,7 @@ router.get('/sitemap.xml', async (req, res, next) => {
     const settings = await getAllSettings();
     const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
     const articles = await db.all(`SELECT slug, updated_at FROM articles WHERE status = 'published' ORDER BY updated_at DESC`);
-    const categories = await db.all('SELECT slug FROM categories');
+    const categories = await getCategories();
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
