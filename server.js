@@ -44,17 +44,21 @@ app.use('/api', apiRoutes);
 app.use('/admin', adminRoutes);
 
 // 404 handler
-app.use((req, res) => {
-  const db = require('./database/db');
-  const rows = db.prepare('SELECT key, value FROM settings').all();
-  const settings = {};
-  rows.forEach(r => settings[r.key] = r.value);
-  res.status(404).render('404', {
-    settings,
-    page: '404',
-    title: '404 — Page Not Found | Tax Clearance',
-    description: 'The page you are looking for could not be found.',
-  });
+app.use(async (req, res, next) => {
+  try {
+    const { db } = require('./database/db');
+    const rows = await db.all('SELECT key, value FROM settings');
+    const settings = {};
+    rows.forEach(r => settings[r.key] = r.value);
+    res.status(404).render('404', {
+      settings,
+      page: '404',
+      title: '404 — Page Not Found | Tax Clearance',
+      description: 'The page you are looking for could not be found.',
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Error handler
@@ -63,9 +67,21 @@ app.use((err, req, res, next) => {
   res.status(500).send('<h1>Server Error</h1><p>' + err.message + '</p>');
 });
 
+const { initializeDatabase } = require('./database/db');
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`\n🚀 Tax Clearance is running at http://localhost:${PORT}`);
-  console.log(`📊 Admin panel: http://localhost:${PORT}/admin`);
-  console.log(`👤 Login: admin / TaxClearance2024!\n`);
-});
+
+async function startServer() {
+  try {
+    await initializeDatabase();
+    app.listen(PORT, () => {
+      console.log(`\n🚀 Tax Clearance is running at http://localhost:${PORT}`);
+      console.log(`📊 Admin panel: http://localhost:${PORT}/admin`);
+      console.log(`👤 Login: admin / TaxClearance2024!\n`);
+    });
+  } catch (err) {
+    console.error('Fatal database initialization error:', err);
+    process.exit(1);
+  }
+}
+
+startServer();
