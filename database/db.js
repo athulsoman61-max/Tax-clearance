@@ -119,6 +119,18 @@ async function initializeDatabase() {
     await db.run(sql);
   }
 
+  // Check if database is already seeded
+  try {
+    const settingsCount = await db.get('SELECT COUNT(*) as cnt FROM settings');
+    if (settingsCount && settingsCount.cnt > 0) {
+      console.log('✅ Database tables verified. Settings exist, skipping seed queries.');
+      console.log('✅ Database initialized successfully');
+      return;
+    }
+  } catch (e) {
+    console.log('⚠️ Seed check failed, running full seed sequence...', e.message);
+  }
+
   // Seed admin user
   const adminExists = await db.get('SELECT id FROM users WHERE username = ?', ['admin']);
   if (!adminExists) {

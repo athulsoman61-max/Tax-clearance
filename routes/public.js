@@ -8,44 +8,42 @@ router.get('/', async (req, res, next) => {
     const settings = await getAllSettings();
     const perPage = parseInt(settings.articles_per_page) || 10;
 
-    const articles = await db.all(`
-      SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color, c.icon as category_icon,
-             u.display_name as author_name
+    const [articles, trending, irsUpdates, featured, categories, totalArticles] = await Promise.all([
+      db.all(`
+        SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color, c.icon as category_icon,
+               u.display_name as author_name
       FROM articles a
       LEFT JOIN categories c ON a.category_id = c.id
       LEFT JOIN users u ON a.author_id = u.id
       WHERE a.status = 'published' AND (a.publish_date IS NULL OR a.publish_date <= CURRENT_TIMESTAMP)
       ORDER BY a.publish_date DESC, a.created_at DESC
       LIMIT ?
-    `, [perPage]);
-
-    const trending = await db.all(`
-      SELECT a.id, a.title, a.slug, a.excerpt, a.featured_image, a.views, a.reading_time, a.publish_date,
-             c.name as category_name, c.slug as category_slug, c.color as category_color
+    `, [perPage]),
+      db.all(`
+        SELECT a.id, a.title, a.slug, a.excerpt, a.featured_image, a.views, a.reading_time, a.publish_date,
+               c.name as category_name, c.slug as category_slug, c.color as category_color
       FROM articles a
       LEFT JOIN categories c ON a.category_id = c.id
       WHERE a.status = 'published'
       ORDER BY a.views DESC LIMIT 5
-    `);
-
-    const irsUpdates = await db.all(`
-      SELECT a.id, a.title, a.slug, a.excerpt, a.publish_date
+    `),
+      db.all(`
+        SELECT a.id, a.title, a.slug, a.excerpt, a.publish_date
       FROM articles a
       LEFT JOIN categories c ON a.category_id = c.id
       WHERE a.status = 'published' AND c.slug = 'irs-updates'
       ORDER BY a.publish_date DESC LIMIT 4
-    `);
-
-    const featured = await db.get(`
-      SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color
+    `),
+      db.get(`
+        SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color
       FROM articles a
       LEFT JOIN categories c ON a.category_id = c.id
       WHERE a.status = 'published' AND a.is_featured = 1
       ORDER BY a.publish_date DESC LIMIT 1
-    `);
-
-    const categories = await getCategories();
-    const totalArticles = await getTotalArticles();
+    `),
+      getCategories(),
+      getTotalArticles()
+    ]);
 
     res.render('home', {
       articles,
@@ -81,28 +79,28 @@ router.get('/article/:slug', async (req, res, next) => {
     if (!article) return res.status(404).render('404', { settings, title: 'Page Not Found', description: '' });
 
     // Increment views
-    await db.run('UPDATE articles SET views = views + 1 WHERE id = ?', [article.id]);
+    const viewUpdatePromise = db.run('UPDATE articles SET views = views + 1 WHERE id = ?', [article.id]);
 
-    const related = await db.all(`
-      SELECT a.id, a.title, a.slug, a.excerpt, a.featured_image, a.reading_time, a.publish_date,
-             c.name as category_name, c.slug as category_slug, c.color as category_color
+    const [related, comments, tags, categories] = await Promise.all([
+      db.all(`
+        SELECT a.id, a.title, a.slug, a.excerpt, a.featured_image, a.reading_time, a.publish_date,
+               c.name as category_name, c.slug as category_slug, c.color as category_color
       FROM articles a
       LEFT JOIN categories c ON a.category_id = c.id
       WHERE a.status = 'published' AND a.category_id = ? AND a.id != ?
       ORDER BY a.views DESC LIMIT 3
-    `, [article.category_id, article.id]);
-
-    const comments = await db.all(`
-      SELECT * FROM comments WHERE article_id = ? AND status = 'approved' ORDER BY created_at DESC
-    `, [article.id]);
-
-    const tags = await db.all(`
-      SELECT t.name, t.slug FROM tags t
+    `, [article.category_id, article.id]),
+      db.all(`
+        SELECT * FROM comments WHERE article_id = ? AND status = 'approved' ORDER BY created_at DESC
+    `, [article.id]),
+      db.all(`
+        SELECT t.name, t.slug FROM tags t
       JOIN article_tags at ON t.id = at.tag_id
       WHERE at.article_id = ?
-    `, [article.id]);
-
-    const categories = await getCategories();
+    `, [article.id]),
+      getCategories(),
+      viewUpdatePromise
+    ]);
 
     res.render('article', {
       article,
@@ -132,20 +130,22 @@ router.get('/category/:slug', async (req, res, next) => {
     const perPage = parseInt(settings.articles_per_page) || 10;
     const offset = (page - 1) * perPage;
 
-    const articles = await db.all(`
-      SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color, c.icon as category_icon,
-             u.display_name as author_name
+    const [articles, totalRow, categories] = await Promise.all([
+      db.all(`
+        SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color, c.icon as category_icon,
+               u.display_name as author_name
       FROM articles a
       LEFT JOIN categories c ON a.category_id = c.id
       LEFT JOIN users u ON a.author_id = u.id
       WHERE a.status = 'published' AND a.category_id = ?
       ORDER BY a.publish_date DESC, a.created_at DESC
       LIMIT ? OFFSET ?
-    `, [category.id, perPage, offset]);
+    `, [category.id, perPage, offset]),
+      db.get('SELECT COUNT(*) as cnt FROM articles WHERE status = ? AND category_id = ?', ['published', category.id]),
+      getCategories()
+    ]);
 
-    const totalRow = await db.get('SELECT COUNT(*) as cnt FROM articles WHERE status = ? AND category_id = ?', ['published', category.id]);
     const total = totalRow?.cnt || 0;
-    const categories = await getCategories();
 
     res.render('category', {
       category,
@@ -203,16 +203,20 @@ router.get('/search', async (req, res, next) => {
 // About page
 router.get('/about', async (req, res, next) => {
   try {
-    const settings = await getAllSettings();
-    const categories = await getCategories();
-    const articlesCount = await getTotalArticles();
-    const categoriesCount = await db.get('SELECT COUNT(*) as cnt FROM categories');
-    const readersCount = await db.get('SELECT SUM(views) as total FROM articles');
+    const [settings, categories, articlesCount, categoriesCount, readersCount] = await Promise.all([
+      getAllSettings(),
+      getCategories(),
+      getTotalArticles(),
+      db.get('SELECT COUNT(*) as cnt FROM categories'),
+      db.get('SELECT SUM(views) as total FROM articles')
+    ]);
+
     const stats = {
       articles: articlesCount,
       categories: categoriesCount?.cnt || 0,
       readers: readersCount?.total || 0,
     };
+
     res.render('about', {
       settings,
       categories,
@@ -229,8 +233,10 @@ router.get('/about', async (req, res, next) => {
 // Contact page
 router.get('/contact', async (req, res, next) => {
   try {
-    const settings = await getAllSettings();
-    const categories = await getCategories();
+    const [settings, categories] = await Promise.all([
+      getAllSettings(),
+      getCategories()
+    ]);
     res.render('contact', {
       settings,
       categories,
@@ -285,10 +291,12 @@ router.post('/contact', async (req, res, next) => {
 // Sitemap
 router.get('/sitemap.xml', async (req, res, next) => {
   try {
-    const settings = await getAllSettings();
+    const [settings, articles, categories] = await Promise.all([
+      getAllSettings(),
+      db.all(`SELECT slug, updated_at FROM articles WHERE status = 'published' ORDER BY updated_at DESC`),
+      getCategories()
+    ]);
     const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
-    const articles = await db.all(`SELECT slug, updated_at FROM articles WHERE status = 'published' ORDER BY updated_at DESC`);
-    const categories = await getCategories();
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
