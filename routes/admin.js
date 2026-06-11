@@ -605,4 +605,25 @@ router.get('/articles/:id/preview', authMiddleware, async (req, res, next) => {
   }
 });
 
+router.get('/fix-images', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const dataPath = path.join(__dirname, '../articles_data.json');
+    if (!fs.existsSync(dataPath)) return res.send('No data file');
+    const articlesData = JSON.parse(fs.readFileSync(dataPath));
+    for (const art of articlesData) {
+      if (art.img) {
+        const imgPath = '/img/articles/' + art.img;
+        await db.run("UPDATE articles SET featured_image = ?, og_image = ? WHERE slug = ?", [imgPath, imgPath, art.slug]);
+      }
+    }
+    const { clearArticlesCache } = require('../database/db');
+    clearArticlesCache();
+    res.send('Fixed images successfully!');
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 module.exports = router;
