@@ -581,6 +581,21 @@ router.get('/newsletter', authMiddleware, async (req, res, next) => {
   }
 });
 
+router.get('/newsletter/export', authMiddleware, async (req, res, next) => {
+  try {
+    const subscribers = await db.all("SELECT email, name, status, subscribed_at FROM newsletter WHERE status='active' ORDER BY subscribed_at DESC");
+    let csv = "Email,Name,Status,SubscribedAt\n";
+    subscribers.forEach(sub => {
+      csv += `"${sub.email}","${sub.name || ''}","${sub.status}","${sub.subscribed_at}"\n`;
+    });
+    res.header('Content-Type', 'text/csv');
+    res.attachment('newsletter_subscribers.csv');
+    return res.send(csv);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── Article Preview ──────────────────────────────────────────────────────────
 router.get('/articles/:id/preview', authMiddleware, async (req, res, next) => {
   try {
