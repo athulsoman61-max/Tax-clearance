@@ -1,7 +1,7 @@
 <%
 const gaId = settings?.google_analytics_id || '';
 const siteName = settings?.site_name || 'Tax Clearance';
-const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+const siteUrl = locals.siteUrl || process.env.SITE_URL || 'https://www.taxclearance.space';
 const canonicalUrl = canonical_url || (siteUrl + (locals.req ? locals.req.path : '/'));
 const ogImg = locals.article?.og_image || locals.article?.featured_image || '/img/og-default.png';
 %><!DOCTYPE html>

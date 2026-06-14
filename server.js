@@ -6,6 +6,24 @@ const fs = require('fs');
 
 const app = express();
 
+app.enable('trust proxy');
+
+// Canonical Domain Redirect (Production only)
+app.use((req, res, next) => {
+  const host = req.get('host');
+  if (process.env.NODE_ENV === 'production' && host && host !== 'www.taxclearance.space') {
+    return res.redirect(301, `https://www.taxclearance.space${req.originalUrl}`);
+  }
+  next();
+});
+
+// Global siteUrl and req middleware
+app.use((req, res, next) => {
+  res.locals.req = req;
+  res.locals.siteUrl = process.env.SITE_URL || (req.protocol + '://' + req.get('host'));
+  next();
+});
+
 // Ensure uploads dir exists
 const uploadsDir = path.join(__dirname, 'public/uploads');
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
