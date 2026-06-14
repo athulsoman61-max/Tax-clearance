@@ -8,6 +8,31 @@
 </div>
 <% } %>
 
+<!-- JSON-LD Article Schema for Google Rich Snippets -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "<%= article.seo_title || article.title %>",
+  "image": "<%= article.featured_image ? (process.env.SITE_URL || 'http://localhost:3000') + article.featured_image : '' %>",
+  "author": {
+    "@type": "Person",
+    "name": "<%= article.author_name || 'Tax Clearance EA' %>"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Tax Clearance",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "<%= (process.env.SITE_URL || 'http://localhost:3000') %>/img/logo.png"
+    }
+  },
+  "datePublished": "<%= new Date(article.publish_date || article.created_at).toISOString() %>",
+  "dateModified": "<%= new Date(article.updated_at || article.created_at).toISOString() %>",
+  "description": "<%= article.seo_description || article.excerpt %>"
+}
+</script>
+
 <!-- Reading Progress Bar -->
 <div class="reading-progress" id="readingProgress"></div>
 
@@ -62,7 +87,7 @@
   <div class="share-bar">
     <div class="share-bar-inner" id="shareBar">
       <span class="share-bar-label">Share</span>
-      <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent((process.env.SITE_URL||'') + '/article/' + article.slug) %>&text=<%= encodeURIComponent(article.title) %>" target="_blank" rel="noopener" class="share-btn share-twitter" aria-label="Share on Twitter">𝕏</a>
+      <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent((process.env.SITE_URL||'') + '/article/' + article.slug) %>&text=<%= encodeURIComponent(article.title) %>&via=TaxClearance" target="_blank" rel="noopener" class="share-btn share-twitter" aria-label="Share on Twitter">𝕏</a>
       <a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent((process.env.SITE_URL||'') + '/article/' + article.slug) %>" target="_blank" rel="noopener" class="share-btn share-fb" aria-label="Share on Facebook">f</a>
       <a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= encodeURIComponent((process.env.SITE_URL||'') + '/article/' + article.slug) %>" target="_blank" rel="noopener" class="share-btn share-li" aria-label="Share on LinkedIn">in</a>
       <button class="share-btn share-copy" onclick="copyLink()" aria-label="Copy link">🔗</button>

@@ -1,7 +1,7 @@
 <% locals.adminPage = 'newsletter'; %>
 <%- include('../partials/admin-head') %>
 
-<div style="margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;">
+<div style="margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;">
   <div class="dash-stat-card" style="flex:none;">
     <div class="dash-stat-icon" style="background:rgba(99,102,241,0.15);color:var(--indigo);">📬</div>
     <div class="dash-stat-body">
@@ -9,6 +9,11 @@
       <div class="dash-stat-label">Total Subscribers</div>
     </div>
   </div>
+  <% if (subscribers.length > 0) { %>
+  <a href="/admin/newsletter/export" class="btn btn-primary" style="display:flex;align-items:center;gap:0.5rem;">
+    <span>⬇️</span> Export CSV
+  </a>
+  <% } %>
 </div>
 
 <div class="admin-table-wrap">
