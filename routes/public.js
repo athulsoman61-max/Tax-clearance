@@ -8,7 +8,7 @@ router.get('/', async (req, res, next) => {
     const settings = await getAllSettings();
     const perPage = parseInt(settings.articles_per_page) || 10;
 
-    const [articles, trending, irsUpdates, featured, categories, totalArticles] = await Promise.all([
+    const [articles, trending, irsUpdates, featured, categories, totalArticles, recentQuestions] = await Promise.all([
       db.all(`
         SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color, c.icon as category_icon,
                u.display_name as author_name
@@ -42,7 +42,18 @@ router.get('/', async (req, res, next) => {
       ORDER BY a.publish_date DESC LIMIT 1
     `),
       getCategories(),
-      getTotalArticles()
+      getTotalArticles(),
+      db.all(`
+        SELECT q.id, q.title, q.description, q.views, q.created_at, q.status,
+               c.name as category_name, c.color as category_color,
+               u.display_name as author_name, u.avatar,
+               (SELECT COUNT(*) FROM answers WHERE question_id = q.id) as answer_count
+        FROM questions q
+        LEFT JOIN categories c ON q.category_id = c.id
+        LEFT JOIN users u ON q.user_id = u.id
+        ORDER BY q.created_at DESC
+        LIMIT 5
+      `)
     ]);
 
     res.render('home', {
@@ -52,6 +63,7 @@ router.get('/', async (req, res, next) => {
       featured,
       categories,
       totalArticles,
+      recentQuestions,
       hasMore: totalArticles > perPage,
       settings,
       page: 'home',
@@ -81,7 +93,7 @@ router.get('/article/:slug', async (req, res, next) => {
     // Increment views
     const viewUpdatePromise = db.run('UPDATE articles SET views = views + 1 WHERE id = ?', [article.id]);
 
-    const [related, comments, tags, categories] = await Promise.all([
+    const [related, comments, tags, categories, relatedQuestions] = await Promise.all([
       db.all(`
         SELECT a.id, a.title, a.slug, a.excerpt, a.featured_image, a.reading_time, a.publish_date,
                c.name as category_name, c.slug as category_slug, c.color as category_color
@@ -99,12 +111,25 @@ router.get('/article/:slug', async (req, res, next) => {
       WHERE at.article_id = ?
     `, [article.id]),
       getCategories(),
+      db.all(`
+        SELECT q.id, q.title, q.description, q.views, q.created_at, q.status,
+               c.name as category_name, c.color as category_color,
+               u.display_name as author_name, u.avatar,
+               (SELECT COUNT(*) FROM answers WHERE question_id = q.id) as answer_count
+        FROM questions q
+        LEFT JOIN categories c ON q.category_id = c.id
+        LEFT JOIN users u ON q.user_id = u.id
+        WHERE q.category_id = ?
+        ORDER BY q.created_at DESC
+        LIMIT 3
+      `, [article.category_id]),
       viewUpdatePromise
     ]);
 
     res.render('article', {
       article,
       related,
+      relatedQuestions,
       comments,
       tags,
       categories,

@@ -1,0 +1,59 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="container" style="margin-top: 6rem; margin-bottom: 4rem;">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <h1 style="font-family: var(--font-display); font-size: 2.5rem; color: var(--white); margin-bottom: 1rem;">Verified Experts Directory</h1>
+    <p style="color: var(--gray-400); max-width: 600px; margin: 0 auto; font-size: 1.1rem; line-height: 1.6;">
+      Get help from trusted professionals. All experts listed here have had their credentials verified by our team.
+    </p>
+  </div>
+
+  <% if (experts && experts.length > 0) { %>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+      <% experts.forEach(e => { %>
+        <div style="background: var(--navy-800); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-md); padding: 1.5rem; display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+            <% if (e.avatar) { %>
+              <img src="<%= e.avatar %>" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--indigo);">
+            <% } else { %>
+              <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--navy-600); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid var(--indigo);">👤</div>
+            <% } %>
+            <div>
+              <h3 style="color: var(--white); font-size: 1.2rem; margin-bottom: 0.25rem;"><%= e.display_name %></h3>
+              <span style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3);">
+                ✓ <%= e.verification_type %>
+              </span>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 1.5rem; flex: 1;">
+            <p style="color: var(--gray-300); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem;">
+              <%= e.bio ? e.bio.substring(0, 150) + '...' : 'No bio provided.' %>
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem;">
+              <div style="background: rgba(255,255,255,0.02); padding: 0.5rem; border-radius: var(--radius-sm);">
+                <strong style="color: var(--gray-400); display: block; margin-bottom: 0.25rem;">Experience</strong>
+                <span style="color: var(--white);"><%= e.experience || 'Not specified' %></span>
+              </div>
+              <div style="background: rgba(255,255,255,0.02); padding: 0.5rem; border-radius: var(--radius-sm);">
+                <strong style="color: var(--gray-400); display: block; margin-bottom: 0.25rem;">Reputation</strong>
+                <span style="color: var(--white);">⭐ <%= e.reputation_score %></span>
+              </div>
+            </div>
+          </div>
+          
+          <a href="#" class="btn btn-outline" style="width: 100%;">View Profile</a>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div style="padding: 4rem; text-align: center; background: var(--navy-800); border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05);">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+      <h3 style="color: var(--white); margin-bottom: 0.5rem;">No verified experts yet</h3>
+      <p style="color: var(--gray-400); max-width: 400px; margin: 0 auto;">We are currently verifying professionals. Check back soon for our directory of EAs and CPAs.</p>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

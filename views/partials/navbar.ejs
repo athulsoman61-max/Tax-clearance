@@ -7,17 +7,24 @@
     </a>
     <div class="nav-links">
       <a href="/" class="<%= locals.page === 'home' ? 'active' : '' %>">Home</a>
-      <a href="/category/tax-deductions">Deductions</a>
-      <a href="/category/irs-updates">IRS Updates</a>
-      <a href="/category/small-business-taxes">Business</a>
-      <a href="/category/tax-planning">Planning</a>
+      <a href="/category/tax-deductions">Articles</a>
+      <a href="/community">Community</a>
+      <a href="/experts">Experts</a>
       <a href="/about" class="<%= locals.page === 'about' ? 'active' : '' %>">About EA</a>
     </div>
     <div class="nav-right">
       <button class="nav-search-btn" id="searchBtn" aria-label="Search">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </button>
-      <a href="/contact" class="btn-ea">Ask an EA →</a>
+      
+      <% if (locals.user) { %>
+        <a href="/questions/new" class="btn-ea">Ask Question</a>
+        <a href="/logout" style="color: var(--gray-300); font-size: 0.85rem; font-weight: 500; margin-left: 0.5rem;">Logout</a>
+      <% } else { %>
+        <a href="/login" style="color: var(--gray-300); font-size: 0.85rem; font-weight: 500; margin-right: 0.5rem;">Log In</a>
+        <a href="/register" class="btn-ea" style="background: var(--navy-600); box-shadow: none;">Sign Up</a>
+      <% } %>
+      
       <button class="nav-toggle" id="navToggle" aria-label="Menu">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       </button>
@@ -26,15 +33,15 @@
 </nav>
 <div class="mobile-menu" id="mobileMenu">
   <a href="/">🏠 Home</a>
-  <a href="/category/tax-deductions">💰 Tax Deductions</a>
-  <a href="/category/tax-credits">✅ Tax Credits</a>
-  <a href="/category/irs-updates">📢 IRS Updates</a>
-  <a href="/category/small-business-taxes">🏢 Small Business</a>
-  <a href="/category/self-employed-taxes">💼 Self-Employed</a>
-  <a href="/category/tax-planning">📊 Tax Planning</a>
-  <a href="/category/crypto-tax">₿ Crypto Tax</a>
-  <a href="/about">👤 About EA</a>
-  <a href="/contact" style="color:var(--indigo-400);">📞 Consultation</a>
+  <a href="/category/tax-deductions">📚 Articles</a>
+  <a href="/community">👥 Community</a>
+  <a href="/experts">⭐ Experts</a>
+  <a href="/about">👤 About</a>
+  <% if (locals.user) { %>
+    <a href="/logout" style="color:var(--rose);">🚪 Logout</a>
+  <% } else { %>
+    <a href="/login" style="color:var(--indigo-400);">🔑 Log In / Sign Up</a>
+  <% } %>
 </div>
 <div class="search-overlay" id="searchOverlay">
   <div class="search-overlay-inner">

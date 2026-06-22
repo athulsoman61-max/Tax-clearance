@@ -25,4 +25,34 @@ function apiAuthMiddleware(req, res, next) {
   }
 }
 
-module.exports = { authMiddleware, apiAuthMiddleware };
+function userAuthMiddleware(req, res, next) {
+  const token = req.cookies?.user_token;
+  if (!token) {
+    req.session = req.session || {};
+    req.session.returnTo = req.originalUrl;
+    return res.redirect('/login');
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.clearCookie('user_token');
+    return res.redirect('/login');
+  }
+}
+
+function optionalUserAuthMiddleware(req, res, next) {
+  const token = req.cookies?.user_token;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+    } catch (err) {
+      res.clearCookie('user_token');
+    }
+  }
+  next();
+}
+
+module.exports = { authMiddleware, apiAuthMiddleware, userAuthMiddleware, optionalUserAuthMiddleware };

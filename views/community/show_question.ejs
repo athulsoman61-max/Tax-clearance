@@ -1,0 +1,120 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="container home-layout" style="margin-top: 6rem; margin-bottom: 4rem;">
+  
+  <div class="feed-column">
+    <!-- Question Header -->
+    <div style="margin-bottom: 2rem;">
+      <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <span class="badge" style="background:<%= question.category_color || '#6366f1' %>22;color:<%= question.category_color || '#6366f1' %>; border: 1px solid <%= question.category_color || '#6366f1' %>44">
+          <%= question.category_name || 'General' %>
+        </span>
+        <span style="color: var(--gray-400); font-size: 0.9rem;">👁 <%= question.views %> views</span>
+      </div>
+      
+      <h1 style="font-family: var(--font-display); font-size: 2.2rem; color: var(--white); margin-bottom: 1.5rem; line-height: 1.2;">
+        <%= question.title %>
+      </h1>
+      
+      <div style="display: flex; align-items: center; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <% if (question.avatar) { %>
+          <img src="<%= question.avatar %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
+        <% } else { %>
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--navy-600); display: flex; align-items: center; justify-content: center; font-size: 20px;">👤</div>
+        <% } %>
+        <div>
+          <div style="color: var(--white); font-weight: 600;"><%= question.is_anonymous ? 'Anonymous' : (question.author_name || 'User') %></div>
+          <div style="color: var(--gray-400); font-size: 0.85rem;"><%= new Date(question.created_at).toLocaleString('en-US', {month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'}) %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Body -->
+    <div class="article-content" style="margin-bottom: 3rem; background: var(--navy-800); padding: 2rem; border-radius: var(--radius-md);">
+      <p style="white-space: pre-wrap; font-size: 1.1rem; line-height: 1.7; color: var(--gray-200);"><%= question.description %></p>
+    </div>
+
+    <!-- Answers Section -->
+    <div style="margin-bottom: 2rem;">
+      <h3 style="font-family: var(--font-display); font-size: 1.5rem; color: var(--white); margin-bottom: 1.5rem;">
+        <%= answers.length %> Answer<%= answers.length === 1 ? '' : 's' %>
+      </h3>
+      
+      <% if (answers.length > 0) { %>
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <% answers.forEach(ans => { %>
+            <div style="background: <%= ans.is_verified_answer ? 'var(--navy-700)' : 'var(--navy-800)' %>; border: 1px solid <%= ans.is_verified_answer ? 'var(--emerald)' : 'rgba(255,255,255,0.05)' %>; border-radius: var(--radius-md); padding: 1.5rem; position: relative;">
+              
+              <% if (ans.is_verified_answer) { %>
+                <div style="position: absolute; top: -12px; right: 20px; background: var(--emerald); color: var(--navy-900); font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                  ⭐ Verified Answer
+                </div>
+              <% } %>
+
+              <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <% if (ans.avatar) { %>
+                  <img src="<%= ans.avatar %>" alt="Avatar" style="width: 36px; height: 36px; border-radius: 50%;">
+                <% } else { %>
+                  <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--navy-600); display: flex; align-items: center; justify-content: center; font-size: 18px;">👤</div>
+                <% } %>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="color: var(--white); font-weight: 600;"><%= ans.author_name || 'User' %></span>
+                    <% if (ans.is_verified_expert) { %>
+                      <span style="background: rgba(16, 185, 129, 0.15); color: var(--emerald); font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        ✓ <%= ans.verification_type || 'Verified Expert' %>
+                      </span>
+                    <% } %>
+                  </div>
+                  <div style="color: var(--gray-400); font-size: 0.8rem;"><%= new Date(ans.created_at).toLocaleString('en-US', {month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'}) %></div>
+                </div>
+              </div>
+
+              <div style="color: var(--gray-300); line-height: 1.6; white-space: pre-wrap;"><%= ans.content %></div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div style="padding: 2rem; text-align: center; background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); border: 1px dashed rgba(255,255,255,0.1);">
+          <p style="color: var(--gray-400);">No answers yet. Be the first to help out!</p>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Post Answer Form -->
+    <div style="background: var(--navy-800); padding: 2rem; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05);">
+      <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--white); margin-bottom: 1rem;">Your Answer</h3>
+      <% if (locals.user) { %>
+        <form action="/answers" method="POST">
+          <input type="hidden" name="question_id" value="<%= question.id %>">
+          <div style="margin-bottom: 1rem;">
+            <textarea name="content" required rows="6" placeholder="Write your detailed answer here..." style="width: 100%; padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--navy-500); background: var(--navy-900); color: var(--white); font-size: 1rem; resize: vertical;"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Post Answer</button>
+        </form>
+      <% } else { %>
+        <div style="padding: 1.5rem; text-align: center; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);">
+          <p style="color: var(--gray-300); margin-bottom: 1rem;">You must be logged in to post an answer.</p>
+          <div style="display: flex; justify-content: center; gap: 1rem;">
+            <a href="/login" class="btn btn-outline">Log In</a>
+            <a href="/register" class="btn btn-primary">Sign Up</a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-widget" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.08));border-color:rgba(99,102,241,0.2);text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">⚖️</div>
+      <h3 style="font-family:var(--font-display);font-size:1rem;font-weight:700;margin-bottom:0.5rem;">Need Private Help?</h3>
+      <p style="font-size:0.82rem;color:var(--gray-400);margin-bottom:1rem;line-height:1.5;">Some tax situations are too sensitive for public forums.</p>
+      <a href="/contact" class="btn btn-primary" style="width:100%;display:flex;">Request Private Consultation</a>
+    </div>
+  </aside>
+
+</div>
+
+<%- include('../partials/footer') %>

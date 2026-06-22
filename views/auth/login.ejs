@@ -1,0 +1,38 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="container" style="max-width: 400px; margin: 4rem auto; padding: 2rem; background: var(--navy-700); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);">
+  <h1 style="text-align: center; margin-bottom: 1.5rem; color: var(--white); font-family: var(--font-display);">Welcome Back</h1>
+  
+  <% if (error) { %>
+    <div style="background: rgba(244, 63, 94, 0.1); color: var(--rose); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; text-align: center; border: 1px solid rgba(244, 63, 94, 0.2);">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <% if (locals.registered) { %>
+    <div style="background: rgba(16, 185, 129, 0.1); color: var(--emerald); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; text-align: center; border: 1px solid rgba(16, 185, 129, 0.2);">
+      Registration successful! Please log in.
+    </div>
+  <% } %>
+
+  <form action="/login" method="POST" style="display: flex; flex-direction: column; gap: 1.25rem;">
+    <div>
+      <label for="username" style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--gray-300);">Username or Email</label>
+      <input type="text" id="username" name="username" required style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--navy-500); background: var(--navy-800); color: var(--white); font-size: 1rem;">
+    </div>
+    
+    <div>
+      <label for="password" style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--gray-300);">Password</label>
+      <input type="password" id="password" name="password" required style="width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--navy-500); background: var(--navy-800); color: var(--white); font-size: 1rem;">
+    </div>
+    
+    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1rem; margin-top: 0.5rem;">Log In</button>
+  </form>
+  
+  <p style="text-align: center; margin-top: 2rem; font-size: 0.9rem; color: var(--gray-400);">
+    Don't have an account? <a href="/register" style="color: var(--indigo-400);">Sign Up</a>
+  </p>
+</div>
+
+<%- include('../partials/footer') %>

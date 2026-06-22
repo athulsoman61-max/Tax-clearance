@@ -1,0 +1,763 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Articles | Tax Clearance Admin</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-header">
+    <div class="admin-logo">
+      <div class="admin-logo-icon">⚖️</div>
+      <div><div class="admin-logo-name">Tax Clearance</div><div class="admin-logo-sub">Admin Panel</div></div>
+    </div>
+  </div>
+  <nav class="admin-nav">
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Content</div>
+      <a href="/admin" class="admin-nav-link "><span class="admin-nav-icon">📊</span> Dashboard</a>
+      <a href="/admin/articles/new" class="admin-nav-link "><span class="admin-nav-icon">✏️</span> New Article</a>
+      <a href="/admin/articles" class="admin-nav-link active"><span class="admin-nav-icon">📰</span> All Articles</a>
+      <a href="/admin/categories" class="admin-nav-link "><span class="admin-nav-icon">🏷️</span> Categories</a>
+      <a href="/admin/tags" class="admin-nav-link "><span class="admin-nav-icon">🔖</span> Tags</a>
+    </div>
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Media</div>
+      <a href="/admin/media" class="admin-nav-link "><span class="admin-nav-icon">🖼️</span> Media Library</a>
+    </div>
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Engagement</div>
+      <a href="/admin/comments" class="admin-nav-link "><span class="admin-nav-icon">💬</span> Comments</a>
+      <a href="/admin/newsletter" class="admin-nav-link "><span class="admin-nav-icon">📬</span> Newsletter</a>
+    </div>
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Business</div>
+      <a href="/admin/leads" class="admin-nav-link "><span class="admin-nav-icon">🎯</span> Leads</a>
+    </div>
+    <div class="admin-nav-section">
+      <div class="admin-nav-label">Config</div>
+      <a href="/admin/settings" class="admin-nav-link "><span class="admin-nav-icon">⚙️</span> Settings</a>
+      <a href="/" target="_blank" class="admin-nav-link"><span class="admin-nav-icon">🌐</span> View Site</a>
+      <a href="/admin/logout" class="admin-nav-link admin-logout"><span class="admin-nav-icon">🚪</span> Logout</a>
+    </div>
+  </nav>
+</aside>
+<div class="admin-main" id="adminMain">
+  <header class="admin-topbar">
+    <button class="admin-sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="admin-topbar-title">Articles</div>
+    <div class="admin-topbar-right">
+      <a href="/admin/articles/new" class="btn btn-primary btn-sm">+ New Article</a>
+      <div class="admin-user-chip">
+        <div class="admin-user-avatar">⚖️</div>
+        <span class="admin-user-name">admin</span>
+      </div>
+    </div>
+  </header>
+  <div class="admin-content">
+
+
+<!-- Filters -->
+<div class="admin-filters-bar">
+  <form method="GET" action="/admin/articles" class="admin-filters-form">
+    <input type="text" name="search" value="" class="admin-filter-input" placeholder="Search articles...">
+    <select name="status" class="admin-filter-input" style="max-width:140px;">
+      <option value="">All Status</option>
+      <option value="published" >Published</option>
+      <option value="draft" >Draft</option>
+      <option value="scheduled" >Scheduled</option>
+    </select>
+    <select name="category" class="admin-filter-input" style="max-width:180px;">
+      <option value="">All Categories</option>
+      
+      <option value="irs-updates" >IRS Updates</option>
+      
+      <option value="tax-planning" >Tax Planning</option>
+      
+      <option value="tax-filing-tips" >Tax Filing Tips</option>
+      
+      <option value="tax-deductions" >Tax Deductions</option>
+      
+      <option value="tax-credits" >Tax Credits</option>
+      
+      <option value="small-business-taxes" >Small Business Taxes</option>
+      
+      <option value="self-employed-taxes" >Self-Employed Taxes</option>
+      
+      <option value="crypto-tax" >Crypto Tax</option>
+      
+      <option value="international-tax" >International Tax</option>
+      
+      <option value="tax-deadlines" >Tax Deadlines</option>
+      
+      <option value="tax-relief-programs" >Tax Relief Programs</option>
+      
+      <option value="state-taxes" >State Taxes</option>
+      
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+    <a href="/admin/articles" class="btn btn-ghost btn-sm">Reset</a>
+  </form>
+  <a href="/admin/articles/new" class="btn btn-primary btn-sm">+ New Article</a>
+</div>
+
+
+
+<!-- Bulk Actions Form -->
+<form action="/admin/articles/bulk" method="POST" id="bulkForm">
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th style="width:40px;"><input type="checkbox" id="checkAll" style="accent-color:var(--indigo);"></th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Views</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="13" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/13/edit" class="admin-table-title">W-2 vs 1099: What&#39;s the Difference and How It Affects Your Taxes</a>
+            <div class="admin-article-slug">/article/w2-vs-1099-difference-taxes</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#ec489922;color:#ec4899">Tax Filing Tips</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">0</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/13/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/13/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/w2-vs-1099-difference-taxes" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(13)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="16" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/16/edit" class="admin-table-title">Self-Employed Tax Deductions: The Complete Guide for 2024</a>
+            <div class="admin-article-slug">/article/self-employed-tax-deductions-guide</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#06b6d422;color:#06b6d4">Self-Employed Taxes</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">0</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/16/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/16/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/self-employed-tax-deductions-guide" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(16)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="15" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/15/edit" class="admin-table-title">IRS Audit Triggers: 10 Red Flags That Increase Your Audit Risk</a>
+            <div class="admin-article-slug">/article/irs-audit-triggers-red-flags</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#ef444422;color:#ef4444">IRS Updates</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">0</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/15/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/15/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/irs-audit-triggers-red-flags" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(15)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="14" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/14/edit" class="admin-table-title">Crypto Tax Rules: How the IRS Taxes Bitcoin and Digital Assets in 2024</a>
+            <div class="admin-article-slug">/article/crypto-tax-rules-irs-bitcoin-2024</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#f9731622;color:#f97316">Crypto Tax</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">0</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/14/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/14/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/crypto-tax-rules-irs-bitcoin-2024" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(14)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="12" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/12/edit" class="admin-table-title">How to File Your Taxes for Free in 2025: IRS Free File Explained</a>
+            <div class="admin-article-slug">/article/how-to-file-taxes-free-irs-free-file</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#ec489922;color:#ec4899">Tax Filing Tips</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">0</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/12/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/12/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/how-to-file-taxes-free-irs-free-file" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(12)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="11" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/11/edit" class="admin-table-title">Where Is My Tax Refund? How to Track Your IRS Refund Status</a>
+            <div class="admin-article-slug">/article/where-is-my-tax-refund</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#ec489922;color:#ec4899">Tax Filing Tips</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">0</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/11/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/11/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/where-is-my-tax-refund" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(11)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="10" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/10/edit" class="admin-table-title">Standard Deduction 2025: How Much Can You Deduct?</a>
+            <div class="admin-article-slug">/article/standard-deduction-2025</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#ef444422;color:#ef4444">IRS Updates</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">0</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/10/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/10/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/standard-deduction-2025" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(10)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="9" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/9/edit" class="admin-table-title">IRS Tax Brackets 2025: What Every American Needs to Know</a>
+            <div class="admin-article-slug">/article/irs-tax-brackets-2025</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#ef444422;color:#ef4444">IRS Updates</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">0</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/9/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/9/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/irs-tax-brackets-2025" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(9)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="25" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/25/edit" class="admin-table-title">How to File a Tax Extension in 2025: Step-by-Step Guide</a>
+            <div class="admin-article-slug">/article/how-to-file-tax-extension-2025</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#14b8a622;color:#14b8a6">Tax Deadlines</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">8</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/25/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/25/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/how-to-file-tax-extension-2025" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(25)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="19" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/19/edit" class="admin-table-title">401(k) Contribution Limits 2025: How Much Can You Save Tax-Free?</a>
+            <div class="admin-article-slug">/article/401k-contribution-limits-2025</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#f59e0b22;color:#f59e0b">Tax Planning</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">2</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/19/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/19/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/401k-contribution-limits-2025" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(19)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="18" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/18/edit" class="admin-table-title">Roth IRA vs Traditional IRA: Which Is Right for Your Retirement?</a>
+            <div class="admin-article-slug">/article/roth-ira-vs-traditional-ira</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#f59e0b22;color:#f59e0b">Tax Planning</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">1</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/18/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/18/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/roth-ira-vs-traditional-ira" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(18)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="21" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/21/edit" class="admin-table-title">LLC Taxes Explained: How Your Business Entity Affects What You Owe</a>
+            <div class="admin-article-slug">/article/llc-taxes-explained-business-entity</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#8b5cf622;color:#8b5cf6">Small Business Taxes</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">3</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/21/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/21/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/llc-taxes-explained-business-entity" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(21)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="22" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/22/edit" class="admin-table-title">Medical Expense Deduction: What Qualifies and the 7.5% Rule</a>
+            <div class="admin-article-slug">/article/medical-expense-deduction-7-5-percent</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#6366f122;color:#6366f1">Tax Deductions</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">2</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/22/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/22/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/medical-expense-deduction-7-5-percent" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(22)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="26" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/26/edit" class="admin-table-title">How to File an Amended Tax Return (Form 1040-X)</a>
+            <div class="admin-article-slug">/article/how-to-file-amended-tax-return-1040x</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#ec489922;color:#ec4899">Tax Filing Tips</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">1</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/26/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/26/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/how-to-file-amended-tax-return-1040x" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(26)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="27" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/27/edit" class="admin-table-title">US Taxes for Expats: What Americans Living Abroad Must Know</a>
+            <div class="admin-article-slug">/article/us-taxes-for-expats-americans-abroad</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#84cc1622;color:#84cc16">International Tax</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">2</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/27/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/27/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/us-taxes-for-expats-americans-abroad" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(27)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="28" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/28/edit" class="admin-table-title">Back Taxes: What to Do When You Owe the IRS</a>
+            <div class="admin-article-slug">/article/back-taxes-what-to-do-owe-irs</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#22c55e22;color:#22c55e">Tax Relief Programs</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">2</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/28/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/28/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/back-taxes-what-to-do-owe-irs" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(28)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="24" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/24/edit" class="admin-table-title">Gift Tax Rules 2025: How Much Can You Give Tax-Free?</a>
+            <div class="admin-article-slug">/article/gift-tax-rules-2025-annual-exclusion</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#f59e0b22;color:#f59e0b">Tax Planning</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">2</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/24/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/24/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/gift-tax-rules-2025-annual-exclusion" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(24)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="23" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/23/edit" class="admin-table-title">Earned Income Tax Credit (EITC): Do You Qualify for This Valuable Credit?</a>
+            <div class="admin-article-slug">/article/earned-income-tax-credit-eitc-qualify</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#10b98122;color:#10b981">Tax Credits</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">3</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/23/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/23/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/earned-income-tax-credit-eitc-qualify" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(23)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="20" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/20/edit" class="admin-table-title">Rental Property Tax Deductions: What Every Landlord Needs to Know</a>
+            <div class="admin-article-slug">/article/rental-property-tax-deductions-landlord</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#6366f122;color:#6366f1">Tax Deductions</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">1</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/20/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/20/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/rental-property-tax-deductions-landlord" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(20)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><input type="checkbox" name="ids" value="17" class="row-check" style="accent-color:var(--indigo);"></td>
+        <td>
+          <div class="admin-article-title-cell">
+            <a href="/admin/articles/17/edit" class="admin-table-title">Capital Gains Tax 2024: Rates, Rules, and How to Reduce What You Owe</a>
+            <div class="admin-article-slug">/article/capital-gains-tax-2024-rates-rules</div>
+          </div>
+        </td>
+        <td>
+          
+          <span class="admin-cat-badge" style="background:#f59e0b22;color:#f59e0b">Tax Planning</span>
+          
+        </td>
+        <td><span class="admin-status-badge admin-status-published">published</span></td>
+        <td style="color:var(--gray-400);font-size:0.85rem;">0</td>
+        <td style="color:var(--gray-500);font-size:0.8rem;">Jun 11, 2026</td>
+        <td>
+          <div class="admin-row-actions">
+            <a href="/admin/articles/17/edit" class="admin-action-btn">Edit</a>
+            <a href="/admin/articles/17/preview" target="_blank" class="admin-action-btn">Preview</a>
+            
+            <a href="/article/capital-gains-tax-2024-rates-rules" target="_blank" class="admin-action-btn">View</a>
+            
+            <button type="button" class="admin-action-btn admin-action-danger" onclick="deleteArticle(17)">Delete</button>
+          </div>
+        </td>
+      </tr>
+      
+    </tbody>
+  </table>
+</div>
+
+<!-- Bulk Bar -->
+<div class="bulk-bar" id="bulkBar" style="display:none;">
+  <span class="bulk-count" id="bulkCount">0 selected</span>
+  <select name="action" class="admin-filter-input" style="max-width:160px;" required>
+    <option value="">Bulk Action...</option>
+    <option value="publish">Publish</option>
+    <option value="draft">Move to Draft</option>
+    <option value="delete">Delete</option>
+  </select>
+  <button type="submit" class="btn btn-amber btn-sm" onclick="return confirm('Apply bulk action?')">Apply</button>
+</div>
+</form>
+
+<!-- Pagination -->
+
+<div class="admin-pagination">
+  
+  
+  <a href="?page=1" class="page-btn active">1</a>
+  
+  <a href="?page=2" class="page-btn ">2</a>
+  
+  <a href="?page=2" class="page-btn">Next &rarr;</a>
+  <span style="font-size:0.8rem;color:var(--gray-500);">28 total</span>
+</div>
+
+
+<script>
+const checkAll = document.getElementById('checkAll');
+const bulkBar = document.getElementById('bulkBar');
+const bulkCount = document.getElementById('bulkCount');
+const rowChecks = document.querySelectorAll('.row-check');
+
+function updateBulk() {
+  const checked = document.querySelectorAll('.row-check:checked').length;
+  bulkBar.style.display = checked > 0 ? 'flex' : 'none';
+  bulkCount.textContent = checked + ' selected';
+}
+
+checkAll.addEventListener('change', () => {
+  rowChecks.forEach(c => c.checked = checkAll.checked);
+  updateBulk();
+});
+rowChecks.forEach(c => c.addEventListener('change', updateBulk));
+
+function deleteArticle(id) {
+  if (!confirm('Delete this article permanently?')) return;
+  const f = document.createElement('form');
+  f.method = 'POST'; f.action = '/admin/articles/'+id+'/delete';
+  document.body.appendChild(f); f.submit();
+}
+</script>
+
+  </div><!-- end admin-content -->
+</div><!-- end admin-main -->
+<script>
+document.getElementById('sidebarToggle')?.addEventListener('click',()=>{
+  document.getElementById('adminSidebar')?.classList.toggle('collapsed');
+  document.getElementById('adminMain')?.classList.toggle('expanded');
+});
+// Confirm delete
+document.querySelectorAll('[data-confirm]').forEach(el=>{
+  el.addEventListener('click',e=>{
+    if(!confirm(el.dataset.confirm)){e.preventDefault();}
+  });
+});
+</script>
+</body>
+</html>
+

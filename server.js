@@ -56,7 +56,11 @@ app.use((req, res, next) => {
 const publicRoutes = require('./routes/public');
 const apiRoutes = require('./routes/api');
 const adminRoutes = require('./routes/admin');
+const authRoutes = require('./routes/auth');
+const communityRoutes = require('./routes/community');
 
+app.use('/', authRoutes);
+app.use('/', communityRoutes);
 app.use('/', publicRoutes);
 app.use('/api', apiRoutes);
 app.use('/admin', adminRoutes);
