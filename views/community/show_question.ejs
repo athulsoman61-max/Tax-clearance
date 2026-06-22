@@ -17,7 +17,7 @@
         <%= question.title %>
       </h1>
       
-      <div style="display: flex; align-items: center; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+      <div style="display: flex; align-items: center; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.1);">
         <% if (question.avatar) { %>
           <img src="<%= question.avatar %>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%;">
         <% } else { %>
@@ -44,7 +44,7 @@
       <% if (answers.length > 0) { %>
         <div style="display: flex; flex-direction: column; gap: 1.5rem;">
           <% answers.forEach(ans => { %>
-            <div style="background: <%= ans.is_verified_answer ? 'var(--navy-700)' : 'var(--navy-800)' %>; border: 1px solid <%= ans.is_verified_answer ? 'var(--emerald)' : 'rgba(255,255,255,0.05)' %>; border-radius: var(--radius-md); padding: 1.5rem; position: relative;">
+            <div style="background: <%= ans.is_verified_answer ? 'var(--navy-700)' : 'var(--navy-800)' %>; border: 1px solid <%= ans.is_verified_answer ? 'var(--emerald)' : 'rgba(0,0,0,0.05)' %>; border-radius: var(--radius-md); padding: 1.5rem; position: relative;">
               
               <% if (ans.is_verified_answer) { %>
                 <div style="position: absolute; top: -12px; right: 20px; background: var(--emerald); color: var(--navy-900); font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
@@ -76,32 +76,25 @@
           <% }); %>
         </div>
       <% } else { %>
-        <div style="padding: 2rem; text-align: center; background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); border: 1px dashed rgba(255,255,255,0.1);">
+        <div style="padding: 2rem; text-align: center; background: rgba(0,0,0,0.02); border-radius: var(--radius-sm); border: 1px dashed rgba(0,0,0,0.1);">
           <p style="color: var(--gray-400);">No answers yet. Be the first to help out!</p>
         </div>
       <% } %>
     </div>
 
     <!-- Post Answer Form -->
-    <div style="background: var(--navy-800); padding: 2rem; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.05);">
+    <div style="background: var(--navy-800); padding: 2rem; border-radius: var(--radius-md); border: 1px solid rgba(0,0,0,0.05);">
       <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--white); margin-bottom: 1rem;">Your Answer</h3>
-      <% if (locals.user) { %>
-        <form action="/answers" method="POST">
-          <input type="hidden" name="question_id" value="<%= question.id %>">
-          <div style="margin-bottom: 1rem;">
-            <textarea name="content" required rows="6" placeholder="Write your detailed answer here..." style="width: 100%; padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--navy-500); background: var(--navy-900); color: var(--white); font-size: 1rem; resize: vertical;"></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Post Answer</button>
-        </form>
-      <% } else { %>
-        <div style="padding: 1.5rem; text-align: center; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);">
-          <p style="color: var(--gray-300); margin-bottom: 1rem;">You must be logged in to post an answer.</p>
-          <div style="display: flex; justify-content: center; gap: 1rem;">
-            <a href="/login" class="btn btn-outline">Log In</a>
-            <a href="/register" class="btn btn-primary">Sign Up</a>
-          </div>
+      <form action="/answers" method="POST">
+        <input type="hidden" name="question_id" value="<%= question.id %>">
+        <div style="margin-bottom: 1rem;">
+          <textarea name="content" required rows="6" placeholder="Write your detailed answer here..." style="width: 100%; padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--navy-500); background: var(--navy-900); color: var(--white); font-size: 1rem; resize: vertical;"></textarea>
         </div>
-      <% } %>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.85rem; color: var(--gray-400);">Posting as: <strong><%= locals.user ? locals.user.display_name : 'Guest (Anonymous)' %></strong></span>
+          <button type="submit" class="btn btn-primary">Post Answer</button>
+        </div>
+      </form>
     </div>
 
   </div>

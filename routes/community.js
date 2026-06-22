@@ -57,7 +57,7 @@ router.get('/question/:id', optionalUserAuthMiddleware, async (req, res) => {
 });
 
 // Create question page
-router.get('/questions/new', userAuthMiddleware, async (req, res) => {
+router.get('/questions/new', optionalUserAuthMiddleware, async (req, res) => {
   try {
     const categories = await getCategories();
     res.render('community/new_question', { categories, user: req.user });
@@ -68,12 +68,25 @@ router.get('/questions/new', userAuthMiddleware, async (req, res) => {
 });
 
 // Handle question creation
-router.post('/questions', userAuthMiddleware, async (req, res) => {
+router.post('/questions', optionalUserAuthMiddleware, async (req, res) => {
   try {
     const { title, description, category_id, is_anonymous } = req.body;
+    let userId = req.user ? req.user.id : null;
+    
+    // If guest, fetch guest user ID
+    if (!userId) {
+      let guest = await db.get("SELECT id FROM users WHERE email = 'guest@taxclearance.com'");
+      if (!guest) {
+        const r = await db.run("INSERT INTO users (email, password_hash, display_name, role) VALUES ('guest@taxclearance.com', 'none', 'Guest', 'user')");
+        userId = r.lastInsertRowid;
+      } else {
+        userId = guest.id;
+      }
+    }
+
     const result = await db.run(
       'INSERT INTO questions (title, description, user_id, category_id, is_anonymous) VALUES (?, ?, ?, ?, ?)',
-      [title, description, req.user.id, category_id || null, is_anonymous ? 1 : 0]
+      [title, description, userId, category_id || null, is_anonymous ? 1 : (!req.user ? 1 : 0)]
     );
     res.redirect(`/question/${result.lastInsertRowid}`);
   } catch (err) {
@@ -83,12 +96,19 @@ router.post('/questions', userAuthMiddleware, async (req, res) => {
 });
 
 // Handle answer creation
-router.post('/answers', userAuthMiddleware, async (req, res) => {
+router.post('/answers', optionalUserAuthMiddleware, async (req, res) => {
   try {
     const { question_id, content } = req.body;
+    let userId = req.user ? req.user.id : null;
+    
+    if (!userId) {
+      let guest = await db.get("SELECT id FROM users WHERE email = 'guest@taxclearance.com'");
+      userId = guest ? guest.id : 0; // Assuming guest is created when question is asked
+    }
+
     await db.run(
       'INSERT INTO answers (question_id, user_id, content) VALUES (?, ?, ?)',
-      [question_id, req.user.id, content]
+      [question_id, userId, content]
     );
     res.redirect(`/question/${question_id}`);
   } catch (err) {
