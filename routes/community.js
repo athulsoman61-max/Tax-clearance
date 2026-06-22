@@ -77,7 +77,7 @@ router.post('/questions', optionalUserAuthMiddleware, async (req, res) => {
     if (!userId) {
       let guest = await db.get("SELECT id FROM users WHERE email = 'guest@taxclearance.com'");
       if (!guest) {
-        const r = await db.run("INSERT INTO users (email, password_hash, display_name, role) VALUES ('guest@taxclearance.com', 'none', 'Guest', 'user')");
+        const r = await db.run("INSERT INTO users (username, email, password_hash, display_name, role) VALUES ('guest_user', 'guest@taxclearance.com', 'none', 'Guest', 'user')");
         userId = r.lastInsertRowid;
       } else {
         userId = guest.id;
