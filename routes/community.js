@@ -85,10 +85,32 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not an image! Please upload an image file.'), false);
+    }
+  }
+});
 
 // Handle question creation
-router.post('/questions', optionalUserAuthMiddleware, upload.single('image'), async (req, res) => {
+router.post('/questions', optionalUserAuthMiddleware, (req, res, next) => {
+  upload.single('image')(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).send('File too large. Maximum size is 5MB. Please go back and try again.');
+      }
+      return res.status(400).send(err.message);
+    } else if (err) {
+      return res.status(400).send(err.message);
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const { title, description, category_id, is_anonymous } = req.body;
     let userId = req.user ? req.user.id : null;
