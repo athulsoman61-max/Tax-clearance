@@ -115,6 +115,7 @@ async function initializeDatabase() {
       description TEXT NOT NULL,
       user_id INTEGER NOT NULL,
       category_id INTEGER,
+      image_url TEXT,
       is_anonymous INTEGER DEFAULT 0,
       views INTEGER DEFAULT 0,
       status TEXT DEFAULT 'open',
@@ -166,6 +167,13 @@ async function initializeDatabase() {
 
   for (const sql of tables) {
     await db.run(sql);
+  }
+
+  // Attempt to add new columns to existing tables (fails silently if already exists)
+  try {
+    await db.run("ALTER TABLE questions ADD COLUMN image_url TEXT");
+  } catch (e) {
+    // Column likely already exists
   }
 
   // Check if database is already seeded

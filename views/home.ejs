@@ -2,48 +2,55 @@
 <%- include('partials/navbar') %>
 
 <!-- New Community Hero Section -->
-<section class="hero-section" style="background: var(--gradient-hero); padding-top: calc(var(--nav-height) + 4rem); padding-bottom: 4rem; text-align: center;">
+<section class="hero-section" style="background: var(--gradient-hero); padding-top: calc(var(--nav-height) + 2rem); padding-bottom: 2rem; text-align: center;">
   <div class="container" style="max-width: 800px; margin: 0 auto;">
-    <h1 class="hero-title" style="font-size: clamp(2.5rem, 5vw, 4rem); font-family: var(--font-display); font-weight: 800; color: var(--white); margin-bottom: 1.5rem; line-height: 1.1;">
+    <h1 class="hero-title" style="font-size: clamp(2rem, 4vw, 3rem); font-family: var(--font-display); font-weight: 800; color: var(--white); margin-bottom: 1rem; line-height: 1.1;">
       Clear Your Tax and Finance Doubts
     </h1>
-    <p class="hero-excerpt" style="font-size: 1.125rem; color: var(--gray-300); margin-bottom: 2.5rem; line-height: 1.6;">
+    <p class="hero-excerpt" style="font-size: 1rem; color: var(--gray-300); margin-bottom: 1.5rem; line-height: 1.5;">
       Read expert articles, ask questions, join discussions, and get answers from verified professionals.
     </p>
     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-      <a href="/questions/new" class="btn btn-primary btn-lg" style="padding: 0.85rem 2rem; font-size: 1.1rem; box-shadow: var(--shadow-glow);">❓ Ask a Question</a>
-      <a href="#articleFeed" class="btn btn-secondary btn-lg" style="padding: 0.85rem 2rem; font-size: 1.1rem; background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.2); color: var(--white);">📚 Explore Articles</a>
-      <a href="/community" class="btn btn-secondary btn-lg" style="padding: 0.85rem 2rem; font-size: 1.1rem; background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.2); color: var(--white);">👥 Join Community</a>
+      <a href="/questions/new" class="btn btn-primary" style="box-shadow: var(--shadow-glow);">❓ Ask a Question</a>
+      <a href="#articleFeed" class="btn btn-secondary" style="background: rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.2); color: var(--white);">📚 Explore Articles</a>
     </div>
   </div>
 </section>
 
 <!-- Action Cards (What Can You Do Here?) -->
-<div class="container" style="margin-top: -2rem; position: relative; z-index: 10;">
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+<div class="container" style="margin-top: -1rem; position: relative; z-index: 10;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
     <!-- Card 1 -->
-    <a href="#articleCarousel" style="background: var(--navy-700); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); text-align: center; display: block;">
-      <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 120px; height: 120px; object-fit: contain; margin: 0 auto 1rem auto;">
-      <h3 style="color: var(--white); margin-bottom: 0.5rem; font-size: 1.25rem;">Read Articles</h3>
-      <p style="color: var(--gray-400); font-size: 0.9rem;">Explore tax, investing, business, and personal finance content.</p>
+    <a href="#articleCarousel" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
+      <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 50px; height: 50px; object-fit: contain;">
+      <div style="text-align: left;">
+        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 0.25rem;">Read Articles</h3>
+        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Tax & finance guides.</p>
+      </div>
     </a>
     <!-- Card 2 -->
-    <a href="/questions/new" style="background: var(--navy-700); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); text-align: center; display: block;">
-      <img src="/images/card_ask_questions.png" alt="Ask Questions" style="width: 120px; height: 120px; object-fit: contain; margin: 0 auto 1rem auto;">
-      <h3 style="color: var(--white); margin-bottom: 0.5rem; font-size: 1.25rem;">Ask Questions</h3>
-      <p style="color: var(--gray-400); font-size: 0.9rem;">Post your tax or finance questions and receive community and expert answers.</p>
+    <a href="/questions/new" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
+      <img src="/images/card_ask_questions.png" alt="Ask Questions" style="width: 50px; height: 50px; object-fit: contain;">
+      <div style="text-align: left;">
+        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 0.25rem;">Ask Questions</h3>
+        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Get expert answers.</p>
+      </div>
     </a>
     <!-- Card 3 -->
-    <a href="/community" style="background: var(--navy-700); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); text-align: center; display: block;">
-      <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 120px; height: 120px; object-fit: contain; margin: 0 auto 1rem auto;">
-      <h3 style="color: var(--white); margin-bottom: 0.5rem; font-size: 1.25rem;">Join Discussions</h3>
-      <p style="color: var(--gray-400); font-size: 0.9rem;">Discuss taxes, investing, business, and wealth-building strategies.</p>
+    <a href="/community" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
+      <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 50px; height: 50px; object-fit: contain;">
+      <div style="text-align: left;">
+        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 0.25rem;">Discussions</h3>
+        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Wealth building tips.</p>
+      </div>
     </a>
     <!-- Card 4 -->
-    <a href="/experts" style="background: var(--navy-700); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); text-align: center; display: block;">
-      <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 120px; height: 120px; object-fit: contain; margin: 0 auto 1rem auto;">
-      <h3 style="color: var(--white); margin-bottom: 0.5rem; font-size: 1.25rem;">Learn From Experts</h3>
-      <p style="color: var(--gray-400); font-size: 0.9rem;">Get answers from verified EAs, CPAs, Attorneys, and Finance Professionals.</p>
+    <a href="/experts" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
+      <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 50px; height: 50px; object-fit: contain;">
+      <div style="text-align: left;">
+        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 0.25rem;">Experts</h3>
+        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Verified EAs & CPAs.</p>
+      </div>
     </a>
   </div>
 </div>
@@ -79,36 +86,69 @@
   </div>
 </div>
 
-<!-- Main Layout: Feed + Sidebar -->
+
+<!-- Main Layout: 2 Columns -->
 <div class="container home-layout" style="margin-top: 2.5rem;">
 
-  <!-- Article Feed -->
-    <!-- Community Questions First -->
+  <!-- Left Column: Article Feed -->
+  <div class="feed-column">
+    <div class="section-header" style="margin-bottom: 1.5rem;" id="articleCarousel">
+      <div class="section-title">
+        <div class="section-title-accent"></div>
+        Latest Articles
+      </div>
+      <a href="/category/tax-deductions" class="text-muted" style="font-size:0.85rem; text-decoration: underline;">View All</a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 3rem;">
+      <% articles.slice(0, 8).forEach((article, i) => { %>
+      <article class="article-card reveal" style="display: flex; gap: 1rem; align-items: stretch; background: var(--navy-800); border-radius: var(--radius-md); padding: 1rem; box-shadow: var(--shadow-sm);">
+        <a href="/article/<%= article.slug %>" style="width: 120px; flex-shrink: 0;">
+          <div class="article-card-img" style="height: 100%; border-radius: var(--radius-sm); overflow: hidden;">
+            <% if (article.featured_image) { %>
+            <img src="<%= article.featured_image %>" alt="<%= article.title %>" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+            <% } else { %>
+            <div class="article-card-placeholder" style="height: 100%;"><%= article.category_icon || '📋' %></div>
+            <% } %>
+          </div>
+        </a>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+          <span style="color:<%= article.category_color %>; font-size: 0.75rem; font-weight: 600;"><%= article.category_name || 'General' %></span>
+          <h3 style="font-size: 1.1rem; line-height: 1.3; margin: 0.25rem 0;"><a href="/article/<%= article.slug %>" style="color: var(--white);"><%= article.title %></a></h3>
+          <span style="font-size: 0.8rem; color: var(--gray-400);"><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) %></span>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Right Column: Community Questions -->
+  <div class="feed-column">
     <div class="section-header" style="margin-bottom: 1.5rem;">
       <div class="section-title">
         <div class="section-title-accent" style="background: var(--indigo);"></div>
-        Latest Community Questions
+        Community Discussions
       </div>
-      <a href="/questions/new" class="btn btn-outline btn-sm">Ask a Question</a>
+      <a href="/community" class="text-muted" style="font-size:0.85rem; text-decoration: underline;">View All</a>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem;">
       <% if (recentQuestions && recentQuestions.length > 0) { %>
-        <% recentQuestions.forEach(q => { %>
-          <article class="article-card reveal" style="background: var(--navy-800); border-left: 4px solid var(--indigo); border-radius: var(--radius-md); padding: 1.5rem;">
+        <% recentQuestions.slice(0, 6).forEach(q => { %>
+          <article class="article-card reveal" style="background: var(--navy-800); border-left: 4px solid var(--indigo); border-radius: var(--radius-md); padding: 1.25rem;">
             <div style="display: flex; align-items: flex-start; gap: 1rem;">
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius-sm); padding: 0.5rem; min-width: 60px; text-align: center;">
-                <span style="font-size: 1.25rem; font-weight: 700; color: var(--indigo-400); line-height: 1;"><%= q.answer_count %></span>
-                <span style="font-size: 0.65rem; color: var(--gray-400); text-transform: uppercase; margin-top: 0.25rem;">Answers</span>
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: var(--radius-sm); padding: 0.5rem; min-width: 50px; text-align: center;">
+                <span style="font-size: 1.1rem; font-weight: 700; color: var(--indigo-400); line-height: 1;"><%= q.answer_count %></span>
+                <span style="font-size: 0.6rem; color: var(--gray-400); text-transform: uppercase; margin-top: 0.25rem;">Answers</span>
               </div>
               <div style="flex: 1;">
                 <div class="article-card-meta" style="margin-bottom: 0.25rem;">
                   <span class="article-card-cat" style="background:<%= q.category_color || '#6366f1' %>22;color:<%= q.category_color || '#6366f1' %>; padding: 0.15rem 0.5rem; font-size: 0.7rem;">
                     <%= q.category_name || 'General' %>
                   </span>
-                  <span class="article-card-date" style="font-size: 0.8rem;">Asked by <%= q.is_anonymous ? 'Anonymous' : (q.author_name || 'User') %></span>
+                  <span class="article-card-date" style="font-size: 0.8rem;">by <%= q.is_anonymous ? 'Anonymous' : (q.author_name || 'User') %></span>
                 </div>
-                <h2 class="article-card-title" style="margin-bottom: 0.5rem; font-size: 1.15rem;">
+                <h2 class="article-card-title" style="margin-bottom: 0.25rem; font-size: 1.05rem;">
                   <a href="/question/<%= q.id %>" style="color: var(--white);"><%= q.title %></a>
                 </h2>
               </div>
@@ -120,60 +160,12 @@
           <p style="color: var(--gray-400);">No questions yet. Be the first to ask!</p>
         </div>
       <% } %>
-    </div>
-
-    <!-- Latest Articles Horizontal Carousel -->
-    <div class="section-header" style="margin-bottom: 1.5rem;" id="articleCarousel">
-      <div class="section-title">
-        <div class="section-title-accent"></div>
-        Latest Articles
+      <div style="text-align: center; margin-top: 1rem;">
+        <a href="/questions/new" class="btn btn-primary" style="width: 100%;">❓ Ask a Question</a>
       </div>
-      <a href="/category/tax-deductions" class="text-muted" style="font-size:0.85rem; text-decoration: underline;">View All</a>
     </div>
-
-    <div class="article-carousel" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 1.5rem; padding-bottom: 1.5rem; margin-bottom: 2rem;">
-      <% articles.forEach((article, i) => { %>
-      <article class="article-card reveal" data-i="<%= i %>" style="min-width: 300px; flex: 0 0 300px; scroll-snap-align: start; display: flex; flex-direction: column;">
-        <a href="/article/<%= article.slug %>" class="article-card-img-link" style="height: 160px;">
-          <div class="article-card-img" style="height: 100%;">
-            <% if (article.featured_image) { %>
-            <img src="<%= article.featured_image %>" alt="<%= article.title %>" loading="lazy" style="height: 100%; object-fit: cover;">
-            <% } else { %>
-            <div class="article-card-placeholder"><%= article.category_icon || '📋' %></div>
-            <% } %>
-          </div>
-        </a>
-        <div class="article-card-body" style="flex: 1; display: flex; flex-direction: column;">
-          <div class="article-card-meta">
-            <span class="article-card-cat" style="background:<%= article.category_color %>22;color:<%= article.category_color %>">
-              <%= article.category_name || 'Tax' %>
-            </span>
-          </div>
-          <h2 class="article-card-title" style="font-size: 1.1rem; line-height: 1.4; flex: 1;">
-            <a href="/article/<%= article.slug %>"><%= article.title %></a>
-          </h2>
-          <div class="article-card-footer" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.05);">
-            <span class="article-card-date" style="font-size: 0.8rem;"><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) %></span>
-            <a href="/article/<%= article.slug %>" class="read-more-btn" style="font-size: 0.85rem;">Read →</a>
-          </div>
-        </div>
-      </article>
-      <% }); %>
-    </div>
-
-    <!-- Load More / Infinite Scroll -->
-    <div class="load-more-container" id="loadMoreContainer">
-      <% if (hasMore) { %>
-      <div class="spinner" id="feedSpinner" style="display:none;"></div>
-      <button class="btn btn-outline" id="loadMoreBtn">Load More Articles</button>
-      <% } %>
-    </div>
-  </div>
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-
-    <!-- EA CTA -->
+    
+    <!-- EA CTA (Moved under community questions) -->
     <div class="ea-cta-banner reveal" style="margin-bottom:1.5rem;">
       <div class="ea-cta-avatar">⚖️</div>
       <div class="ea-cta-content">
@@ -181,36 +173,14 @@
         <div class="ea-cta-sub"><%= settings?.ea_name || 'Our Enrolled Agent' %> is here to help with your tax questions.</div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
           <a href="/contact" class="btn btn-primary btn-sm">Book Consultation</a>
-          <a href="/about" class="btn btn-ghost btn-sm">Learn More</a>
         </div>
       </div>
     </div>
 
-    <!-- Trending -->
-    <div class="sidebar-widget reveal">
-      <div class="section-header">
-        <div class="section-title" style="font-size:1rem;">
-          <div class="section-title-accent" style="background:var(--gradient-amber)"></div>
-          🔥 Trending
-        </div>
-      </div>
-      <div class="trending-list">
-        <% trending.forEach((a, idx) => { %>
-        <a href="/article/<%= a.slug %>" class="trending-item">
-          <span class="trending-num"><%= (idx + 1).toString().padStart(2, '0') %></span>
-          <div class="trending-info">
-            <div class="trending-title"><%= a.title %></div>
-            <div class="trending-meta">
-              <span style="color:<%= a.category_color %>;font-size:0.72rem;font-weight:600"><%= a.category_name %></span>
-              <span class="text-muted" style="font-size:0.72rem">· 👁 <%= (a.views||0).toLocaleString() %></span>
-            </div>
-          </div>
-        </a>
-        <% }); %>
-      </div>
-    </div>
+  </div>
 
-    <!-- Newsletter -->
+</div>
+<!-- Newsletter -->
     <div class="sidebar-widget reveal newsletter-widget">
       <div class="newsletter-icon">📬</div>
       <h3 class="newsletter-title">Free Tax Updates</h3>
@@ -336,7 +306,7 @@
 
 .home-layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 1fr 1fr;
   gap: 2.5rem;
   align-items: start;
   padding-bottom: 4rem;

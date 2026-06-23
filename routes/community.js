@@ -67,11 +67,32 @@ router.get('/questions/new', optionalUserAuthMiddleware, async (req, res) => {
   }
 });
 
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Configure Multer for image uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.join(__dirname, '../public/uploads/questions');
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
+
 // Handle question creation
-router.post('/questions', optionalUserAuthMiddleware, async (req, res) => {
+router.post('/questions', optionalUserAuthMiddleware, upload.single('image'), async (req, res) => {
   try {
     const { title, description, category_id, is_anonymous } = req.body;
     let userId = req.user ? req.user.id : null;
+    let imageUrl = req.file ? '/uploads/questions/' + req.file.filename : null;
     
     // If guest, fetch guest user ID
     if (!userId) {
@@ -85,8 +106,8 @@ router.post('/questions', optionalUserAuthMiddleware, async (req, res) => {
     }
 
     const result = await db.run(
-      'INSERT INTO questions (title, description, user_id, category_id, is_anonymous) VALUES (?, ?, ?, ?, ?)',
-      [title, description, userId, category_id || null, is_anonymous ? 1 : (!req.user ? 1 : 0)]
+      'INSERT INTO questions (title, description, user_id, category_id, is_anonymous, image_url) VALUES (?, ?, ?, ?, ?, ?)',
+      [title, description, userId, category_id || null, is_anonymous ? 1 : (!req.user ? 1 : 0), imageUrl]
     );
     res.redirect(`/question/${result.lastInsertRowid}`);
   } catch (err) {
