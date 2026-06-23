@@ -1,9 +1,13 @@
 <% const siteName = settings?.site_name || 'Tax Clearance'; %>
 <nav class="navbar" id="navbar">
   <div class="nav-inner">
-    <a href="/" class="nav-logo">
-      <div class="nav-logo-icon">⚖️</div>
-      <span class="nav-logo-text"><%= siteName %></span>
+    <a href="/" class="nav-logo" style="text-decoration: none;">
+      <div class="nav-logo-icon" style="background: var(--navy-800); border: 1px solid var(--indigo-400); color: var(--indigo-400); border-radius: 8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <span class="nav-logo-text" style="font-size: 1.3rem; font-family: var(--font-display); letter-spacing: -0.5px;">
+        <span style="color: var(--white); font-weight: 800;">Tax</span><span style="color: var(--indigo-400); font-weight: 800;">Clearance</span><span style="color: var(--gray-500); font-size: 0.75em; font-weight: 600;">.space</span>
+      </span>
     </a>
     <div class="nav-links">
       <a href="/" class="<%= locals.page === 'home' ? 'active' : '' %>">Home</a>
