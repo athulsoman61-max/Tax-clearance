@@ -381,8 +381,9 @@ router.get('/articles', async (req, res, next) => {
     const totalPages = Math.ceil(totalArticles / limit);
 
     res.render('category', {
-      category: { name: 'All Articles', slug: 'articles', description: 'Browse all our latest tax and finance articles.', color: '#6366f1' },
+      category: { name: 'All Articles', slug: 'articles', description: 'Browse all our latest tax and finance articles.', color: '#6366f1', icon: '📚' },
       articles,
+      total: totalArticles,
       categories,
       settings,
       page: 'articles',
