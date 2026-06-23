@@ -353,4 +353,48 @@ router.get('/robots.txt', (req, res) => {
   res.send(`User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${siteUrl}/sitemap.xml\n`);
 });
 
+
+// All Articles Route
+router.get('/articles', async (req, res, next) => {
+  try {
+    const settings = await getAllSettings();
+    const categories = await getCategories();
+    
+    const pageNum = parseInt(req.query.page) || 1;
+    const limit = 12;
+    const offset = (pageNum - 1) * limit;
+
+    const articles = await db.all(`
+      SELECT a.id, a.title, a.slug, a.excerpt, a.featured_image, a.publish_date, a.created_at,
+             c.name as category_name, c.slug as category_slug, c.color as category_color,
+             u.display_name as author_name
+      FROM articles a
+      LEFT JOIN categories c ON a.category_id = c.id
+      LEFT JOIN users u ON a.author_id = u.id
+      WHERE a.status = 'published' AND (a.publish_date IS NULL OR a.publish_date <= CURRENT_TIMESTAMP)
+      ORDER BY a.publish_date DESC, a.created_at DESC
+      LIMIT ? OFFSET ?
+    `, [limit, offset]);
+    
+    const countRow = await db.get(`SELECT COUNT(*) as count FROM articles WHERE status = 'published' AND (publish_date IS NULL OR publish_date <= CURRENT_TIMESTAMP)`);
+    const totalArticles = countRow.count;
+    const totalPages = Math.ceil(totalArticles / limit);
+
+    res.render('category', {
+      category: { name: 'All Articles', slug: 'articles', description: 'Browse all our latest tax and finance articles.', color: '#6366f1' },
+      articles,
+      categories,
+      settings,
+      page: 'articles',
+      title: `All Articles | ${settings.site_name}`,
+      description: 'Browse all tax and finance articles on TaxClearance.',
+      currentPage: pageNum,
+      totalPages,
+      hasMore: pageNum < totalPages
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

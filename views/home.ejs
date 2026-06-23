@@ -15,7 +15,7 @@
 <div class="container" style="margin-top: -1rem; position: relative; z-index: 10;">
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
     <!-- Card 1 -->
-    <a href="#articleCarousel" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
+    <a href="/articles" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
       <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 50px; height: 50px; object-fit: contain;">
       <div style="text-align: left;">
         <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 0.25rem;">Read Articles</h3>
@@ -148,7 +148,7 @@
   <div class="glance-section" id="articleCarousel">
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
       <h2 style="font-size: 1.5rem; font-weight: 800; margin: 0; color: var(--white);">Top News</h2>
-      <a href="/category/tax-deductions" style="color: var(--indigo-400); font-weight: 600; font-size: 0.85rem;">View All →</a>
+      <a href="/articles" style="color: var(--indigo-400); font-weight: 600; font-size: 0.85rem;">View All →</a>
     </div>
     <div class="glance-track">
       <% articles.slice(0, 8).forEach((article, i) => { %>
