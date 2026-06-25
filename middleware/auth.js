@@ -26,7 +26,7 @@ function apiAuthMiddleware(req, res, next) {
 }
 
 function userAuthMiddleware(req, res, next) {
-  const token = req.cookies?.user_token;
+  const token = req.cookies?.user_token || req.cookies?.admin_token;
   if (!token) {
     req.session = req.session || {};
     req.session.returnTo = req.originalUrl;
@@ -43,7 +43,7 @@ function userAuthMiddleware(req, res, next) {
 }
 
 function optionalUserAuthMiddleware(req, res, next) {
-  const token = req.cookies?.user_token;
+  const token = req.cookies?.user_token || req.cookies?.admin_token;
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
