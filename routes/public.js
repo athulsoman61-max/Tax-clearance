@@ -398,4 +398,60 @@ router.get('/articles', async (req, res, next) => {
   }
 });
 
+// Temporary route to add the IRS article
+router.get('/temp-add-article', async (req, res, next) => {
+  try {
+    const articleTitle = "National Taxpayer Advocate Issues 2026 Mid-Year Report to Congress";
+    const articleSlug = "national-taxpayer-advocate-2026-mid-year-report";
+    const articleExcerpt = "The National Taxpayer Advocate has delivered its 2026 Mid-Year Report to Congress, highlighting ongoing IRS customer service challenges, technology modernization efforts, and key priorities to protect taxpayer rights.";
+    const articleContent = `
+<h2>A Crucial Update on IRS Performance and Taxpayer Rights</h2>
+
+<p>The National Taxpayer Advocate (NTA) has officially released its 2026 Mid-Year Report to Congress. This mandated report serves as an independent voice inside the IRS, identifying the most serious problems taxpayers are currently facing and outlining the Taxpayer Advocate Service's (TAS) priorities for the upcoming fiscal year.</p>
+
+<h3>Key Highlights from the 2026 Mid-Year Report</h3>
+
+<p>The 2026 report places a heavy emphasis on several critical areas that directly impact both individual taxpayers and small businesses:</p>
+
+<ul>
+  <li><strong>Customer Service Challenges:</strong> While the IRS has made strides in answering phone calls since the implementation of the Inflation Reduction Act funding, the report notes that correspondence processing and amended return processing continue to face unacceptable delays.</li>
+  <li><strong>Technology Modernization:</strong> The NTA emphasized the urgent need for the IRS to continue its transition away from legacy IT systems. Outdated systems are cited as the primary bottleneck preventing the IRS from offering a 21st-century digital experience.</li>
+  <li><strong>Taxpayer Rights and Audits:</strong> The report raises concerns over automated audit triggers and the difficulty taxpayers face in getting a human review when an automated system flags their return. Ensuring the "Right to a Fair and Just Tax System" remains a top TAS priority.</li>
+  <li><strong>Fraud Filters and Refund Delays:</strong> The NTA identified that overly aggressive identity theft filters are catching legitimate returns, causing months of financial hardship for taxpayers waiting on their rightful refunds.</li>
+</ul>
+
+<h3>What This Means for You</h3>
+
+<p>If you are currently waiting on correspondence from the IRS, an amended return, or are caught in an identity verification delay, the NTA's report formally acknowledges these systemic issues to Congress. This external pressure often leads to targeted IRS task forces designed to clear these specific backlogs.</p>
+
+<p>The Taxpayer Advocate Service remains a critical resource for taxpayers who are experiencing financial hardship due to IRS delays or who have exhausted all other avenues to resolve their tax problems.</p>
+
+<hr>
+<p><em>For the full detailed report, you can visit the official IRS Newsroom or the Taxpayer Advocate Service website.</em></p>
+    `;
+    
+    let category = await db.get("SELECT id FROM categories WHERE slug = 'irs-updates' OR name LIKE '%IRS%' LIMIT 1");
+    const categoryId = category ? category.id : 1;
+
+    let user = await db.get("SELECT id FROM users WHERE role = 'admin' OR role = 'expert' LIMIT 1");
+    const userId = user ? user.id : 1;
+
+    // Check if it already exists
+    const existing = await db.get("SELECT id FROM articles WHERE slug = ?", [articleSlug]);
+    if (existing) {
+      return res.send("Article already exists on this server!");
+    }
+
+    const query = `
+      INSERT INTO articles (title, slug, excerpt, content, author_id, category_id, status, featured_image, publish_date)
+      VALUES (?, ?, ?, ?, ?, ?, 'published', '/images/advocate_report_2026.png', CURRENT_TIMESTAMP)
+    `;
+
+    await db.run(query, [articleTitle, articleSlug, articleExcerpt, articleContent, userId, categoryId]);
+    res.send("Article successfully added to the production database!");
+  } catch (err) {
+    res.status(500).send("Error adding article: " + err.message);
+  }
+});
+
 module.exports = router;
