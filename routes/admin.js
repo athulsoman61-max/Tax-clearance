@@ -185,6 +185,37 @@ router.get('/users', authMiddleware, async (req, res, next) => {
   }
 });
 
+// ─── Questions List (Community) ────────────────────────────────────────────────
+router.get('/questions', authMiddleware, async (req, res, next) => {
+  try {
+    const settings = await getAllSettings();
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 20;
+    const offset = (page - 1) * perPage;
+
+    const questions = await db.all(`
+      SELECT q.id, q.title, q.created_at, q.views, u.display_name as author_name, c.name as category_name,
+             (SELECT COUNT(*) FROM answers WHERE question_id = q.id) as answer_count
+      FROM questions q
+      LEFT JOIN users u ON q.user_id = u.id
+      LEFT JOIN categories c ON q.category_id = c.id
+      ORDER BY q.created_at DESC LIMIT ? OFFSET ?
+    `, [perPage, offset]);
+
+    const totalRow = await db.get(`SELECT COUNT(*) as cnt FROM questions`);
+    const total = totalRow?.cnt || 0;
+
+    res.render('admin/questions', {
+      questions, settings, total,
+      currentPage: page, totalPages: Math.ceil(total / perPage),
+      title: 'Community Questions | Tax Clearance Admin',
+      admin: req.admin,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── Article Editor (new) ─────────────────────────────────────────────────────
 router.get('/articles/new', authMiddleware, async (req, res, next) => {
   try {
