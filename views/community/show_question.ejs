@@ -13,9 +13,19 @@
         <span style="color: var(--gray-400); font-size: 0.9rem;">👁 <%= question.views %> views</span>
       </div>
       
-      <h1 style="font-family: var(--font-display); font-size: 2.2rem; color: var(--white); margin-bottom: 1.5rem; line-height: 1.2;">
-        <%= question.title %>
-      </h1>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+        <h1 style="font-family: var(--font-display); font-size: 2.2rem; color: var(--white); margin-bottom: 1.5rem; line-height: 1.2; flex: 1;">
+          <%= question.title %>
+        </h1>
+        
+        <% if (locals.user && locals.user.role === 'admin') { %>
+          <form action="/question/<%= question.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this question completely?');">
+            <button type="submit" class="btn" style="background: rgba(239,68,68,0.1); color: var(--rose); border: 1px solid rgba(239,68,68,0.2); padding: 0.5rem 1rem;">
+              🗑️ Delete
+            </button>
+          </form>
+        <% } %>
+      </div>
       
       <div style="display: flex; align-items: center; gap: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.1);">
         <% if (question.avatar) { %>
@@ -95,8 +105,25 @@
         <div style="margin-bottom: 1rem;">
           <textarea name="content" required rows="6" placeholder="Write your detailed answer here..." style="width: 100%; padding: 0.85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--navy-500); background: var(--navy-900); color: var(--white); font-size: 1rem; resize: vertical;"></textarea>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 0.85rem; color: var(--gray-400);">Posting as: <strong><%= locals.user ? locals.user.display_name : 'Guest (Anonymous)' %></strong></span>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap;">
+          <div>
+            <% if (locals.user && locals.user.role === 'admin') { %>
+              <div style="margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--gray-300);"><strong>Admin Controls:</strong></div>
+              <div style="display: flex; gap: 1.5rem; align-items: center; background: rgba(0,0,0,0.2); padding: 0.5rem 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--gray-300); font-size: 0.9rem;">
+                  <input type="radio" name="reply_mode" value="admin" checked onclick="document.getElementById('fake_name_input').style.display='none'"> 
+                  Reply as Admin (Verified)
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--gray-300); font-size: 0.9rem;">
+                  <input type="radio" name="reply_mode" value="fake" onclick="document.getElementById('fake_name_input').style.display='block'"> 
+                  Reply as Fake User
+                </label>
+                <input type="text" name="fake_name" id="fake_name_input" placeholder="Fake User Name" style="display: none; padding: 0.3rem 0.6rem; border-radius: 4px; border: 1px solid var(--navy-500); background: var(--navy-700); color: var(--white); font-size: 0.85rem;">
+              </div>
+            <% } else { %>
+              <span style="font-size: 0.85rem; color: var(--gray-400);">Posting as: <strong><%= locals.user ? locals.user.display_name : 'Guest (Anonymous)' %></strong></span>
+            <% } %>
+          </div>
           <button type="submit" class="btn btn-primary">Post Answer</button>
         </div>
       </form>

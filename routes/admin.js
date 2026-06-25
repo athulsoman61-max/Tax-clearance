@@ -157,6 +157,34 @@ router.get('/articles', authMiddleware, async (req, res, next) => {
   }
 });
 
+// ─── Users List ────────────────────────────────────────────────────────────
+router.get('/users', authMiddleware, async (req, res, next) => {
+  try {
+    const settings = await getAllSettings();
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 20;
+    const offset = (page - 1) * perPage;
+
+    const users = await db.all(`
+      SELECT id, username, email, display_name, role, created_at
+      FROM users
+      ORDER BY created_at DESC LIMIT ? OFFSET ?
+    `, [perPage, offset]);
+
+    const totalRow = await db.get(`SELECT COUNT(*) as cnt FROM users`);
+    const total = totalRow?.cnt || 0;
+
+    res.render('admin/users', {
+      users, settings, total,
+      currentPage: page, totalPages: Math.ceil(total / perPage),
+      title: 'Users | Tax Clearance Admin',
+      admin: req.admin,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ─── Article Editor (new) ─────────────────────────────────────────────────────
 router.get('/articles/new', authMiddleware, async (req, res, next) => {
   try {

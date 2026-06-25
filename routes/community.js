@@ -56,6 +56,21 @@ router.get('/question/:id', optionalUserAuthMiddleware, async (req, res) => {
   }
 });
 
+// Delete question (admin only)
+router.post('/question/:id/delete', userAuthMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).send('Forbidden: Admins only');
+    }
+    const qid = req.params.id;
+    await db.run('DELETE FROM questions WHERE id = ?', [qid]);
+    res.redirect('/community');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
 // Create question page
 router.get('/questions/new', optionalUserAuthMiddleware, async (req, res) => {
   try {
@@ -141,17 +156,34 @@ router.post('/questions', optionalUserAuthMiddleware, (req, res, next) => {
 // Handle answer creation
 router.post('/answers', optionalUserAuthMiddleware, async (req, res) => {
   try {
-    const { question_id, content } = req.body;
+    const { question_id, content, reply_mode, fake_name } = req.body;
     let userId = req.user ? req.user.id : null;
+    let isVerified = 0;
     
+    if (req.user && req.user.role === 'admin') {
+      if (reply_mode === 'fake') {
+        const dName = fake_name && fake_name.trim() !== '' ? fake_name.trim() : 'Anonymous User';
+        const fakeEmail = 'fake_' + Date.now() + '@taxclearance.com';
+        const r = await db.run("INSERT INTO users (username, email, password_hash, display_name, role) VALUES (?, ?, 'none', ?, 'user')", ['fake_' + Date.now(), fakeEmail, dName]);
+        userId = r.lastInsertRowid;
+      } else if (reply_mode === 'admin') {
+        isVerified = 1;
+      }
+    }
+
     if (!userId) {
       let guest = await db.get("SELECT id FROM users WHERE email = 'guest@taxclearance.com'");
-      userId = guest ? guest.id : 0; // Assuming guest is created when question is asked
+      if (!guest) {
+        const r = await db.run("INSERT INTO users (username, email, password_hash, display_name, role) VALUES ('guest_user', 'guest@taxclearance.com', 'none', 'Guest', 'user')");
+        userId = r.lastInsertRowid;
+      } else {
+        userId = guest.id;
+      }
     }
 
     await db.run(
-      'INSERT INTO answers (question_id, user_id, content) VALUES (?, ?, ?)',
-      [question_id, userId, content]
+      'INSERT INTO answers (question_id, user_id, content, is_verified_answer) VALUES (?, ?, ?, ?)',
+      [question_id, userId, content, isVerified]
     );
     res.redirect(`/question/${question_id}`);
   } catch (err) {

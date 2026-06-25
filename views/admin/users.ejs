@@ -1,0 +1,78 @@
+<%- include('../partials/head') %>
+
+<div style="display: flex; min-height: 100vh; background: var(--navy-900);">
+  <%- include('../partials/admin_sidebar') %>
+
+  <div style="flex: 1; padding: 2rem; overflow-y: auto;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+          <h1 style="font-family: var(--font-display); font-size: 2rem; color: var(--white); margin: 0;">Registered Users</h1>
+          <p style="color: var(--gray-400); margin-top: 0.5rem;">Manage and view all accounts (Total: <%= total %>)</p>
+        </div>
+      </div>
+
+      <div style="background: var(--navy-800); border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,0.05); overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; color: var(--gray-300);">
+          <thead>
+            <tr style="background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left;">
+              <th style="padding: 1rem 1.5rem; font-weight: 600; color: var(--white);">ID</th>
+              <th style="padding: 1rem 1.5rem; font-weight: 600; color: var(--white);">Name / Username</th>
+              <th style="padding: 1rem 1.5rem; font-weight: 600; color: var(--white);">Email</th>
+              <th style="padding: 1rem 1.5rem; font-weight: 600; color: var(--white);">Role</th>
+              <th style="padding: 1rem 1.5rem; font-weight: 600; color: var(--white);">Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (users.length > 0) { %>
+              <% users.forEach(u => { %>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.02); transition: background 0.2s;">
+                  <td style="padding: 1rem 1.5rem;"><%= u.id %></td>
+                  <td style="padding: 1rem 1.5rem;">
+                    <div style="color: var(--white); font-weight: 500;"><%= u.display_name || u.username %></div>
+                    <div style="font-size: 0.8rem; color: var(--gray-500);">@<%= u.username %></div>
+                  </td>
+                  <td style="padding: 1rem 1.5rem;"><%= u.email %></td>
+                  <td style="padding: 1rem 1.5rem;">
+                    <span style="padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; background: <%= u.role === 'admin' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)' %>; color: <%= u.role === 'admin' ? 'var(--indigo-400)' : 'var(--gray-300)' %>;">
+                      <%= u.role %>
+                    </span>
+                  </td>
+                  <td style="padding: 1rem 1.5rem; font-size: 0.9rem; color: var(--gray-400);">
+                    <%= new Date(u.created_at).toLocaleDateString() %>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="5" style="padding: 2rem; text-align: center; color: var(--gray-500);">No users found.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+          <div style="padding: 1rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+            <div style="color: var(--gray-400); font-size: 0.9rem;">
+              Showing page <%= currentPage %> of <%= totalPages %>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">Previous</a>
+              <% } %>
+              <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">Next</a>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

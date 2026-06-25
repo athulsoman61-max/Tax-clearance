@@ -34,6 +34,7 @@ const pageTitle = locals.title || 'Admin | Tax Clearance';
     </div>
     <div class="admin-nav-section">
       <div class="admin-nav-label">Engagement</div>
+      <a href="/admin/users" class="admin-nav-link <%= locals.adminPage==='users'?'active':'' %>"><span class="admin-nav-icon">👥</span> Users</a>
       <a href="/admin/comments" class="admin-nav-link <%= locals.adminPage==='comments'?'active':'' %>"><span class="admin-nav-icon">💬</span> Comments</a>
       <a href="/admin/newsletter" class="admin-nav-link <%= locals.adminPage==='newsletter'?'active':'' %>"><span class="admin-nav-icon">📬</span> Newsletter</a>
     </div>
