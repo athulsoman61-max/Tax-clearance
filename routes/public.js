@@ -224,8 +224,11 @@ Because implementation continues through IRS guidance, taxpayers and practitione
     const status = 'published';
     const reading_time = 7;
     const publish_date = new Date().toISOString();
-    const category_id = 1;
-    const author_id = 1;
+    const adminUser = await db.get("SELECT id FROM users LIMIT 1");
+    const author_id = adminUser ? adminUser.id : null;
+
+    const firstCat = await db.get("SELECT id FROM categories LIMIT 1");
+    const category_id = firstCat ? firstCat.id : null;
 
     await db.run(
       "INSERT INTO articles (title, slug, excerpt, content, featured_image, status, reading_time, publish_date, category_id, author_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
