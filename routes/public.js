@@ -236,7 +236,7 @@ Because implementation continues through IRS guidance, taxpayers and practitione
     );
     res.send("Article added successfully");
   } catch (err) {
-    next(err);
+    res.status(500).send("Error: " + err.message);
   }
 });
 
