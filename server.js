@@ -89,8 +89,6 @@ app.use((err, req, res, next) => {
 
 const { initializeDatabase, db } = require('./database/db');
 const PORT = process.env.PORT || 3000;
-const fs = require('fs');
-const path = require('path');
 
 // All known committed images in public/uploads/
 const SLUG_IMAGE_MAP = [
