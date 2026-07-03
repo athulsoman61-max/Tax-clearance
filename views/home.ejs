@@ -9,9 +9,6 @@
   width: 100%;
   overflow-x: hidden;
 }
-
-/* On desktop all sections appear in source order */
-/* On mobile, flex ordering controls visual order */
 @media (max-width: 768px) {
   .order-mobile-1 { order: 1; }
   .order-mobile-2 { order: 2; }
@@ -20,12 +17,82 @@
   .order-mobile-5 { order: 5; }
   .order-mobile-6 { order: 6; }
   .order-mobile-7 { order: 7; }
-
-  /* Action cards: 2 columns on mobile */
-  .action-cards-grid {
-    grid-template-columns: 1fr 1fr !important;
-  }
 }
+
+/* ── Scroll Carousel Wrapper ──────────────────────────────────── */
+.carousel-wrapper {
+  position: relative;
+}
+/* Fade-out right edge indicating more content */
+.carousel-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 1.5rem;
+  width: 60px;
+  background: linear-gradient(to right, transparent, var(--navy));
+  pointer-events: none;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  z-index: 2;
+}
+
+/* Scroll arrow buttons */
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--indigo);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  transition: opacity 0.2s, transform 0.2s;
+  opacity: 0.9;
+  font-size: 1rem;
+  line-height: 1;
+}
+.scroll-btn:hover { opacity: 1; transform: translateY(-60%) scale(1.1); }
+.scroll-btn.prev { left: -14px; }
+.scroll-btn.next { right: -14px; }
+.scroll-btn.hidden { opacity: 0; pointer-events: none; }
+
+/* Dot indicators */
+.scroll-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 0.5rem;
+}
+.scroll-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--gray-500);
+  transition: background 0.25s, transform 0.25s;
+  cursor: pointer;
+}
+.scroll-dot.active {
+  background: var(--indigo);
+  transform: scale(1.35);
+}
+
+/* Swipe hint label */
+.swipe-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--gray-500);
+  margin-bottom: 0.6rem;
+}
+.swipe-hint svg { opacity: 0.6; }
+@media (min-width: 769px) { .swipe-hint { display: none; } }
+
 
 /* ── App-like Glance Carousel ─────────────────────────────────── */
 .glance-section { margin-bottom: 0; }
@@ -176,115 +243,147 @@
 <!-- ② Top News Carousel (mobile order 2) -->
 <div class="container order-mobile-2" style="margin-top: 0;">
   <div class="glance-section" id="articleCarousel">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;">
       <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--white);">Top News</h2>
       <a href="/articles" style="color: var(--indigo-400); font-weight: 600; font-size: 0.85rem;">View All →</a>
     </div>
-    <div class="glance-track">
-      <% articles.slice(0, 8).forEach((article, i) => { %>
-        <div class="glance-card">
-          <a href="/article/<%= article.slug %>" style="display: block; position: relative;">
-            <div class="glance-card-img-wrapper">
-              <% if (article.featured_image) { %>
-                <% const imgPath = article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image; %>
-                <img src="<%= imgPath %>" class="glance-card-img" alt="<%= article.title %>" loading="lazy">
-              <% } else { %>
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;"><%= article.category_icon || '📋' %></div>
-              <% } %>
-              <div class="glance-card-num"><%= (i + 1).toString().padStart(2, '0') %></div>
-            </div>
-          </a>
-          <div class="glance-card-body">
-            <div style="margin-bottom: 0.5rem;">
-              <span style="color:<%= article.category_color %>; font-size: 0.72rem; font-weight: 700; background: <%= article.category_color %>22; padding: 0.2rem 0.5rem; border-radius: 4px;"><%= article.category_name || 'General' %></span>
-            </div>
-            <h3 style="font-size: 1rem; line-height: 1.4; margin: 0 0 0.5rem 0; flex: 1;">
-              <a href="/article/<%= article.slug %>" style="color: var(--white);"><%= article.title %></a>
-            </h3>
-            <div style="font-size: 0.78rem; color: var(--gray-400);">
-              <span><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) %></span>
+    <div class="swipe-hint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Swipe to see more articles
+    </div>
+    <div class="carousel-wrapper" id="newsCarouselWrapper">
+      <button class="scroll-btn prev hidden" id="newsPrev" aria-label="Previous">&#8249;</button>
+      <button class="scroll-btn next" id="newsNext" aria-label="Next">&#8250;</button>
+      <div class="glance-track" id="newsTrack">
+        <% articles.slice(0, 8).forEach((article, i) => { %>
+          <div class="glance-card">
+            <a href="/article/<%= article.slug %>" style="display: block; position: relative;">
+              <div class="glance-card-img-wrapper">
+                <% if (article.featured_image) { %>
+                  <% const imgPath = article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image; %>
+                  <img src="<%= imgPath %>" class="glance-card-img" alt="<%= article.title %>" loading="lazy">
+                <% } else { %>
+                  <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;"><%= article.category_icon || '📋' %></div>
+                <% } %>
+                <div class="glance-card-num"><%= (i + 1).toString().padStart(2, '0') %></div>
+              </div>
+            </a>
+            <div class="glance-card-body">
+              <div style="margin-bottom: 0.5rem;">
+                <span style="color:<%= article.category_color %>; font-size: 0.72rem; font-weight: 700; background: <%= article.category_color %>22; padding: 0.2rem 0.5rem; border-radius: 4px;"><%= article.category_name || 'General' %></span>
+              </div>
+              <h3 style="font-size: 1rem; line-height: 1.4; margin: 0 0 0.5rem 0; flex: 1;">
+                <a href="/article/<%= article.slug %>" style="color: var(--white);"><%= article.title %></a>
+              </h3>
+              <div style="font-size: 0.78rem; color: var(--gray-400);">
+                <span><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) %></span>
+              </div>
             </div>
           </div>
-        </div>
+        <% }); %>
+      </div>
+    </div>
+    <div class="scroll-dots" id="newsDots">
+      <% articles.slice(0, 8).forEach((_, i) => { %>
+        <div class="scroll-dot <%= i === 0 ? 'active' : '' %>" data-track="newsTrack" data-index="<%= i %>"></div>
       <% }); %>
     </div>
   </div>
 </div>
 
-<!-- ③ Action Cards (mobile order 3) — visible on ALL screen sizes -->
+<!-- ③ Action Cards (mobile order 3) — horizontal scroll on mobile -->
 <div class="container order-mobile-3" style="margin-top: 1.5rem;">
-  <div class="action-cards-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
-    <a href="/articles" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
-      <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Read Articles</h3>
-        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Tax & finance guides</p>
-      </div>
-    </a>
-    <a href="/questions/new" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
-      <img src="/images/card_ask_questions.png" alt="Ask Questions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Ask Questions</h3>
-        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Get expert answers</p>
-      </div>
-    </a>
-    <a href="/community" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
-      <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Discussions</h3>
-        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Join the community</p>
-      </div>
-    </a>
-    <a href="/experts" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
-      <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Experts</h3>
-        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Verified EAs & CPAs</p>
-      </div>
-    </a>
+  <div style="overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; padding-bottom: 0.5rem;">
+    <div style="display: flex; gap: 0.85rem; min-width: max-content;">
+      <a href="/articles" style="background: var(--navy-700); padding: 0.9rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.65rem; text-decoration: none; min-width: 150px; flex-shrink: 0;">
+        <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 38px; height: 38px; object-fit: contain; flex-shrink: 0;">
+        <div>
+          <h3 style="color: var(--white); font-size: 0.88rem; margin: 0 0 0.15rem 0; font-weight: 700; white-space: nowrap;">Read Articles</h3>
+          <p style="color: var(--gray-400); font-size: 0.68rem; margin: 0; white-space: nowrap;">Tax &amp; finance guides</p>
+        </div>
+      </a>
+      <a href="/questions/new" style="background: var(--navy-700); padding: 0.9rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.65rem; text-decoration: none; min-width: 150px; flex-shrink: 0;">
+        <img src="/images/card_ask_questions.png" alt="Ask Questions" style="width: 38px; height: 38px; object-fit: contain; flex-shrink: 0;">
+        <div>
+          <h3 style="color: var(--white); font-size: 0.88rem; margin: 0 0 0.15rem 0; font-weight: 700; white-space: nowrap;">Ask Questions</h3>
+          <p style="color: var(--gray-400); font-size: 0.68rem; margin: 0; white-space: nowrap;">Get expert answers</p>
+        </div>
+      </a>
+      <a href="/community" style="background: var(--navy-700); padding: 0.9rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.65rem; text-decoration: none; min-width: 150px; flex-shrink: 0;">
+        <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 38px; height: 38px; object-fit: contain; flex-shrink: 0;">
+        <div>
+          <h3 style="color: var(--white); font-size: 0.88rem; margin: 0 0 0.15rem 0; font-weight: 700; white-space: nowrap;">Discussions</h3>
+          <p style="color: var(--gray-400); font-size: 0.68rem; margin: 0; white-space: nowrap;">Join the community</p>
+        </div>
+      </a>
+      <a href="/experts" style="background: var(--navy-700); padding: 0.9rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.65rem; text-decoration: none; min-width: 150px; flex-shrink: 0;">
+        <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 38px; height: 38px; object-fit: contain; flex-shrink: 0;">
+        <div>
+          <h3 style="color: var(--white); font-size: 0.88rem; margin: 0 0 0.15rem 0; font-weight: 700; white-space: nowrap;">Experts</h3>
+          <p style="color: var(--gray-400); font-size: 0.68rem; margin: 0; white-space: nowrap;">Verified EAs &amp; CPAs</p>
+        </div>
+      </a>
+    </div>
   </div>
 </div>
 
 <!-- ④ Community Discussions (mobile order 4) -->
 <div class="container order-mobile-4" style="margin-top: 2rem;">
   <div class="glance-section">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;">
       <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--white);">Recent Discussions</h2>
       <a href="/community" style="color: var(--indigo-400); font-weight: 600; font-size: 0.85rem;">Community →</a>
     </div>
-    <div class="glance-track">
-      <div class="glance-community-card" style="justify-content: center; align-items: center; text-align: center; border-left: 4px dashed var(--indigo-400); background: rgba(99,102,241,0.05);">
-        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💬</div>
-        <h3 style="font-size: 1.05rem; color: var(--white); margin: 0;">Have a tax question?</h3>
-        <p style="font-size: 0.82rem; color: var(--gray-400); margin: 0.5rem 0 1rem 0;">Get answers from verified experts and the community.</p>
-        <a href="/questions/new" class="btn btn-primary btn-sm" style="width: 100%;">Ask a Question</a>
-      </div>
-      <% if (recentQuestions && recentQuestions.length > 0) { %>
-        <% recentQuestions.slice(0, 6).forEach(q => { %>
-          <div class="glance-community-card">
-            <div style="display: flex; gap: 1rem; align-items: flex-start;">
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); border-radius: var(--radius-sm); padding: 0.5rem; min-width: 46px;">
-                <span style="font-size: 1.1rem; font-weight: 700; color: var(--indigo-400); line-height: 1;"><%= q.answer_count %></span>
-                <span style="font-size: 0.62rem; color: var(--gray-400); text-transform: uppercase; margin-top: 0.25rem;">Ans</span>
-              </div>
-              <div style="flex: 1; min-width: 0;">
-                <div style="margin-bottom: 0.4rem;">
-                  <span style="background:<%= q.category_color || '#6366f1' %>22;color:<%= q.category_color || '#6366f1' %>; padding: 0.15rem 0.4rem; font-size: 0.68rem; border-radius: 4px; font-weight: 600;">
-                    <%= q.category_name || 'General' %>
-                  </span>
+    <div class="swipe-hint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Swipe to browse discussions
+    </div>
+    <div class="carousel-wrapper" id="discCarouselWrapper">
+      <button class="scroll-btn prev hidden" id="discPrev" aria-label="Previous">&#8249;</button>
+      <button class="scroll-btn next" id="discNext" aria-label="Next">&#8250;</button>
+      <div class="glance-track" id="discTrack">
+        <div class="glance-community-card" style="justify-content: center; align-items: center; text-align: center; border-left: 4px dashed var(--indigo-400); background: rgba(99,102,241,0.05);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">💬</div>
+          <h3 style="font-size: 1.05rem; color: var(--white); margin: 0;">Have a tax question?</h3>
+          <p style="font-size: 0.82rem; color: var(--gray-400); margin: 0.5rem 0 1rem 0;">Get answers from verified experts and the community.</p>
+          <a href="/questions/new" class="btn btn-primary btn-sm" style="width: 100%;">Ask a Question</a>
+        </div>
+        <% if (recentQuestions && recentQuestions.length > 0) { %>
+          <% recentQuestions.slice(0, 6).forEach(q => { %>
+            <div class="glance-community-card">
+              <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); border-radius: var(--radius-sm); padding: 0.5rem; min-width: 46px;">
+                  <span style="font-size: 1.1rem; font-weight: 700; color: var(--indigo-400); line-height: 1;"><%= q.answer_count %></span>
+                  <span style="font-size: 0.62rem; color: var(--gray-400); text-transform: uppercase; margin-top: 0.25rem;">Ans</span>
                 </div>
-                <h3 style="font-size: 0.95rem; line-height: 1.35; margin: 0 0 0.4rem 0;">
-                  <a href="/question/<%= q.id %>" style="color: var(--white);"><%= q.title %></a>
-                </h3>
-                <div style="font-size: 0.78rem; color: var(--gray-400);">by <%= q.is_anonymous ? 'Anonymous' : (q.author_name || 'User') %></div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="margin-bottom: 0.4rem;">
+                    <span style="background:<%= q.category_color || '#6366f1' %>22;color:<%= q.category_color || '#6366f1' %>; padding: 0.15rem 0.4rem; font-size: 0.68rem; border-radius: 4px; font-weight: 600;">
+                      <%= q.category_name || 'General' %>
+                    </span>
+                  </div>
+                  <h3 style="font-size: 0.95rem; line-height: 1.35; margin: 0 0 0.4rem 0;">
+                    <a href="/question/<%= q.id %>" style="color: var(--white);"><%= q.title %></a>
+                  </h3>
+                  <div style="font-size: 0.78rem; color: var(--gray-400);">by <%= q.is_anonymous ? 'Anonymous' : (q.author_name || 'User') %></div>
+                </div>
               </div>
             </div>
-          </div>
+          <% }); %>
+        <% } %>
+      </div>
+    </div>
+    <div class="scroll-dots" id="discDots">
+      <div class="scroll-dot active" data-track="discTrack" data-index="0"></div>
+      <% if (recentQuestions && recentQuestions.length > 0) { %>
+        <% recentQuestions.slice(0, 6).forEach((_, i) => { %>
+          <div class="scroll-dot" data-track="discTrack" data-index="<%= i+1 %>"></div>
         <% }); %>
       <% } %>
     </div>
   </div>
 </div>
+
 
 <!-- ⑤ IRS Updates Ticker (mobile order 5) -->
 <% if (irsUpdates && irsUpdates.length > 0) { %>
@@ -388,3 +487,68 @@
 
 </div><%- include('partials/footer') %>
 <%- include('partials/scripts') %>
+
+<script>
+// ── Carousel scroll controls ──────────────────────────────────────
+function initCarousel(trackId, prevBtnId, nextBtnId, dotsId) {
+  const track = document.getElementById(trackId);
+  const prev  = document.getElementById(prevBtnId);
+  const next  = document.getElementById(nextBtnId);
+  const dotsEl = document.getElementById(dotsId);
+  if (!track || !next) return;
+
+  const dots = dotsEl ? Array.from(dotsEl.querySelectorAll('.scroll-dot')) : [];
+
+  function getCardWidth() {
+    const card = track.firstElementChild;
+    if (!card) return 280;
+    return card.offsetWidth + 20; // card + gap
+  }
+
+  function updateButtons() {
+    const atStart = track.scrollLeft <= 8;
+    const atEnd   = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
+    if (prev) prev.classList.toggle('hidden', atStart);
+    if (next) next.classList.toggle('hidden', atEnd);
+  }
+
+  function updateDots() {
+    const cw = getCardWidth();
+    const idx = Math.round(track.scrollLeft / cw);
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+
+  if (prev) prev.addEventListener('click', () => {
+    track.scrollBy({ left: -getCardWidth(), behavior: 'smooth' });
+  });
+  next.addEventListener('click', () => {
+    track.scrollBy({ left: getCardWidth(), behavior: 'smooth' });
+  });
+
+  track.addEventListener('scroll', () => { updateButtons(); updateDots(); });
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      track.scrollTo({ left: getCardWidth() * i, behavior: 'smooth' });
+    });
+  });
+
+  updateButtons();
+}
+
+// Also handle dot clicks via delegation (for dynamically rendered dots)
+document.querySelectorAll('.scroll-dot').forEach(dot => {
+  dot.addEventListener('click', function() {
+    const trackId = this.dataset.track;
+    const idx     = parseInt(this.dataset.index);
+    const track   = document.getElementById(trackId);
+    if (!track) return;
+    const card = track.firstElementChild;
+    const cw   = card ? card.offsetWidth + 20 : 280;
+    track.scrollTo({ left: cw * idx, behavior: 'smooth' });
+  });
+});
+
+initCarousel('newsTrack', 'newsPrev', 'newsNext', 'newsDots');
+initCarousel('discTrack', 'discPrev', 'discNext', 'discDots');
+</script>
