@@ -40,7 +40,8 @@
 <div class="article-hero">
   <% if (article.featured_image) { %>
   <div class="article-hero-img-wrap">
-    <img src="<%= article.featured_image %>" alt="<%= article.featured_image_alt || article.title %>" class="article-hero-img" loading="eager">
+    <% const heroImgPath = article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image; %>
+    <img src="<%= heroImgPath %>" alt="<%= article.featured_image_alt || article.title %>" class="article-hero-img" loading="eager">
     <div class="article-hero-overlay"></div>
   </div>
   <% } %>
@@ -212,7 +213,8 @@
         <% related.forEach(r => { %>
         <a href="/article/<%= r.slug %>" class="related-card">
           <% if (r.featured_image) { %>
-          <img src="<%= r.featured_image %>" alt="<%= r.title %>" class="related-card-img" loading="lazy">
+          <% const relImgPath = r.featured_image.startsWith('/') || r.featured_image.startsWith('http') ? r.featured_image : '/images/' + r.featured_image; %>
+          <img src="<%= relImgPath %>" alt="<%= r.title %>" class="related-card-img" loading="lazy">
           <% } %>
           <div class="related-card-body">
             <span class="article-card-cat" style="background:<%= r.category_color %>22;color:<%= r.category_color %>;font-size:0.68rem;padding:0.15rem 0.5rem"><%= r.category_name %></span>

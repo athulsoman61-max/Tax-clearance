@@ -168,7 +168,8 @@
           <a href="/article/<%= article.slug %>" style="display: block; position: relative;">
             <div class="glance-card-img-wrapper">
               <% if (article.featured_image) { %>
-                <img src="<%= article.featured_image %>" class="glance-card-img" alt="<%= article.title %>" loading="lazy">
+                <% const imgPath = article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image; %>
+                <img src="<%= imgPath %>" class="glance-card-img" alt="<%= article.title %>" loading="lazy">
               <% } else { %>
                 <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;"><%= article.category_icon || '📋' %></div>
               <% } %>
