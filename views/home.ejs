@@ -67,7 +67,7 @@
 <div class="container order-mobile-5" style="margin-top: 1.5rem;">
   <div class="irs-ticker">
     <span class="ticker-label">🔴 IRS</span>
-    <div class="ticker-items">
+    <div class="ticker-items" style="flex: 1; overflow: hidden; white-space: nowrap; min-width: 0;">
       <div class="ticker-track">
         <% irsUpdates.forEach(u => { %>
         <a href="/article/<%= u.slug %>" class="ticker-item"><%= u.title %></a>
