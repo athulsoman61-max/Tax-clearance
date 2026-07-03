@@ -117,7 +117,9 @@ const SLUG_IMAGE_MAP = [
 
 function fileExists(imgPath) {
   try {
-    return fs.existsSync(path.join(__dirname, 'public', imgPath));
+    // Strip leading slash so path.join doesn't treat it as an absolute path root
+    const normalizedPath = imgPath.startsWith('/') ? imgPath.slice(1) : imgPath;
+    return fs.existsSync(path.join(__dirname, 'public', normalizedPath));
   } catch { return false; }
 }
 
