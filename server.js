@@ -89,42 +89,59 @@ app.use((err, req, res, next) => {
 
 const { initializeDatabase, db } = require('./database/db');
 const PORT = process.env.PORT || 3000;
+const fs = require('fs');
+const path = require('path');
 
-// Image path migration: map known article slugs to committed image files
-const IMAGE_FIXES = [
-  { match: 'june-jobs-report',          image: '/uploads/june_jobs_report.png' },
-  { match: 'us-job-growth',             image: '/uploads/june_jobs_report.png' },
-  { match: 'irs-safe-harbor',           image: '/uploads/irs_safe_harbor_photo.png' },
-  { match: 'treasury-irs-safe-harbor',  image: '/uploads/irs_safe_harbor_photo.png' },
-  { match: 'trump-account',             image: '/uploads/trump_account_tax.png' },
-  { match: 'working-families-tax-cuts', image: '/uploads/trump_account_tax.png' },
-  { match: 'property-tax-relief',       image: '/uploads/property_tax_relief_photo.png' },
-  { match: 'counties-opt-out',          image: '/uploads/property_tax_relief_photo.png' },
-  { match: 'ai-risks',                  image: '/uploads/irs_ai_risks_photo.png' },
-  { match: 'circular-230',              image: '/uploads/irs_ai_risks_photo.png' },
-  { match: 'charitable-contribution',   image: '/uploads/charitable_contributions.png' },
-  { match: 'stacking-charitable',       image: '/uploads/charitable_contributions.png' },
-  { match: 'obbba',                     image: '/uploads/obbba_tax_bill.png' },
-  { match: 'digital-services-tax',      image: '/uploads/digital_tax_concept.png' },
-  { match: 'polestar',                  image: '/uploads/polestar_ev_ban.png' },
+// All known committed images in public/uploads/
+const SLUG_IMAGE_MAP = [
+  { slugPart: 'june-jobs',              image: '/uploads/june_jobs_report.png' },
+  { slugPart: 'us-job-growth',          image: '/uploads/june_jobs_report.png' },
+  { slugPart: 'jobs-report',            image: '/uploads/june_jobs_report.png' },
+  { slugPart: 'irs-safe-harbor',        image: '/uploads/irs_safe_harbor_photo.png' },
+  { slugPart: 'trump-account',          image: '/uploads/trump_account_tax.png' },
+  { slugPart: 'working-families',       image: '/uploads/trump_account_tax.png' },
+  { slugPart: 'property-tax',           image: '/uploads/property_tax_relief_photo.png' },
+  { slugPart: 'counties-opt-out',       image: '/uploads/property_tax_relief_photo.png' },
+  { slugPart: 'opt-out',                image: '/uploads/property_tax_relief_photo.png' },
+  { slugPart: 'ai-risk',                image: '/uploads/irs_ai_risks_photo.png' },
+  { slugPart: 'circular-230',           image: '/uploads/irs_ai_risks_photo.png' },
+  { slugPart: 'charitable',             image: '/uploads/charitable_contributions.png' },
+  { slugPart: 'obbba',                  image: '/uploads/obbba_tax_bill.png' },
+  { slugPart: 'big-beautiful',          image: '/uploads/obbba_tax_bill.png' },
+  { slugPart: 'digital-service',        image: '/uploads/digital_tax_concept.png' },
+  { slugPart: 'dst',                    image: '/uploads/digital_tax_concept.png' },
+  { slugPart: 'polestar',               image: '/uploads/polestar_ev_ban.png' },
+  { slugPart: 'gift-tax',               image: '/uploads/gift_tax_safe_harbor_2026.png' },
+  { slugPart: 'advocate',               image: '/uploads/advocate_report_2026.png' },
 ];
+
+function fileExists(imgPath) {
+  try {
+    return fs.existsSync(path.join(__dirname, 'public', imgPath));
+  } catch { return false; }
+}
 
 async function fixImagePaths() {
   try {
-    const articles = await db.all("SELECT id, slug, featured_image FROM articles WHERE featured_image IS NOT NULL");
+    const articles = await db.all('SELECT id, slug, featured_image FROM articles');
+    let fixed = 0;
     for (const article of articles) {
-      // Fix if image path has old random timestamp format OR points to a missing /images/ path
-      const needsFix = !article.featured_image || 
-        article.featured_image.match(/\/uploads\/\d{13}-\d+/) ||
-        (article.featured_image.startsWith('/images/') && !['obbba_tax_bill.png','digital_tax_concept.png','dst_global_map.png','dst_tariffs_trade.png','gift_tax_safe_harbor_2026.png','advocate_report_2026.png','polestar_ev_ban.png'].some(f => article.featured_image.includes(f)));
-      if (needsFix) {
-        const fix = IMAGE_FIXES.find(f => article.slug.includes(f.match));
-        if (fix) {
-          await db.run('UPDATE articles SET featured_image = ? WHERE id = ?', [fix.image, article.id]);
-          console.log(`🖼️  Fixed image: ${article.slug} => ${fix.image}`);
-        }
+      const cur = article.featured_image || '';
+      // Skip if current file actually exists on disk
+      if (cur && fileExists(cur)) continue;
+
+      // Find a replacement based on slug
+      const fix = SLUG_IMAGE_MAP.find(m => article.slug && article.slug.includes(m.slugPart));
+      if (fix && fileExists(fix.image)) {
+        await db.run('UPDATE articles SET featured_image = ? WHERE id = ?', [fix.image, article.id]);
+        console.log(`🖼️  Image fixed: [${article.id}] ${article.slug} => ${fix.image}`);
+        fixed++;
+      } else if (cur) {
+        console.log(`⚠️  No fix found: [${article.id}] ${article.slug} has missing image: ${cur}`);
       }
     }
+    if (fixed > 0) console.log(`✅ Fixed ${fixed} article image paths.`);
+    else console.log('✅ All article images OK.');
   } catch (e) {
     console.error('Image path migration error (non-fatal):', e.message);
   }
