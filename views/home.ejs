@@ -67,17 +67,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   transition: opacity 0.2s, transform 0.2s;
   opacity: 0.9;
-  font-size: 1.2rem;
+  font-size: 1rem;
   line-height: 1;
 }
 .scroll-btn:hover { opacity: 1; transform: translateY(-60%) scale(1.1); }
-.scroll-btn.prev { left: 8px; }
-.scroll-btn.next { right: 8px; }
+.scroll-btn.prev { left: -14px; }
+.scroll-btn.next { right: -14px; }
 .scroll-btn.hidden { opacity: 0.4; cursor: default; }
-
 
 /* Dot indicators */
 .scroll-dots {
@@ -279,7 +278,7 @@
                 <% if (article.featured_image) { %>
                   <% const imgPath = article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image; %>
                 <img src="<%= imgPath %>" class="glance-card-img" alt="<%= article.title %>" loading="lazy"
-                  onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;\'><%= article.category_icon || \"📋\" %></div>'">
+                  onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;\'><%= article.category_icon || '📋' %></div>'">
                 <% } else { %>
                   <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;"><%= article.category_icon || '📋' %></div>
                 <% } %>
@@ -312,22 +311,6 @@
 <!-- ③ Action Cards (mobile order 3) — visible on ALL screen sizes (2x2 grid on mobile) -->
 <div class="container order-mobile-3" style="margin-top: 1.5rem;">
   <div class="action-cards-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
-    <!-- Moved to Top Row: Discussions & Experts -->
-    <a href="/community" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
-      <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Discussions</h3>
-        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Join the community</p>
-      </div>
-    </a>
-    <a href="/experts" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
-      <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Experts</h3>
-        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Verified EAs &amp; CPAs</p>
-      </div>
-    </a>
-    <!-- Moved to Bottom Row: Read Articles & Ask Questions -->
     <a href="/articles" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
       <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
       <div>
@@ -340,6 +323,20 @@
       <div>
         <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Ask Questions</h3>
         <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Get expert answers</p>
+      </div>
+    </a>
+    <a href="/community" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+      <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
+      <div>
+        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Discussions</h3>
+        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Join the community</p>
+      </div>
+    </a>
+    <a href="/experts" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+      <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
+      <div>
+        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Experts</h3>
+        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Verified EAs &amp; CPAs</p>
       </div>
     </a>
   </div>
