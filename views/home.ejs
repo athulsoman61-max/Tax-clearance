@@ -1,21 +1,169 @@
 <%- include('partials/head') %>
 <%- include('partials/navbar') %>
+
 <style>
-  .home-layout-wrapper { display: flex; flex-direction: column; }
-  @media (max-width: 768px) {
-    .order-mobile-1 { order: 1; }
-    .order-mobile-2 { order: 2; }
-    .order-mobile-3 { order: 3; }
-    .order-mobile-4 { order: 4; }
-    .order-mobile-5 { order: 5; }
-    .order-mobile-6 { order: 6; }
-    .order-mobile-7 { order: 7; }
+/* ── Home page layout & ordering ─────────────────────────────── */
+.home-layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* On desktop all sections appear in source order */
+/* On mobile, flex ordering controls visual order */
+@media (max-width: 768px) {
+  .order-mobile-1 { order: 1; }
+  .order-mobile-2 { order: 2; }
+  .order-mobile-3 { order: 3; }
+  .order-mobile-4 { order: 4; }
+  .order-mobile-5 { order: 5; }
+  .order-mobile-6 { order: 6; }
+  .order-mobile-7 { order: 7; }
+
+  /* Action cards: 2 columns on mobile */
+  .action-cards-grid {
+    grid-template-columns: 1fr 1fr !important;
   }
+}
+
+/* ── App-like Glance Carousel ─────────────────────────────────── */
+.glance-section { margin-bottom: 0; }
+.glance-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 1.25rem;
+  padding-bottom: 1.5rem;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.glance-track::-webkit-scrollbar { display: none; }
+
+.glance-card {
+  scroll-snap-align: start;
+  flex: 0 0 82%;
+  max-width: 340px;
+  background: var(--navy-700);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.glance-card-img-wrapper {
+  position: relative;
+  height: 175px;
+  width: 100%;
+  background: var(--navy-600);
+  flex-shrink: 0;
+}
+.glance-card-img { width: 100%; height: 100%; object-fit: cover; }
+.glance-card-body { padding: 1rem; display: flex; flex-direction: column; flex: 1; }
+.glance-card-num {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  color: white;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.glance-community-card {
+  flex: 0 0 82%;
+  max-width: 340px;
+  background: var(--navy-700);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--indigo);
+}
+
+/* ── Category Pills ───────────────────────────────────────────── */
+.cat-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.cat-pill {
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.08);
+  color: var(--gray-300);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.cat-pill:hover, .cat-pill.active {
+  background: var(--indigo-light);
+  border-color: var(--indigo);
+  color: var(--indigo-400);
+}
+
+/* ── Main 2-col layout (desktop) ──────────────────────────────── */
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2.5rem;
+  align-items: start;
+  padding-bottom: 4rem;
+}
+@media (max-width: 1100px) {
+  .home-layout { grid-template-columns: 1fr; }
+  .sidebar { position: static !important; }
+}
+
+.article-feed { display: flex; flex-direction: column; gap: 1.5rem; }
+.sidebar { position: sticky; top: calc(var(--nav-height) + 1.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
+
+.sidebar-widget {
+  background: var(--navy-700);
+  border: 1px solid rgba(0,0,0,0.07);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
+.newsletter-widget {
+  background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.08) 100%);
+  border-color: rgba(99,102,241,0.2);
+  text-align: center;
+}
+.newsletter-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.newsletter-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+.newsletter-sub { font-size: 0.82rem; color: var(--gray-400); margin-bottom: 1rem; line-height: 1.5; }
+.newsletter-form-vertical { display: flex; flex-direction: column; }
+
+.sidebar-cats { display: flex; flex-direction: column; gap: 0.25rem; }
+.sidebar-cat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  color: var(--gray-300);
+  font-size: 0.875rem;
+}
+.sidebar-cat:hover { background: rgba(0,0,0,0.05); color: var(--white); }
+.sidebar-cat-icon { width: 30px; height: 30px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+.sidebar-cat-name { flex: 1; font-weight: 500; }
+.sidebar-cat-count { font-size: 0.75rem; color: var(--gray-600); }
 </style>
 
 <div class="home-layout-wrapper">
 
-<!-- Mini Header -->
+<!-- ① Mini Header (mobile order 1) -->
 <div class="container order-mobile-1" style="padding-top: calc(var(--nav-height) + 1.5rem); margin-bottom: 1.5rem;">
   <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
     <div>
@@ -24,143 +172,12 @@
     </div>
   </div>
 </div>
-<!-- Action Cards (What Can You Do Here?) -->
-<div class="container order-mobile-3" style="margin-top: -1rem; position: relative; z-index: 10;">
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-    <!-- Card 1 -->
-    <a href="/articles" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
-      <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 50px; height: 50px; object-fit: contain;">
-      <div style="text-align: left;">
-        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 0.25rem;">Read Articles</h3>
-        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Tax & finance guides.</p>
-      </div>
-    </a>
-    <!-- Card 2 -->
-    <a href="/questions/new" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
-      <img src="/images/card_ask_questions.png" alt="Ask Questions" style="width: 50px; height: 50px; object-fit: contain;">
-      <div style="text-align: left;">
-        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 0.25rem;">Ask Questions</h3>
-        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Get expert answers.</p>
-      </div>
-    </a>
-    <!-- Card 3 -->
-    <a href="/community" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
-      <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 50px; height: 50px; object-fit: contain;">
-      <div style="text-align: left;">
-        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 0.25rem;">Discussions</h3>
-        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Wealth building tips.</p>
-      </div>
-    </a>
-    <!-- Card 4 -->
-    <a href="/experts" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 1rem;">
-      <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 50px; height: 50px; object-fit: contain;">
-      <div style="text-align: left;">
-        <h3 style="color: var(--white); font-size: 1rem; margin-bottom: 0.25rem;">Experts</h3>
-        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Verified EAs & CPAs.</p>
-      </div>
-    </a>
-  </div>
-</div>
 
-<!-- IRS Updates Ticker -->
-<% if (irsUpdates && irsUpdates.length > 0) { %>
-<div class="container order-mobile-5" style="margin-top: 1.5rem;">
-  <div class="irs-ticker">
-    <span class="ticker-label">🔴 IRS</span>
-    <div class="ticker-items" style="flex: 1; overflow: hidden; white-space: nowrap; min-width: 0;">
-      <div class="ticker-track">
-        <% irsUpdates.forEach(u => { %>
-        <a href="/article/<%= u.slug %>" class="ticker-item"><%= u.title %></a>
-        <% }); %>
-        <% irsUpdates.forEach(u => { %>
-        <a href="/article/<%= u.slug %>" class="ticker-item"><%= u.title %></a>
-        <% }); %>
-      </div>
-    </div>
-  </div>
-</div>
-<% } %>
-
-<!-- Category Pills -->
-<div class="container order-mobile-6" style="margin-top:2rem;">
-  <div class="cat-pills">
-    <a href="/" class="cat-pill <%= !locals.activeCat ? 'active' : '' %>">All</a>
-    <% categories.slice(0, 10).forEach(cat => { %>
-    <a href="/category/<%= cat.slug %>" class="cat-pill" style="--cat-color: <%= cat.color %>">
-      <%= cat.icon %> <%= cat.name %>
-    </a>
-    <% }); %>
-  </div>
-</div>
-
-
-
-<!-- Main Layout: Stacked Glance Carousels -->
-<style>
-  /* App-like Glance styles */
-  .glance-section { margin-bottom: 2rem; }
-  .glance-track {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 1.25rem;
-    padding-bottom: 1.5rem;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .glance-track::-webkit-scrollbar { display: none; }
-  .glance-card {
-    scroll-snap-align: start;
-    flex: 0 0 85%;
-    max-width: 360px;
-    background: var(--navy-800);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: var(--shadow-md);
-    border: 1px solid rgba(255,255,255,0.05);
-  }
-  .glance-card-img-wrapper {
-    position: relative;
-    height: 180px;
-    width: 100%;
-    background: var(--navy-900);
-  }
-  .glance-card-img { width: 100%; height: 100%; object-fit: cover; }
-  .glance-card-body { padding: 1.25rem; display: flex; flex-direction: column; flex: 1; }
-  .glance-card-num {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(4px);
-    color: white;
-    font-weight: 800;
-    font-size: 1.2rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--radius-sm);
-  }
-  .glance-community-card {
-    flex: 0 0 85%;
-    max-width: 360px;
-    background: var(--navy-800);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    scroll-snap-align: start;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    box-shadow: var(--shadow-md);
-    border-left: 4px solid var(--indigo);
-  }
-</style>
-
-<div class="container order-mobile-2" style="margin-top: 1.5rem;">
-  <!-- Top Section: Latest Articles (Glance) -->
+<!-- ② Top News Carousel (mobile order 2) -->
+<div class="container order-mobile-2" style="margin-top: 0;">
   <div class="glance-section" id="articleCarousel">
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
-      <h2 style="font-size: 1.5rem; font-weight: 800; margin: 0; color: var(--white);">Top News</h2>
+      <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--white);">Top News</h2>
       <a href="/articles" style="color: var(--indigo-400); font-weight: 600; font-size: 0.85rem;">View All →</a>
     </div>
     <div class="glance-track">
@@ -179,12 +196,12 @@
           </a>
           <div class="glance-card-body">
             <div style="margin-bottom: 0.5rem;">
-              <span style="color:<%= article.category_color %>; font-size: 0.75rem; font-weight: 700; background: <%= article.category_color %>22; padding: 0.2rem 0.5rem; border-radius: 4px;"><%= article.category_name || 'General' %></span>
+              <span style="color:<%= article.category_color %>; font-size: 0.72rem; font-weight: 700; background: <%= article.category_color %>22; padding: 0.2rem 0.5rem; border-radius: 4px;"><%= article.category_name || 'General' %></span>
             </div>
-            <h3 style="font-size: 1.15rem; line-height: 1.4; margin: 0 0 0.5rem 0; flex: 1;">
+            <h3 style="font-size: 1rem; line-height: 1.4; margin: 0 0 0.5rem 0; flex: 1;">
               <a href="/article/<%= article.slug %>" style="color: var(--white);"><%= article.title %></a>
             </h3>
-            <div style="font-size: 0.8rem; color: var(--gray-400); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.78rem; color: var(--gray-400);">
               <span><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) %></span>
             </div>
           </div>
@@ -194,437 +211,180 @@
   </div>
 </div>
 
-<!-- Bottom Section: Community Discussions (Glance) -->
-<div class="container order-mobile-4" style="margin-top: 1.5rem;">
+<!-- ③ Action Cards (mobile order 3) — visible on ALL screen sizes -->
+<div class="container order-mobile-3" style="margin-top: 1.5rem;">
+  <div class="action-cards-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+    <a href="/articles" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+      <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
+      <div>
+        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Read Articles</h3>
+        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Tax & finance guides</p>
+      </div>
+    </a>
+    <a href="/questions/new" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+      <img src="/images/card_ask_questions.png" alt="Ask Questions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
+      <div>
+        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Ask Questions</h3>
+        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Get expert answers</p>
+      </div>
+    </a>
+    <a href="/community" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+      <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
+      <div>
+        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Discussions</h3>
+        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Join the community</p>
+      </div>
+    </a>
+    <a href="/experts" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+      <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
+      <div>
+        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Experts</h3>
+        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Verified EAs & CPAs</p>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- ④ Community Discussions (mobile order 4) -->
+<div class="container order-mobile-4" style="margin-top: 2rem;">
   <div class="glance-section">
     <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
-      <h2 style="font-size: 1.5rem; font-weight: 800; margin: 0; color: var(--white);">Recent Discussions</h2>
+      <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--white);">Recent Discussions</h2>
       <a href="/community" style="color: var(--indigo-400); font-weight: 600; font-size: 0.85rem;">Community →</a>
     </div>
     <div class="glance-track">
       <div class="glance-community-card" style="justify-content: center; align-items: center; text-align: center; border-left: 4px dashed var(--indigo-400); background: rgba(99,102,241,0.05);">
         <div style="font-size: 2rem; margin-bottom: 0.5rem;">💬</div>
-        <h3 style="font-size: 1.1rem; color: var(--white); margin: 0;">Have a tax question?</h3>
-        <p style="font-size: 0.85rem; color: var(--gray-400); margin: 0.5rem 0 1rem 0;">Get answers from verified experts and the community.</p>
+        <h3 style="font-size: 1.05rem; color: var(--white); margin: 0;">Have a tax question?</h3>
+        <p style="font-size: 0.82rem; color: var(--gray-400); margin: 0.5rem 0 1rem 0;">Get answers from verified experts and the community.</p>
         <a href="/questions/new" class="btn btn-primary btn-sm" style="width: 100%;">Ask a Question</a>
       </div>
       <% if (recentQuestions && recentQuestions.length > 0) { %>
         <% recentQuestions.slice(0, 6).forEach(q => { %>
           <div class="glance-community-card">
             <div style="display: flex; gap: 1rem; align-items: flex-start;">
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.2); border-radius: var(--radius-sm); padding: 0.5rem; min-width: 50px;">
-                <span style="font-size: 1.2rem; font-weight: 700; color: var(--indigo-400); line-height: 1;"><%= q.answer_count %></span>
-                <span style="font-size: 0.65rem; color: var(--gray-400); text-transform: uppercase; margin-top: 0.25rem;">Ans</span>
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); border-radius: var(--radius-sm); padding: 0.5rem; min-width: 46px;">
+                <span style="font-size: 1.1rem; font-weight: 700; color: var(--indigo-400); line-height: 1;"><%= q.answer_count %></span>
+                <span style="font-size: 0.62rem; color: var(--gray-400); text-transform: uppercase; margin-top: 0.25rem;">Ans</span>
               </div>
-              <div style="flex: 1;">
+              <div style="flex: 1; min-width: 0;">
                 <div style="margin-bottom: 0.4rem;">
-                  <span style="background:<%= q.category_color || '#6366f1' %>22;color:<%= q.category_color || '#6366f1' %>; padding: 0.15rem 0.4rem; font-size: 0.7rem; border-radius: 4px; font-weight: 600;">
+                  <span style="background:<%= q.category_color || '#6366f1' %>22;color:<%= q.category_color || '#6366f1' %>; padding: 0.15rem 0.4rem; font-size: 0.68rem; border-radius: 4px; font-weight: 600;">
                     <%= q.category_name || 'General' %>
                   </span>
                 </div>
-                <h3 style="font-size: 1.05rem; line-height: 1.35; margin: 0 0 0.5rem 0;">
+                <h3 style="font-size: 0.95rem; line-height: 1.35; margin: 0 0 0.4rem 0;">
                   <a href="/question/<%= q.id %>" style="color: var(--white);"><%= q.title %></a>
                 </h3>
-                <div style="font-size: 0.8rem; color: var(--gray-400);">by <%= q.is_anonymous ? 'Anonymous' : (q.author_name || 'User') %></div>
+                <div style="font-size: 0.78rem; color: var(--gray-400);">by <%= q.is_anonymous ? 'Anonymous' : (q.author_name || 'User') %></div>
               </div>
             </div>
-            <% if (q.image_url) { %>
-              <div style="height: 120px; width: 100%; border-radius: var(--radius-sm); overflow: hidden; margin-top: auto;">
-                <img src="<%= q.image_url %>" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;">
-              </div>
-            <% } %>
           </div>
         <% }); %>
       <% } %>
     </div>
   </div>
 </div>
-<!-- Sidebar section (Newsletter & Categories) -->
-<div class="container order-mobile-7" style="margin-top: 2rem;">
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-    <!-- Newsletter -->
-    <div class="sidebar-widget reveal newsletter-widget">
-      <div class="newsletter-icon">📬</div>
-      <h3 class="newsletter-title">Free Tax Updates</h3>
-      <p class="newsletter-sub">Get the latest IRS changes and tax tips delivered to your inbox — free.</p>
-      <form class="newsletter-form-vertical" id="sidebarNewsletter">
-        <input type="text" name="name" placeholder="Your name" class="newsletter-input" style="margin-bottom:0.5rem;">
-        <input type="email" name="email" placeholder="your@email.com" class="newsletter-input" required>
-        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5rem;">Subscribe Free</button>
-        <p style="font-size:0.72rem;color:var(--gray-600);text-align:center;margin-top:0.5rem;">No spam. Unsubscribe anytime.</p>
-      </form>
-    </div>
 
-    <!-- Categories -->
-    <div class="sidebar-widget reveal">
-      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;">
-        <div class="section-title-accent"></div>
-        Browse Categories
-      </div>
-      <div class="sidebar-cats">
-        <% categories.forEach(cat => { %>
-        <a href="/category/<%= cat.slug %>" class="sidebar-cat">
-          <span class="sidebar-cat-icon" style="background:<%= cat.color %>22;color:<%= cat.color %>"><%= cat.icon %></span>
-          <span class="sidebar-cat-name"><%= cat.name %></span>
-          <span class="sidebar-cat-count"><%= cat.article_count || 0 %></span>
-        </a>
+<!-- ⑤ IRS Updates Ticker (mobile order 5) -->
+<% if (irsUpdates && irsUpdates.length > 0) { %>
+<div class="container order-mobile-5" style="margin-top: 1.5rem;">
+  <div class="irs-ticker">
+    <span class="ticker-label">🔴 IRS</span>
+    <div class="ticker-items" style="flex: 1; overflow: hidden; min-width: 0;">
+      <div class="ticker-track">
+        <% irsUpdates.forEach(u => { %>
+        <a href="/article/<%= u.slug %>" class="ticker-item"><%= u.title %></a>
+        <% }); %>
+        <% irsUpdates.forEach(u => { %>
+        <a href="/article/<%= u.slug %>" class="ticker-item"><%= u.title %></a>
         <% }); %>
       </div>
     </div>
   </div>
 </div>
+<% } %>
+
+<!-- ⑥ Category Pills (mobile order 6) -->
+<div class="container order-mobile-6" style="margin-top: 2rem;">
+  <div class="cat-pills">
+    <a href="/" class="cat-pill <%= !locals.activeCat ? 'active' : '' %>">All</a>
+    <% categories.slice(0, 10).forEach(cat => { %>
+    <a href="/category/<%= cat.slug %>" class="cat-pill" style="--cat-color: <%= cat.color %>">
+      <%= cat.icon %> <%= cat.name %>
+    </a>
+    <% }); %>
+  </div>
 </div>
 
-<style>
-/* Home page specific styles */
-.hero-section {
-  position: relative;
-  min-height: 75vh;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-  padding-top: var(--nav-height);
-}
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background: var(--gradient-hero);
-  background-size: cover;
-  background-position: center;
-}
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(10,14,26,0.97) 0%, rgba(10,14,26,0.6) 50%, rgba(10,14,26,0.3) 100%);
-}
-.hero-content {
-  position: relative;
-  z-index: 1;
-  padding-bottom: 4rem;
-  max-width: 800px;
-}
-.hero-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-.hero-featured-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--amber);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: 800;
-  line-height: 1.15;
-  margin-bottom: 1rem;
-  color: var(--white);
-}
-.hero-excerpt {
-  font-size: 1rem;
-  color: var(--gray-300);
-  line-height: 1.7;
-  margin-bottom: 1.25rem;
-  max-width: 600px;
-}
-.hero-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--gray-400);
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-.hero-dot { color: var(--gray-600); }
-.hero-cta { font-size: 1rem; padding: 0.75rem 2rem; }
-
-.cat-pills {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.cat-pill {
-  padding: 0.4rem 0.9rem;
-  border-radius: var(--radius-full);
-  font-size: 0.8rem;
-  font-weight: 500;
-  background: rgba(0,0,0,0.05);
-  border: 1px solid rgba(0,0,0,0.08);
-  color: var(--gray-300);
-  transition: var(--transition);
-  white-space: nowrap;
-}
-.cat-pill:hover, .cat-pill.active {
-  background: var(--indigo-light);
-  border-color: var(--indigo);
-  color: var(--indigo-400);
-}
-
-.home-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
-  align-items: start;
-  padding-bottom: 4rem;
-}
-
-.article-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.sidebar { position: sticky; top: calc(var(--nav-height) + 1.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
-
-.sidebar-widget {
-  background: var(--navy-700);
-  border: 1px solid rgba(0,0,0,0.07);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-}
-
-.newsletter-widget {
-  background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.08) 100%);
-  border-color: rgba(99,102,241,0.2);
-  text-align: center;
-}
-.newsletter-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-.newsletter-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
-.newsletter-sub { font-size: 0.82rem; color: var(--gray-400); margin-bottom: 1rem; line-height: 1.5; }
-.newsletter-form-vertical { display: flex; flex-direction: column; }
-
-.trending-list { display: flex; flex-direction: column; gap: 0; }
-.trending-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.875rem;
-  padding: 0.875rem 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  transition: var(--transition);
-}
-.trending-item:last-child { border-bottom: none; }
-.trending-item:hover .trending-title { color: var(--indigo-400); }
-.trending-num { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: rgba(0,0,0,0.1); min-width: 2rem; }
-.trending-title { font-size: 0.86rem; font-weight: 500; color: var(--white); line-height: 1.4; margin-bottom: 0.3rem; transition: var(--transition); }
-.trending-meta { display: flex; align-items: center; gap: 0.25rem; }
-
-.sidebar-cats { display: flex; flex-direction: column; gap: 0.25rem; }
-.sidebar-cat {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.6rem;
-  border-radius: var(--radius-sm);
-  transition: var(--transition);
-  color: var(--gray-300);
-  font-size: 0.875rem;
-}
-.sidebar-cat:hover { background: rgba(0,0,0,0.05); color: var(--white); }
-.sidebar-cat-icon { width: 30px; height: 30px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
-.sidebar-cat-name { flex: 1; font-weight: 500; }
-.sidebar-cat-count { font-size: 0.75rem; color: var(--gray-600); }
-
-@media (max-width: 1100px) {
-<!-- Newsletter -->
-    <div class="sidebar-widget reveal newsletter-widget">
-      <div class="newsletter-icon">📬</div>
-      <h3 class="newsletter-title">Free Tax Updates</h3>
-      <p class="newsletter-sub">Get the latest IRS changes and tax tips delivered to your inbox — free.</p>
-      <form class="newsletter-form-vertical" id="sidebarNewsletter">
-        <input type="text" name="name" placeholder="Your name" class="newsletter-input" style="margin-bottom:0.5rem;">
-        <input type="email" name="email" placeholder="your@email.com" class="newsletter-input" required>
-        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5rem;">Subscribe Free</button>
-        <p style="font-size:0.72rem;color:var(--gray-600);text-align:center;margin-top:0.5rem;">No spam. Unsubscribe anytime.</p>
-      </form>
-    </div>
-
-    <!-- Categories -->
-    <div class="sidebar-widget reveal">
-      <div class="section-title" style="font-size:1rem;margin-bottom:1rem;">
-        <div class="section-title-accent"></div>
-        Browse Categories
-      </div>
-      <div class="sidebar-cats">
-        <% categories.forEach(cat => { %>
-        <a href="/category/<%= cat.slug %>" class="sidebar-cat">
-          <span class="sidebar-cat-icon" style="background:<%= cat.color %>22;color:<%= cat.color %>"><%= cat.icon %></span>
-          <span class="sidebar-cat-name"><%= cat.name %></span>
-          <span class="sidebar-cat-count"><%= cat.article_count || 0 %></span>
-        </a>
+<!-- ⑦ Main Article Feed + Sidebar (mobile order 7 - comes after key content on mobile) -->
+<div class="container order-mobile-7" style="margin-top: 2rem;">
+  <div class="home-layout">
+    <!-- Article Feed -->
+    <main class="article-feed">
+      <% if (articles && articles.length > 0) { %>
+        <% articles.forEach(article => { %>
+        <% const feedImg = article.featured_image ? (article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image) : null; %>
+        <article class="article-card reveal" style="background: var(--navy-700); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.06); display: flex; flex-direction: column;">
+          <% if (feedImg) { %>
+          <a href="/article/<%= article.slug %>" style="display: block; height: 200px; overflow: hidden; flex-shrink: 0;">
+            <img src="<%= feedImg %>" alt="<%= article.title %>" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+          </a>
+          <% } %>
+          <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column;">
+            <div style="margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span class="article-card-cat" style="background:<%= article.category_color %>22;color:<%= article.category_color %>;font-size:0.7rem;padding:0.2rem 0.6rem;border-radius:4px;font-weight:700;"><%= article.category_name || 'General' %></span>
+              <span style="font-size: 0.75rem; color: var(--gray-400);"><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) %></span>
+            </div>
+            <h2 style="font-size: 1.15rem; font-weight: 700; line-height: 1.4; margin: 0 0 0.6rem 0;">
+              <a href="/article/<%= article.slug %>" style="color: var(--white);"><%= article.title %></a>
+            </h2>
+            <% if (article.excerpt) { %>
+            <p style="font-size: 0.88rem; color: var(--gray-400); line-height: 1.6; margin: 0 0 1rem 0; flex: 1;"><%= article.excerpt.substring(0, 150) %>...</p>
+            <% } %>
+            <a href="/article/<%= article.slug %>" style="color: var(--indigo-400); font-size: 0.82rem; font-weight: 600;">Read more →</a>
+          </div>
+        </article>
         <% }); %>
+      <% } else { %>
+        <p style="color: var(--gray-400); text-align: center; padding: 3rem;">No articles yet. Check back soon!</p>
+      <% } %>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Newsletter -->
+      <div class="sidebar-widget reveal newsletter-widget">
+        <div class="newsletter-icon">📬</div>
+        <h3 class="newsletter-title">Free Tax Updates</h3>
+        <p class="newsletter-sub">Get the latest IRS changes and tax tips delivered to your inbox — free.</p>
+        <form class="newsletter-form-vertical" id="sidebarNewsletter">
+          <input type="text" name="name" placeholder="Your name" class="newsletter-input" style="margin-bottom:0.5rem;">
+          <input type="email" name="email" placeholder="your@email.com" class="newsletter-input" required>
+          <button type="submit" class="btn btn-primary" style="width:100%;margin-top:0.5rem;">Subscribe Free</button>
+          <p style="font-size:0.72rem;color:var(--gray-600);text-align:center;margin-top:0.5rem;">No spam. Unsubscribe anytime.</p>
+        </form>
       </div>
-    </div>
 
-  </aside>
+      <!-- Categories -->
+      <div class="sidebar-widget reveal">
+        <div class="section-title" style="font-size:1rem;margin-bottom:1rem;">
+          <div class="section-title-accent"></div>
+          Browse Categories
+        </div>
+        <div class="sidebar-cats">
+          <% categories.forEach(cat => { %>
+          <a href="/category/<%= cat.slug %>" class="sidebar-cat">
+            <span class="sidebar-cat-icon" style="background:<%= cat.color %>22;color:<%= cat.color %>"><%= cat.icon %></span>
+            <span class="sidebar-cat-name"><%= cat.name %></span>
+            <span class="sidebar-cat-count"><%= cat.article_count || 0 %></span>
+          </a>
+          <% }); %>
+        </div>
+      </div>
+    </aside>
+  </div>
 </div>
 
-<style>
-/* Home page specific styles */
-.hero-section {
-  position: relative;
-  min-height: 75vh;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-  padding-top: var(--nav-height);
-}
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background: var(--gradient-hero);
-  background-size: cover;
-  background-position: center;
-}
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(10,14,26,0.97) 0%, rgba(10,14,26,0.6) 50%, rgba(10,14,26,0.3) 100%);
-}
-.hero-content {
-  position: relative;
-  z-index: 1;
-  padding-bottom: 4rem;
-  max-width: 800px;
-}
-.hero-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-.hero-featured-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--amber);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: 800;
-  line-height: 1.15;
-  margin-bottom: 1rem;
-  color: var(--white);
-}
-.hero-excerpt {
-  font-size: 1rem;
-  color: var(--gray-300);
-  line-height: 1.7;
-  margin-bottom: 1.25rem;
-  max-width: 600px;
-}
-.hero-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--gray-400);
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-}
-.hero-dot { color: var(--gray-600); }
-.hero-cta { font-size: 1rem; padding: 0.75rem 2rem; }
-
-.cat-pills {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.cat-pill {
-  padding: 0.4rem 0.9rem;
-  border-radius: var(--radius-full);
-  font-size: 0.8rem;
-  font-weight: 500;
-  background: rgba(0,0,0,0.05);
-  border: 1px solid rgba(0,0,0,0.08);
-  color: var(--gray-300);
-  transition: var(--transition);
-  white-space: nowrap;
-}
-.cat-pill:hover, .cat-pill.active {
-  background: var(--indigo-light);
-  border-color: var(--indigo);
-  color: var(--indigo-400);
-}
-
-.home-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2.5rem;
-  align-items: start;
-  padding-bottom: 4rem;
-}
-
-.article-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.sidebar { position: sticky; top: calc(var(--nav-height) + 1.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
-
-.sidebar-widget {
-  background: var(--navy-700);
-  border: 1px solid rgba(0,0,0,0.07);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-}
-
-.newsletter-widget {
-  background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.08) 100%);
-  border-color: rgba(99,102,241,0.2);
-  text-align: center;
-}
-.newsletter-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-.newsletter-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
-.newsletter-sub { font-size: 0.82rem; color: var(--gray-400); margin-bottom: 1rem; line-height: 1.5; }
-.newsletter-form-vertical { display: flex; flex-direction: column; }
-
-.trending-list { display: flex; flex-direction: column; gap: 0; }
-.trending-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.875rem;
-  padding: 0.875rem 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  transition: var(--transition);
-}
-.trending-item:last-child { border-bottom: none; }
-.trending-item:hover .trending-title { color: var(--indigo-400); }
-.trending-num { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: rgba(0,0,0,0.1); min-width: 2rem; }
-.trending-title { font-size: 0.86rem; font-weight: 500; color: var(--white); line-height: 1.4; margin-bottom: 0.3rem; transition: var(--transition); }
-.trending-meta { display: flex; align-items: center; gap: 0.25rem; }
-
-.sidebar-cats { display: flex; flex-direction: column; gap: 0.25rem; }
-.sidebar-cat {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.6rem;
-  border-radius: var(--radius-sm);
-  transition: var(--transition);
-  color: var(--gray-300);
-  font-size: 0.875rem;
-}
-.sidebar-cat:hover { background: rgba(0,0,0,0.05); color: var(--white); }
-.sidebar-cat-icon { width: 30px; height: 30px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
-.sidebar-cat-name { flex: 1; font-weight: 500; }
-.sidebar-cat-count { font-size: 0.75rem; color: var(--gray-600); }
-
-@media (max-width: 1100px) {
-  .home-layout { grid-template-columns: 1fr; }
-  .sidebar { position: static; }
-}
-</style>
-
-</div>
-<%- include('partials/footer') %>
+</div><%- include('partials/footer') %>
 <%- include('partials/scripts') %>
