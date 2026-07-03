@@ -17,7 +17,23 @@
   .order-mobile-5 { order: 5; }
   .order-mobile-6 { order: 6; }
   .order-mobile-7 { order: 7; }
+
+  /* Action Cards fit 2x2 on mobile */
+  .action-cards-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.75rem !important;
+  }
+  .action-card {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 0.8rem 0.5rem !important;
+    gap: 0.4rem !important;
+  }
+  .action-card img { width: 36px !important; height: 36px !important; margin: 0 auto !important; }
+  .action-card h3 { font-size: 0.9rem !important; white-space: normal !important; margin: 0 !important; }
+  .action-card p { display: none !important; } /* Hide description on mobile to save space */
 }
+
 
 /* ── Scroll Carousel Wrapper ──────────────────────────────────── */
 .carousel-wrapper {
@@ -60,7 +76,7 @@
 .scroll-btn:hover { opacity: 1; transform: translateY(-60%) scale(1.1); }
 .scroll-btn.prev { left: -14px; }
 .scroll-btn.next { right: -14px; }
-.scroll-btn.hidden { opacity: 0; pointer-events: none; }
+.scroll-btn.hidden { opacity: 0.4; cursor: default; }
 
 /* Dot indicators */
 .scroll-dots {
@@ -292,31 +308,31 @@
   </div>
 </div>
 
-<!-- ③ Action Cards (mobile order 3) — visible on ALL screen sizes -->
+<!-- ③ Action Cards (mobile order 3) — visible on ALL screen sizes (2x2 grid on mobile) -->
 <div class="container order-mobile-3" style="margin-top: 1.5rem;">
   <div class="action-cards-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
-    <a href="/articles" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+    <a href="/articles" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
       <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
       <div>
         <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Read Articles</h3>
         <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Tax &amp; finance guides</p>
       </div>
     </a>
-    <a href="/questions/new" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+    <a href="/questions/new" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
       <img src="/images/card_ask_questions.png" alt="Ask Questions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
       <div>
         <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Ask Questions</h3>
         <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Get expert answers</p>
       </div>
     </a>
-    <a href="/community" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+    <a href="/community" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
       <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
       <div>
         <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Discussions</h3>
         <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Join the community</p>
       </div>
     </a>
-    <a href="/experts" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+    <a href="/experts" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
       <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
       <div>
         <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Experts</h3>
@@ -506,9 +522,10 @@ function initCarousel(trackId, prevBtnId, nextBtnId, dotsId) {
   }
 
   function updateButtons() {
-    // Arrows are now visible full time per user request
-    if (prev) prev.classList.remove('hidden');
-    if (next) next.classList.remove('hidden');
+    const atStart = track.scrollLeft <= 8;
+    const atEnd   = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
+    if (prev) prev.classList.toggle('hidden', atStart);
+    if (next) next.classList.toggle('hidden', atEnd);
   }
 
   function updateDots() {
