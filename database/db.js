@@ -297,6 +297,7 @@ async function initializeDatabase() {
         seo_description: 'Complete guide to small business tax deductions for 2024 — vehicles, home office, Section 179, and more from an Enrolled Agent.',
         seo_keywords: 'small business tax deductions, business expenses, Section 179',
         views: 3102,
+      },
       {
         title: 'One Big Beautiful Bill Explained: 10 Tax Changes Every Taxpayer Should Understand in 2026',
         slug: 'one-big-beautiful-bill-explained-2026',
