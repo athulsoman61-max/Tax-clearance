@@ -26,8 +26,10 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    const name = Date.now() + '-' + Math.round(Math.random() * 1e6) + ext;
-    cb(null, name);
+    // Use sanitized original name so filenames are predictable and committable
+    const base = path.basename(file.originalname, path.extname(file.originalname))
+      .toLowerCase().replace(/[^a-z0-9_-]/g, '_').substring(0, 80);
+    cb(null, base + ext);
   }
 });
 const upload = multer({
