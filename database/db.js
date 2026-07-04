@@ -219,6 +219,59 @@ async function initializeDatabase() {
   }
   // ------------------------------------------------
 
+  // --- MIGRATION: Insert CP53E Notice Article ---
+  try {
+    const cp53Exists = await db.get("SELECT id FROM articles WHERE slug = 'irs-incorrect-cp53e-notices'");
+    if (!cp53Exists) {
+      console.log('Migrating: Adding CP53E Notice article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'irs-updates'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      const content = `<p>The IRS is actively investigating reports of erroneous <strong>CP53E notices</strong> being sent to taxpayers and is seeking examples to determine the root cause of the issue.</p>
+<h3>What is a CP53E Notice?</h3>
+<p>The CP53E notice was recently introduced by the IRS to facilitate a transition from paper checks to electronic direct deposits, aligning with Executive Order 14247. The primary purpose of the notice is to ask taxpayers to provide or update their bank account information so they can receive their tax refunds electronically.</p>
+<h3>The Problem: Erroneous Notices</h3>
+<p>While the IRS initially maintained that the notices were not sent in error, a significant number of taxpayers and tax professionals have reported receiving them under confusing circumstances. According to reports gathered by the American Institute of CPAs (AICPA), these notices have been sent to taxpayers who:</p>
+<ul>
+  <li>Did not expect a refund because they applied their overpayments to the following tax year.</li>
+  <li>Actually reported a balance due rather than a refund.</li>
+  <li>Already had valid, up-to-date direct deposit information on file with the IRS.</li>
+</ul>
+<h3>How You Can Help (and What to Do)</h3>
+<p>If you or your clients have received a CP53E notice in error—specifically cases where there was no net positive adjustment to the account or where a bank deposit wasn't rejected—the AICPA is collecting these examples to share directly with the IRS.</p>
+<p>Tax professionals and taxpayers can send examples of these incorrect notices via email to <strong>IRSServices@aicpa-cima.com</strong>.</p>
+<h3>Beware of Scams</h3>
+<p>Because of the widespread confusion surrounding these notices, scammers have unfortunately begun circulating fraudulent versions of the CP53E letter to steal banking information.</p>
+<p><strong>Safety Tips:</strong></p>
+<ul>
+  <li>Always verify your account status independently by logging into your secure IRS Online Account directly at <strong>IRS.gov</strong>.</li>
+  <li>Do not scan QR codes or click links in any unexpected tax notice you receive via email or letter.</li>
+  <li>Remember that the IRS will never ask for sensitive banking information via text message, email, or social media, nor can they update your banking details over the phone.</li>
+</ul>
+<p>Stay vigilant, and if you believe you received one of these notices in error, consider submitting it to the AICPA to help resolve this administrative glitch.</p>`;
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?)
+      `, [
+        "IRS Seeks Examples of Incorrect CP53E Notices",
+        "irs-incorrect-cp53e-notices",
+        content,
+        "Did you receive a CP53E notice in error? The IRS is investigating reports of notices sent to taxpayers who didn't expect a refund, and the AICPA is collecting examples.",
+        "irs_cp53e_notice.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        3
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed:', e);
+  }
+  // ------------------------------------------------
+
   // Check if database is already seeded
   try {
     const settingsCount = await db.get('SELECT COUNT(*) as cnt FROM settings');
