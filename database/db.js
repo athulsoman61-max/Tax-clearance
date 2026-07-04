@@ -176,6 +176,49 @@ async function initializeDatabase() {
     // Column likely already exists
   }
 
+  // --- MIGRATION: Insert Fringe Benefits Article ---
+  try {
+    const fringeExists = await db.get("SELECT id FROM articles WHERE slug = 'fringe-benefits-fica-taxes-exemption'");
+    if (!fringeExists) {
+      console.log('Migrating: Adding Fringe Benefits article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'tax-news'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      const content = `<p>When it comes to payroll taxes, employers and HR professionals often encounter a confusing crossroad: If a fringe benefit is exempt from federal income tax, does that mean it is also exempt from FICA taxes (Social Security and Medicare)?</p>
+<p>The short answer is: <strong>Not necessarily.</strong> While many tax-exempt benefits share exclusions for both income and FICA taxes, it is not a universal rule.</p>
+<h3>Different Tax Codes, Different Definitions</h3>
+<p>The core of this confusion stems from the fact that federal income tax and FICA taxes operate under completely different sections of the Internal Revenue Code (IRC). Each section carries its own definitions and list of specific exclusions.</p>
+<p>Generally, all fringe benefits are treated as taxable "wages" for both income tax and FICA purposes unless a specific tax code explicitly excludes them. However, an exclusion for federal income tax does not automatically trigger an exclusion for FICA.</p>
+<h3>Example 1: When They Don't Align</h3>
+<p>A primary example where income tax and FICA tax rules diverge is <strong>Adoption Assistance</strong>. Under IRC Section 137, qualified adoption assistance provided by an employer is excluded from an employee's gross income for federal income tax purposes. However, the definition of "wages" for FICA purposes (IRC Section 3121) does not contain a parallel exclusion. As a result, these adoption benefits remain fully subject to FICA taxes.</p>
+<h3>Example 2: When They Do Align</h3>
+<p>In many other cases, the IRS provides specific exclusions that apply across the board. For example, <strong>qualified transportation plans</strong> and <strong>employer-provided health insurance</strong> are generally excluded from both federal income tax and FICA taxes.</p>
+<h3>Takeaway for Employers</h3>
+<p>Because the rules for federal income tax and FICA tax do not always operate in sync, business owners and payroll administrators cannot assume that a benefit is exempt from FICA simply because it avoids federal income tax.</p>
+<p>It is crucial to review the specific tax code provisions for each individual benefit you offer. When in doubt, consult a qualified tax professional or refer to IRS Publication 15-B (Employer's Tax Guide to Fringe Benefits) to ensure accurate payroll tax withholding and reporting.</p>`;
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?)
+      `, [
+        "Are Fringe Benefits Exempt from FICA Taxes?",
+        "fringe-benefits-fica-taxes-exemption",
+        content,
+        "Don't assume that because a fringe benefit is exempt from federal income tax, it's also exempt from FICA taxes. The rules can differ significantly.",
+        "fringe_benefits_fica_tax.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        3
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed:', e);
+  }
+  // ------------------------------------------------
+
   // Check if database is already seeded
   try {
     const settingsCount = await db.get('SELECT COUNT(*) as cnt FROM settings');
