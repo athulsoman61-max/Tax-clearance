@@ -272,6 +272,61 @@ async function initializeDatabase() {
   }
   // ------------------------------------------------
 
+  // --- MIGRATION: Insert Charitable Contributions Article ---
+  try {
+    const charityExists = await db.get("SELECT id FROM articles WHERE slug = 'charitable-contributions-cannot-claim'");
+    if (!charityExists) {
+      console.log('Migrating: Adding Charitable Contributions article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'tax-deductions'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      const content = `<p>As tax season approaches, many taxpayers look to their charitable giving to help reduce their taxable income. However, the IRS has strict rules regarding what qualifies as a tax-deductible donation. It is common for taxpayers to assume certain expenses are deductible when, in reality, they are not.</p>
+<h3>1. Donations to Non-Qualified Organizations</h3>
+<p>To be tax-deductible, your contribution must be made to an IRS-recognized 501(c)(3) charitable organization. You <strong>cannot</strong> deduct donations made to:</p>
+<ul>
+  <li>Civic leagues and chambers of commerce</li>
+  <li>Social and sports clubs</li>
+  <li>Labor unions</li>
+  <li>Political organizations, campaigns, or candidates</li>
+</ul>
+<p>Additionally, gifts given directly to specific individuals in need—no matter how generous—are never tax-deductible.</p>
+<h3>2. The Value of Your Time or Services</h3>
+<p>If you volunteer your time at a local charity, you might think you can deduct your hourly professional rate. Unfortunately, the IRS does not allow you to deduct the value of your time, labor, or services.</p>
+<p><em>However,</em> you may be able to deduct certain out-of-pocket expenses directly related to your volunteering, such as travel costs or purchasing a required uniform that has no general utility outside of the charity work.</p>
+<h3>3. "Quid Pro Quo" Contributions</h3>
+<p>If you receive a benefit in exchange for your donation—such as buying a ticket to a charity gala, participating in a raffle, or receiving a tote bag—you generally cannot deduct the full amount you paid. The IRS requires you to subtract the fair market value of the item or benefit you received from your total donation. You can only deduct the difference.</p>
+<h3>4. Pledges and Promises</h3>
+<p>A pledge to pay a charity in the future does not count for the current tax year. You can only deduct contributions that are actually paid (whether by cash, check, or credit card) by December 31 of the tax year in question.</p>
+<h3>Common Pitfalls to Avoid</h3>
+<p>Even if your contribution qualifies, you must ensure you file correctly:</p>
+<ul>
+  <li><strong>You Must Itemize:</strong> To claim charitable deductions, you generally must itemize your deductions on Schedule A. If you take the Standard Deduction, you usually cannot claim these contributions.</li>
+  <li><strong>Keep Your Records:</strong> The IRS requires documentation for all contributions. For cash donations, you need a bank record or a written acknowledgment. For donations of $250 or more, you must have a "contemporaneous written acknowledgment" from the charity.</li>
+</ul>
+<p>Understanding these rules ahead of time can help you avoid audits and ensure you only claim the deductions you are legally entitled to.</p>`;
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?)
+      `, [
+        "Charitable Contributions You Think You Can Claim but Can't",
+        "charitable-contributions-cannot-claim",
+        content,
+        "Many taxpayers overestimate their tax-deductible charitable contributions. Learn the strict IRS rules about what actually qualifies, including non-deductible time, quid pro quo gifts, and organization types.",
+        "charitable_contributions_photo.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        4
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed:', e);
+  }
+  // ------------------------------------------------
+
   // Check if database is already seeded
   try {
     const settingsCount = await db.get('SELECT COUNT(*) as cnt FROM settings');
