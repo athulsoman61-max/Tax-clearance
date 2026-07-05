@@ -157,6 +157,22 @@ async function initializeDatabase() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )`,
+    `CREATE TABLE IF NOT EXISTS hubs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      slug TEXT UNIQUE NOT NULL,
+      description TEXT,
+      featured_image TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS hub_articles (
+      hub_id INTEGER NOT NULL,
+      article_id INTEGER NOT NULL,
+      sort_order INTEGER DEFAULT 0,
+      PRIMARY KEY (hub_id, article_id),
+      FOREIGN KEY (hub_id) REFERENCES hubs(id) ON DELETE CASCADE,
+      FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
+    )`,
     `CREATE INDEX IF NOT EXISTS idx_articles_status ON articles(status)`,
     `CREATE INDEX IF NOT EXISTS idx_articles_category ON articles(category_id)`,
     `CREATE INDEX IF NOT EXISTS idx_articles_slug ON articles(slug)`,

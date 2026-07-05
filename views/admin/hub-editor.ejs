@@ -1,0 +1,98 @@
+<% locals.adminPage = 'hubs'; %>
+<%- include('../partials/admin-head') %>
+
+<div class="editor-layout">
+  <div class="editor-main">
+    <div class="editor-title-wrap">
+      <input type="text" id="hubTitle" class="editor-title-input" placeholder="Hub Title..." value="<%= hub?.title || '' %>" form="hubForm">
+    </div>
+    <div class="editor-field" style="margin-top:1rem;">
+      <label>Slug</label>
+      <input type="text" name="slug" class="editor-input" value="<%= hub?.slug || '' %>" placeholder="e.g. schedule-e-hub" form="hubForm">
+    </div>
+    <div class="editor-field" style="margin-top:1rem;">
+      <label>Description (Short)</label>
+      <textarea name="description" class="editor-input" rows="4" form="hubForm" placeholder="Describe what readers will learn in this hub..."><%= hub?.description || '' %></textarea>
+    </div>
+
+    <!-- Hub Articles Manager -->
+    <div class="editor-card" style="margin-top:2rem;">
+      <div class="editor-card-title">📚 Hub Curriculum (Articles)</div>
+      <p style="color:var(--gray-500);font-size:0.9rem;margin-bottom:1rem;">Add existing articles to this hub and specify their reading order.</p>
+      
+      <div id="hubArticlesList">
+        <% if (locals.hubArticles && hubArticles.length > 0) { %>
+          <% hubArticles.forEach((ha, index) => { %>
+            <div class="hub-article-item" style="display:flex;gap:1rem;margin-bottom:0.5rem;align-items:center;background:var(--slate-800);padding:0.5rem;border-radius:var(--radius-md);">
+              <input type="number" name="article_order[]" value="<%= ha.sort_order || index + 1 %>" style="width:60px;" class="editor-input" form="hubForm">
+              <input type="hidden" name="article_ids[]" value="<%= ha.id %>" form="hubForm">
+              <div style="flex:1;font-weight:500;"><%= ha.title %></div>
+              <button type="button" class="admin-action-btn admin-action-danger" onclick="this.parentElement.remove()">Remove</button>
+            </div>
+          <% }); %>
+        <% } %>
+      </div>
+
+      <div style="margin-top:1.5rem; border-top:1px solid var(--slate-700); padding-top:1.5rem;">
+        <label>Add Article to Hub</label>
+        <div style="display:flex;gap:0.5rem;">
+          <select id="articleSelect" class="editor-input">
+            <option value="">-- Select an Article --</option>
+            <% (locals.allArticles || []).forEach(art => { %>
+              <option value="<%= art.id %>" data-title="<%= art.title %>"><%= art.title %></option>
+            <% }); %>
+          </select>
+          <button type="button" class="btn btn-secondary" onclick="addArticleToHub()">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="editor-sidebar">
+    <div class="editor-card">
+      <div class="editor-card-title">📤 Save Hub</div>
+      <form id="hubForm" action="/admin/hubs/save" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="<%= hub?.id || '' %>">
+        <input type="hidden" name="title" id="hiddenHubTitle" value="">
+        <input type="hidden" name="existing_featured_image" value="<%= hub?.featured_image || '' %>">
+
+        <div class="editor-field" style="margin-top:1rem;">
+          <label>Featured Image</label>
+          <% if (locals.hub?.featured_image) { %>
+            <img src="<%= hub.featured_image.startsWith('/') ? hub.featured_image : '/images/' + hub.featured_image %>" style="width:100%;border-radius:4px;margin-bottom:0.5rem;">
+          <% } %>
+          <input type="file" name="featured_image" accept="image/*" class="editor-input" style="padding:0.4rem;">
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:1rem;" onclick="document.getElementById('hiddenHubTitle').value = document.getElementById('hubTitle').value;">Save Content Hub</button>
+      </form>
+    </div>
+  </aside>
+</div>
+
+<script>
+function addArticleToHub() {
+  const select = document.getElementById('articleSelect');
+  const opt = select.options[select.selectedIndex];
+  if (!opt.value) return;
+
+  const list = document.getElementById('hubArticlesList');
+  const count = list.children.length;
+
+  const div = document.createElement('div');
+  div.className = 'hub-article-item';
+  div.style.cssText = 'display:flex;gap:1rem;margin-bottom:0.5rem;align-items:center;background:var(--slate-800);padding:0.5rem;border-radius:var(--radius-md);';
+  
+  div.innerHTML = `
+    <input type="number" name="article_order[]" value="${count + 1}" style="width:60px;" class="editor-input" form="hubForm">
+    <input type="hidden" name="article_ids[]" value="${opt.value}" form="hubForm">
+    <div style="flex:1;font-weight:500;">${opt.getAttribute('data-title')}</div>
+    <button type="button" class="admin-action-btn admin-action-danger" onclick="this.parentElement.remove()">Remove</button>
+  `;
+  
+  list.appendChild(div);
+  select.value = ''; // reset
+}
+</script>
+
+<%- include('../partials/admin-foot') %>

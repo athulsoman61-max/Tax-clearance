@@ -599,6 +599,131 @@ router.post('/change-password', authMiddleware, async (req, res, next) => {
   }
 });
 
+// --- HUBS ---
+router.get('/hubs', authMiddleware, async (req, res, next) => {
+  try {
+    const { db } = require('../database/db-turso');
+    const settings = req.app.locals.settings || {};
+    // Get all hubs with article count
+    const hubs = await db.all(`
+      SELECT h.*, COUNT(ha.article_id) as article_count 
+      FROM hubs h 
+      LEFT JOIN hub_articles ha ON h.id = ha.hub_id 
+      GROUP BY h.id 
+      ORDER BY h.created_at DESC
+    `);
+    res.render('admin/hubs', { hubs, settings, title: 'Content Hubs | Tax Clearance Admin', admin: req.admin });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/hubs/new', authMiddleware, async (req, res, next) => {
+  try {
+    const { db } = require('../database/db-turso');
+    const settings = req.app.locals.settings || {};
+    const allArticles = await db.all("SELECT id, title FROM articles ORDER BY created_at DESC");
+    res.render('admin/hub-editor', { 
+      hub: null, 
+      hubArticles: [], 
+      allArticles, 
+      settings, 
+      title: 'New Hub | Tax Clearance Admin', 
+      admin: req.admin 
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/hubs/:id/edit', authMiddleware, async (req, res, next) => {
+  try {
+    const { db } = require('../database/db-turso');
+    const settings = req.app.locals.settings || {};
+    const hub = await db.get("SELECT * FROM hubs WHERE id = ?", [req.params.id]);
+    if (!hub) return res.status(404).send('Hub not found');
+    
+    const hubArticles = await db.all(`
+      SELECT a.id, a.title, ha.sort_order 
+      FROM articles a 
+      JOIN hub_articles ha ON a.id = ha.article_id 
+      WHERE ha.hub_id = ? 
+      ORDER BY ha.sort_order ASC
+    `, [req.params.id]);
+    
+    const allArticles = await db.all("SELECT id, title FROM articles ORDER BY created_at DESC");
+    
+    res.render('admin/hub-editor', { 
+      hub, 
+      hubArticles, 
+      allArticles, 
+      settings, 
+      title: 'Edit Hub | Tax Clearance Admin', 
+      admin: req.admin 
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/hubs/save', authMiddleware, upload.single('featured_image'), async (req, res, next) => {
+  try {
+    const { db } = require('../database/db-turso');
+    const { id, title, slug, description, existing_featured_image } = req.body;
+    let featured_image = existing_featured_image || '';
+    if (req.file) {
+      featured_image = req.file.filename;
+    }
+    
+    let hubId = id;
+    if (id) {
+      await db.run(
+        "UPDATE hubs SET title=?, slug=?, description=?, featured_image=? WHERE id=?",
+        [title, slug, description, featured_image, id]
+      );
+    } else {
+      const result = await db.run(
+        "INSERT INTO hubs (title, slug, description, featured_image) VALUES (?, ?, ?, ?)",
+        [title, slug, description, featured_image]
+      );
+      hubId = result.lastID;
+    }
+
+    // Update hub articles
+    await db.run("DELETE FROM hub_articles WHERE hub_id = ?", [hubId]);
+    
+    const article_ids = req.body['article_ids[]'] || [];
+    const article_order = req.body['article_order[]'] || [];
+    
+    // Convert to array if single item
+    const ids = Array.isArray(article_ids) ? article_ids : [article_ids];
+    const orders = Array.isArray(article_order) ? article_order : [article_order];
+    
+    for (let i = 0; i < ids.length; i++) {
+      if (ids[i]) {
+        await db.run(
+          "INSERT INTO hub_articles (hub_id, article_id, sort_order) VALUES (?, ?, ?)",
+          [hubId, ids[i], orders[i] || (i + 1)]
+        );
+      }
+    }
+    
+    res.redirect('/admin/hubs');
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/hubs/:id/delete', authMiddleware, async (req, res, next) => {
+  try {
+    const { db } = require('../database/db-turso');
+    await db.run("DELETE FROM hubs WHERE id = ?", [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ─── Tags ─────────────────────────────────────────────────────────────────────
 router.get('/tags', authMiddleware, async (req, res, next) => {
   try {

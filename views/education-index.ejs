@@ -1,0 +1,41 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<div class="category-hero" style="background:var(--navy-900); color:var(--white);">
+  <div class="category-hero-bg" style="background: linear-gradient(135deg, var(--indigo-500) 0%, transparent 60%); opacity: 0.1;"></div>
+  <div class="container category-hero-inner">
+    <div>
+      <div class="category-hero-label" style="color:var(--indigo-400);">Tax Education</div>
+      <h1 class="category-hero-title">Content Hubs</h1>
+      <p class="category-hero-desc">Master complex tax topics with our curated, step-by-step educational guides.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="margin-top:3rem; padding-bottom:5rem;">
+  <% if (hubs.length === 0) { %>
+    <div class="empty-state">
+      <h2 style="font-family:var(--font-display);margin-bottom:0.5rem;">No hubs available yet</h2>
+      <p style="color:var(--gray-500);">We are currently building our curriculum. Check back soon!</p>
+    </div>
+  <% } else { %>
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+      <% hubs.forEach(hub => { %>
+        <a href="/education/<%= hub.slug %>" style="text-decoration:none; display:block; background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-lg); overflow:hidden; transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+          <% if (hub.featured_image) { %>
+            <div style="height:160px; background:url('<%= hub.featured_image.startsWith('/') ? hub.featured_image : '/images/' + hub.featured_image %>') center/cover;"></div>
+          <% } else { %>
+            <div style="height:160px; background:var(--navy-800); display:flex; align-items:center; justify-content:center; color:white; font-size:3rem;">📚</div>
+          <% } %>
+          <div style="padding:1.5rem;">
+            <div style="color:var(--indigo-600); font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;"><%= hub.article_count %> Chapters</div>
+            <h2 style="font-family:var(--font-display); font-size:1.25rem; color:var(--gray-900); margin-bottom:0.5rem;"><%= hub.title %></h2>
+            <p style="color:var(--gray-600); font-size:0.95rem; line-height:1.5; margin-bottom:0;"><%= hub.description %></p>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,59 @@
+<% locals.adminPage = 'hubs'; %>
+<%- include('../partials/admin-head') %>
+
+<div class="admin-header-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+  <h2>📚 Content Hubs</h2>
+  <a href="/admin/hubs/new" class="btn btn-primary">➕ Create New Hub</a>
+</div>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Hub Details</th>
+        <th>Articles</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (hubs && hubs.length === 0) { %>
+        <tr>
+          <td colspan="4" style="text-align:center;color:var(--gray-500);padding:2rem;">No hubs created yet.</td>
+        </tr>
+      <% } %>
+      <% (hubs || []).forEach(hub => { %>
+        <tr>
+          <td>
+            <div style="font-weight:600;color:var(--white);margin-bottom:0.2rem;"><%= hub.title %></div>
+            <div style="color:var(--gray-500);font-size:0.85rem;">/<%= hub.slug %></div>
+          </td>
+          <td>
+            <span class="admin-badge" style="background:rgba(99,102,241,0.2);color:#818cf8;"><%= hub.article_count || 0 %> Articles</span>
+          </td>
+          <td style="color:var(--gray-400);font-size:0.9rem;"><%= new Date(hub.created_at).toLocaleDateString() %></td>
+          <td>
+            <div style="display:flex;gap:0.5rem;">
+              <a href="/admin/hubs/<%= hub.id %>/edit" class="admin-action-btn admin-action-primary">Edit</a>
+              <button class="admin-action-btn admin-action-danger" onclick="deleteHub(<%= hub.id %>)">Delete</button>
+            </div>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<script>
+async function deleteHub(id) {
+  if (!confirm('Are you sure you want to delete this content hub? The articles inside it will NOT be deleted.')) return;
+  const res = await fetch('/admin/hubs/' + id + '/delete', { method: 'POST' });
+  if (res.ok) {
+    location.reload();
+  } else {
+    alert('Failed to delete hub');
+  }
+}
+</script>
+
+<%- include('../partials/admin-foot') %>

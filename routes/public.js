@@ -75,6 +75,61 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// --- CONTENT HUBS ---
+router.get('/education', async (req, res, next) => {
+  try {
+    const settings = await getAllSettings();
+    const categories = await getCategories();
+    const hubs = await db.all(`
+      SELECT h.*, COUNT(ha.article_id) as article_count 
+      FROM hubs h 
+      LEFT JOIN hub_articles ha ON h.id = ha.hub_id 
+      GROUP BY h.id 
+      ORDER BY h.created_at DESC
+    `);
+    res.render('education-index', {
+      hubs,
+      categories,
+      settings,
+      page: 'education',
+      title: 'Tax Education Hubs | ' + settings.site_name,
+      description: 'Comprehensive guides and content hubs to master tax topics.'
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/education/:slug', async (req, res, next) => {
+  try {
+    const settings = await getAllSettings();
+    const categories = await getCategories();
+    const hub = await db.get("SELECT * FROM hubs WHERE slug = ?", [req.params.slug]);
+    
+    if (!hub) return res.status(404).render('404', { settings, title: 'Hub Not Found', description: '' });
+
+    const hubArticles = await db.all(`
+      SELECT a.id, a.title, a.slug, a.excerpt, a.reading_time, ha.sort_order 
+      FROM articles a 
+      JOIN hub_articles ha ON a.id = ha.article_id 
+      WHERE ha.hub_id = ? 
+      ORDER BY ha.sort_order ASC
+    `, [hub.id]);
+
+    res.render('education-hub', {
+      hub,
+      hubArticles,
+      categories,
+      settings,
+      page: 'education',
+      title: hub.title + ' | ' + settings.site_name,
+      description: hub.description
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Article page
 router.get('/article/:slug', async (req, res, next) => {
   try {
@@ -93,7 +148,7 @@ router.get('/article/:slug', async (req, res, next) => {
     // Increment views
     const viewUpdatePromise = db.run('UPDATE articles SET views = views + 1 WHERE id = ?', [article.id]);
 
-    const [related, comments, tags, categories, relatedQuestions] = await Promise.all([
+    const [related, comments, tags, categories, relatedQuestions, hubContext] = await Promise.all([
       db.all(`
         SELECT a.id, a.title, a.slug, a.excerpt, a.featured_image, a.reading_time, a.publish_date,
                c.name as category_name, c.slug as category_slug, c.color as category_color
@@ -123,8 +178,26 @@ router.get('/article/:slug', async (req, res, next) => {
         ORDER BY q.created_at DESC
         LIMIT 3
       `, [article.category_id]),
+      db.get(`
+        SELECT h.title as hub_title, h.slug as hub_slug, ha.sort_order 
+        FROM hubs h 
+        JOIN hub_articles ha ON h.id = ha.hub_id 
+        WHERE ha.article_id = ?
+      `, [article.id]),
       viewUpdatePromise
     ]);
+    
+    let hubArticles = [];
+    if (hubContext) {
+      hubArticles = await db.all(`
+        SELECT a.title, a.slug, ha.sort_order 
+        FROM articles a 
+        JOIN hub_articles ha ON a.id = ha.article_id 
+        JOIN hubs h ON ha.hub_id = h.id 
+        WHERE h.slug = ?
+        ORDER BY ha.sort_order ASC
+      `, [hubContext.hub_slug]);
+    }
 
     res.render('article', {
       article,
@@ -133,6 +206,8 @@ router.get('/article/:slug', async (req, res, next) => {
       comments,
       tags,
       categories,
+      hubContext,
+      hubArticles,
       settings,
       page: 'article',
       query: req.query,
