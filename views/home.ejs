@@ -18,10 +18,13 @@
   .order-mobile-6 { order: 6; }
   .order-mobile-7 { order: 7; }
 
-  /* Action Cards fit 2x2 on mobile */
+  /* Action Cards fit 2x2 on mobile, plus 5th card spanning full width */
   .action-cards-grid {
     grid-template-columns: 1fr 1fr !important;
     gap: 0.75rem !important;
+  }
+  .action-card:nth-child(5) {
+    grid-column: span 2;
   }
   .action-card {
     flex-direction: column !important;
@@ -310,7 +313,7 @@
 
 <!-- ③ Action Cards (mobile order 3) — visible on ALL screen sizes (2x2 grid on mobile) -->
 <div class="container order-mobile-3" style="margin-top: 1.5rem;">
-  <div class="action-cards-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+  <div class="action-cards-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;">
     <a href="/articles" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
       <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
       <div>
@@ -337,6 +340,13 @@
       <div>
         <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Experts</h3>
         <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Verified EAs &amp; CPAs</p>
+      </div>
+    </a>
+    <a href="/education" class="action-card" style="background: var(--navy-700); padding: 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+      <img src="/images/card_tax_education.png" alt="Tax Education" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; border-radius: 8px;">
+      <div>
+        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Tax Education</h3>
+        <p style="color: var(--gray-400); font-size: 0.72rem; margin: 0;">Master tax topics</p>
       </div>
     </a>
   </div>
