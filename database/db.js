@@ -528,6 +528,177 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed:', e);
   }
+  // --- MIGRATION: Insert Schedule E Guide Article ---
+  try {
+    const scheduleEExists = await db.get("SELECT id FROM articles WHERE slug = 'schedule-e-form-1040-complete-guide-supplemental-income-loss'");
+    if (!scheduleEExists) {
+      console.log('Migrating: Adding Schedule E Guide article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'tax-filing-tips'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      const content = `<p><strong>Schedule E (Form 1040)</strong> is used to report <strong>supplemental income and loss</strong> that isn't earned from wages or a business operated as a sole proprietor.</p>
+<p>The most common use of Schedule E is reporting <strong>rental real estate income and expenses</strong>, but it's also used for income from:</p>
+<ul>
+  <li>Rental real estate</li>
+  <li>Royalties</li>
+  <li>Partnerships (Schedule K-1)</li>
+  <li>S corporations (Schedule K-1)</li>
+  <li>Estates and trusts (Schedule K-1)</li>
+  <li>Real Estate Mortgage Investment Conduits (REMICs)</li>
+</ul>
+<p>Unlike <strong>Schedule C</strong>, Schedule E generally reports <strong>passive income</strong>, meaning you're not actively running a trade or business.</p>
+
+<h2>Why Is Schedule E Important?</h2>
+<p>Schedule E helps taxpayers accurately calculate taxable income from investments and rental properties while allowing them to claim legitimate deductions.</p>
+<p>Properly completing Schedule E can:</p>
+<ul>
+  <li>Reduce your taxable income through deductible expenses</li>
+  <li>Allow depreciation deductions on rental property</li>
+  <li>Report partnership and S corporation income correctly</li>
+  <li>Track passive activity losses</li>
+  <li>Carry unused losses to future years when applicable</li>
+</ul>
+
+<h2>Who Needs to File Schedule E?</h2>
+<p>You generally need Schedule E if you:</p>
+<ul>
+  <li>✅ Own a residential rental property</li>
+  <li>✅ Own commercial rental property</li>
+  <li>✅ Receive royalty income</li>
+  <li>✅ Are a partner in a partnership</li>
+  <li>✅ Are a shareholder in an S corporation</li>
+  <li>✅ Receive income from an estate or trust</li>
+</ul>
+
+<h2>What Types of Income Are Reported?</h2>
+
+<h3>Part I – Rental Real Estate and Royalties</h3>
+<img src="/images/rental_property_passive.png" alt="Suburban Rental Property" class="article-inline-img" style="width:100%; border-radius:12px; margin:1rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+<p>Examples include:</p>
+<ul>
+  <li>Apartment rentals</li>
+  <li>Single-family rental homes</li>
+  <li>Vacation rentals (subject to IRS rules)</li>
+  <li>Commercial buildings</li>
+  <li>Land rentals</li>
+  <li>Mineral, oil, and gas royalties</li>
+  <li>Book royalties</li>
+</ul>
+
+<h3>Part II – Partnerships and S Corporations</h3>
+<img src="/images/business_partners_k1.png" alt="Business Partners Reviewing K-1" class="article-inline-img" style="width:100%; border-radius:12px; margin:1rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+<p>Report information from <strong>Schedule K-1</strong>, including:</p>
+<ul>
+  <li>Ordinary business income</li>
+  <li>Rental income</li>
+  <li>Interest income and dividends</li>
+  <li>Capital gains</li>
+  <li>Section 179 deductions</li>
+  <li>Credits</li>
+</ul>
+
+<h3>Part III – Estates and Trusts</h3>
+<p>Report amounts from <strong>Schedule K-1 (Form 1041)</strong> received as a beneficiary.</p>
+
+<h3>Part IV – REMICs</h3>
+<p>Used for reporting income or losses from REMIC residual interests.</p>
+
+<h2>Benefits of Filing Schedule E Correctly</h2>
+<h3>1. Deduct Rental Expenses</h3>
+<p>Many ordinary and necessary rental expenses are deductible, including mortgage interest, property taxes, insurance, repairs, advertising, property management fees, HOA fees, utilities, cleaning, maintenance, and legal fees.</p>
+
+<h3>2. Claim Depreciation</h3>
+<p>Depreciation is often one of the largest tax benefits for rental property owners. Instead of deducting the purchase price immediately, the cost of the building is recovered over time. This non-cash deduction can significantly reduce taxable rental income.</p>
+
+<h3>3. Offset Rental Income</h3>
+<p>Allowable expenses can reduce or eliminate taxable rental income. For example, if you have $24,000 in rental income and $18,000 in expenses, your taxable rental income is only $6,000.</p>
+
+<h3>4. Passive Loss Benefits</h3>
+<p>If your rental activity qualifies, losses may offset other income subject to IRS passive activity rules. Some taxpayers may qualify for a <strong>special allowance</strong> (subject to income limits and participation requirements), while unused passive losses may carry forward to future years.</p>
+
+<h3>5. Proper K-1 Reporting</h3>
+<p>Partners and S corporation shareholders use Schedule E to correctly report income passed through from their business entities, avoiding mismatches with IRS records.</p>
+
+<h2>Common Mistakes Taxpayers Make</h2>
+<ul>
+  <li>❌ Claiming personal expenses as rental expenses</li>
+  <li>❌ Deducting improvements as repairs instead of capitalizing them</li>
+  <li>❌ Forgetting depreciation</li>
+  <li>❌ Reporting rental activity on Schedule C instead of Schedule E</li>
+  <li>❌ Ignoring passive activity loss limitations</li>
+  <li>❌ Missing information from Schedule K-1</li>
+</ul>
+
+<h2>Schedule E vs. Schedule C</h2>
+<div style="overflow-x:auto;">
+  <table style="width:100%; border-collapse: collapse; margin-bottom: 1.5rem;">
+    <thead>
+      <tr style="background-color: var(--navy-700); color: white;">
+        <th style="padding: 10px; border: 1px solid var(--gray-600); text-align: left;">Feature</th>
+        <th style="padding: 10px; border: 1px solid var(--gray-600); text-align: left;">Schedule E</th>
+        <th style="padding: 10px; border: 1px solid var(--gray-600); text-align: left;">Schedule C</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Primary Purpose</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Rental & supplemental income</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Sole proprietorship business</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Self-Employment Tax</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Usually No</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Usually Yes</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Rental Property</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Yes</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Usually No</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Passive Activity Rules</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Apply</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Generally Do Not Apply</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Frequently Asked Questions</h2>
+<h3>Can I deduct repairs?</h3>
+<p>Yes. Ordinary repairs that keep the property in good operating condition are generally deductible. Improvements that add value or extend the property's life are typically capitalized instead.</p>
+
+<h3>Do I pay self-employment tax on rental income?</h3>
+<p>In most cases, rental income reported on Schedule E is <strong>not</strong> subject to self-employment tax. However, exceptions can apply depending on the nature of the activity and services provided.</p>
+
+<h3>What if my rental has a loss?</h3>
+<p>The loss may be limited under the passive activity rules. If it cannot be deducted in the current year, it may be carried forward.</p>
+
+<h2>Final Thoughts</h2>
+<p>Schedule E is more than just a tax form—it helps property owners and investors accurately report supplemental income while taking advantage of deductions allowed under the tax law. Proper reporting can reduce taxable income, improve compliance, and prevent costly IRS issues. Whether you own a single rental home or receive income through a partnership or S corporation, understanding Schedule E is an essential part of effective tax planning.</p>`;
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "Schedule E (Form 1040): Complete Guide to Supplemental Income and Loss",
+        "schedule-e-form-1040-complete-guide-supplemental-income-loss",
+        content,
+        "Master IRS Schedule E for rental properties, partnerships, and S-corps. Learn about deductible expenses, depreciation, passive income rules, and common reporting mistakes.",
+        "schedule_e_featured.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        11,
+        "Schedule E Form 1040: Rental & Passive Income Guide",
+        "A complete guide to IRS Schedule E (Form 1040). Learn how to report rental income, royalties, K-1s, calculate deductions, and avoid common taxpayer mistakes."
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
