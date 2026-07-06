@@ -699,6 +699,20 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed:', e);
   }
+  // --- MIGRATION: Restore Nulled Images ---
+  try {
+    const imagesToRestore = [
+      { slug: 'irs-notice-cp14-what-it-means-2026', img: 'irs_notice_cp14.png' },
+      { slug: 'house-taxwriters-approve-taxpayer-rights-bill-package-2026', img: 'taxpayer_rights_bill.png' },
+      { slug: 'new-auditor-ethics-rule-reshapes-malpractice-litigation-2026', img: 'auditor_ethics_litigation.png' },
+      { slug: 'schedule-e-form-1040-complete-guide-supplemental-income-loss', img: 'schedule_e_featured.png' }
+    ];
+    for (const item of imagesToRestore) {
+      await db.run('UPDATE articles SET featured_image = ? WHERE slug = ? AND featured_image IS NULL', [item.img, item.slug]);
+    }
+  } catch (e) {
+    console.error('Migration failed:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
