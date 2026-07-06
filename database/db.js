@@ -341,6 +341,96 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed:', e);
   }
+  // --- MIGRATION: Insert CP14 Notice Article ---
+  try {
+    const cp14Exists = await db.get("SELECT id FROM articles WHERE slug = 'irs-notice-cp14-what-it-means-2026'");
+    if (!cp14Exists) {
+      console.log('Migrating: Adding CP14 Notice article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'irs-updates'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      const content = `<p>Receiving an IRS Notice CP14 can be concerning, but in many cases, it is simply the IRS's first official bill notifying you that you owe taxes. Understanding why you received the notice and how to respond can help you avoid additional penalties and interest.</p>
+
+<h2>What Is IRS Notice CP14?</h2>
+<p>IRS Notice <strong>CP14</strong> is the <strong>first balance due notice</strong> sent by the Internal Revenue Service when your tax account shows an unpaid balance.</p>
+
+<p>The notice explains:</p>
+<ul>
+  <li>The amount of tax you owe</li>
+  <li>Penalties charged</li>
+  <li>Interest accrued</li>
+  <li>Total balance due</li>
+  <li>Payment due date</li>
+  <li>Payment options</li>
+</ul>
+
+<p>It is important to remember that CP14 is <strong>not an audit notice</strong>. It simply informs you that the IRS believes you have an outstanding tax liability that needs to be paid.</p>
+
+<h2>Why Did You Receive a CP14 Notice?</h2>
+<p>There are several common reasons why the IRS might issue a CP14 notice:</p>
+<ul>
+  <li>You filed your tax return but did not pay the full amount due.</li>
+  <li>The IRS adjusted your return, resulting in additional tax liability.</li>
+  <li>Your estimated tax payments throughout the year were insufficient.</li>
+  <li>A payment you made was returned or rejected by your bank.</li>
+  <li>You filed an extension to file, but not an extension to pay (remember, an extension to file does not grant you more time to pay).</li>
+</ul>
+
+<h2>What Information Does the Notice Include?</h2>
+<p>A typical CP14 notice contains crucial details about your account. Review this information carefully to ensure it matches your own tax records:</p>
+<ul>
+  <li><strong>Tax year involved:</strong> Ensures you know which return triggered the balance.</li>
+  <li><strong>Amount of unpaid tax:</strong> The base amount you owe.</li>
+  <li><strong>Penalty charges:</strong> Additional fees for late payment or underpayment.</li>
+  <li><strong>Interest charges:</strong> Accrued interest on the unpaid balance.</li>
+  <li><strong>Total balance due:</strong> The final amount you must pay by the deadline.</li>
+  <li><strong>Payment deadline:</strong> The date by which payment is expected.</li>
+  <li><strong>Payment instructions:</strong> Details on how to submit your payment securely.</li>
+</ul>
+
+<h2>What Should You Do After Receiving CP14?</h2>
+<h3>1. Read the Notice Carefully</h3>
+<p>Confirm that the notice is actually yours. Check your name, the last four digits of your Social Security Number, the tax year in question, the balance due, and the payment deadline.</p>
+
+<h3>2. Compare It With Your Tax Return</h3>
+<p>Review the tax return you filed for the year listed on the notice. Ask yourself:</p>
+<ul>
+  <li>Did you forget to make a payment?</li>
+  <li>Did you accidentally underpay?</li>
+  <li>Did the IRS adjust your return?</li>
+</ul>
+<p>If you agree with the notice, you should pay the balance due by the deadline to avoid further penalties and interest. You can pay online, by phone, or by mail.</p>
+
+<h3>3. What If You Disagree?</h3>
+<p>If you believe the notice is incorrect, do not ignore it. Contact the IRS using the toll-free number provided on the top right corner of your notice. Be prepared to provide supporting documentation, such as canceled checks, amended returns, or correspondence that proves your case.</p>
+
+<h3>4. If You Can't Pay in Full</h3>
+<p>If you agree with the balance but cannot afford to pay it all at once, you have options. You can apply for an IRS installment agreement (payment plan) online, request a temporary delay in collection (currently not collectible status), or in some cases, submit an Offer in Compromise.</p>
+
+<p>Ignoring a CP14 notice will not make it go away. The IRS will continue to add penalties and interest to your balance, and they may eventually take collection actions, such as issuing a tax lien or levy. Address the notice promptly to protect your financial health.</p>`;
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "IRS Notice CP14: What It Means and What to Do If You Receive It",
+        "irs-notice-cp14-what-it-means-2026",
+        content,
+        "Received an IRS Notice CP14? Learn what this balance due notice means, why you might have received it, and the exact steps you need to take to resolve it.",
+        "irs_notice_cp14.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        4,
+        "IRS Notice CP14 Explained: Steps to Take if You Owe Taxes",
+        "Received an IRS Notice CP14? Learn what this balance due notice means, why you might have received it, and the exact steps you need to take to resolve it."
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
