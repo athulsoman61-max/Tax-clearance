@@ -431,6 +431,53 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed:', e);
   }
+  // --- MIGRATION: Insert Taxpayer Rights Bill Article ---
+  try {
+    const rightsBillExists = await db.get("SELECT id FROM articles WHERE slug = 'house-taxwriters-approve-taxpayer-rights-bill-package-2026'");
+    if (!rightsBillExists) {
+      console.log('Migrating: Adding Taxpayer Rights Bill article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'tax-news'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      const content = `<p>The House Ways and Means Committee has officially approved a comprehensive package of seven bills designed to fortify taxpayer rights, streamline IRS customer service, combat persistent tax fraud, and mandate greater transparency from nonprofit hospitals. This legislative push signals a bipartisan effort to hold the IRS accountable while providing everyday taxpayers with enhanced protections.</p>
+
+<h2>Key Focus: Taxpayer Rights and IRS Service</h2>
+<p>At the center of the package is a strong emphasis on improving the taxpayer experience. Over the past few years, the IRS has faced intense scrutiny regarding backlogs, delayed refunds, and inadequate phone support. The proposed legislation seeks to mandate stricter service standards and ensure that taxpayers have reliable, timely access to assistance.</p>
+<p>Additionally, the bills introduce new safeguards to protect taxpayers from aggressive collection tactics and guarantee a more transparent audit process.</p>
+
+<h2>Combating Fraud and Identity Theft</h2>
+<p>Identity theft remains a massive hurdle for the IRS and a nightmare for victims whose refunds are delayed for months or even years. The newly approved measures aim to equip the agency with better tools to proactively identify fraudulent returns before they are processed. Furthermore, the package includes provisions to expedite the resolution process for taxpayers whose identities have been compromised.</p>
+
+<h2>Increased Transparency for Nonprofit Hospitals</h2>
+<p>In a move addressing healthcare costs, the committee also included a bill targeting nonprofit hospitals. Under current law, these institutions enjoy significant tax exemptions in exchange for providing community benefits and charity care. The new legislation would require these hospitals to increase transparency regarding their billing practices, debt collection methods, and the actual amount of charity care they provide to low-income patients.</p>
+
+<h2>What's Next?</h2>
+<p>While approval by the House taxwriters is a critical first step, the legislative package must still pass the full House of Representatives and the Senate before making its way to the President's desk. Tax professionals and advocacy groups will be watching closely to see if these measures survive the legislative gauntlet intact.</p>
+
+<p>For now, this development offers a glimmer of hope for taxpayers seeking a more responsive, fair, and secure tax administration system.</p>`;
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "House Taxwriters Approve Taxpayer Rights and Administrative Bill Package",
+        "house-taxwriters-approve-taxpayer-rights-bill-package-2026",
+        content,
+        "The House Ways and Means Committee has advanced seven bills to protect taxpayer rights, improve IRS customer service, and boost hospital transparency.",
+        "taxpayer_rights_bill.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        3,
+        "House Advances Taxpayer Rights and IRS Reform Bill Package",
+        "The House Ways and Means Committee has advanced a package of seven bills focused on protecting taxpayer rights, improving IRS services, and combating fraud."
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
