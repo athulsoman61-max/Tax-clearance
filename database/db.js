@@ -478,6 +478,56 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed:', e);
   }
+  // --- MIGRATION: Insert Auditor Ethics Article ---
+  try {
+    const ethicsArticleExists = await db.get("SELECT id FROM articles WHERE slug = 'new-auditor-ethics-rule-reshapes-malpractice-litigation-2026'");
+    if (!ethicsArticleExists) {
+      console.log('Migrating: Adding Auditor Ethics article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'tax-news'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      const content = `<p>The landscape of accounting malpractice and auditor liability is on the brink of a significant transformation. With the recent rollout of stringent new auditor ethics rules, accounting firms are facing heightened scrutiny, and legal experts predict these changes will fundamentally reshape malpractice litigation for years to come.</p>
+
+<h2>What the New Ethics Rules Entail</h2>
+<p>The revised ethical standards impose stricter requirements on auditors regarding independence, conflicts of interest, and the aggressive reporting of potential fraud. Unlike previous guidelines that offered more interpretive leeway, the new rules mandate a proactive approach. Auditors are now required to demonstrate a higher degree of professional skepticism and are explicitly obligated to report suspected non-compliance with laws and regulations (NOCLAR) much earlier in the auditing process.</p>
+
+<h2>The Direct Impact on Malpractice Litigation</h2>
+<p>Historically, accounting malpractice suits have often centered on whether an auditor missed a red flag that they "should have" seen. The new ethics rules shift this paradigm by turning previously subjective standards into concrete, enforceable mandates.</p>
+<ul>
+  <li><strong>Easier to Establish Breach of Duty:</strong> Plaintiffs in malpractice suits will likely use the new ethics rules as a strict checklist. If an auditor fails to document their professional skepticism or delays reporting a NOCLAR issue, plaintiffs can more easily argue a breach of the standard of care.</li>
+  <li><strong>Increased Discovery Burdens:</strong> Litigation will likely involve deeper dives into a firm's internal communications and quality control systems to prove whether the firm adhered to the new, rigorous independence and reporting protocols.</li>
+  <li><strong>Expansion of Liability:</strong> By requiring auditors to act on suspected non-compliance even if it doesn't directly impact the financial statements materially, the scope of what an auditor can be sued over has widened considerably.</li>
+</ul>
+
+<h2>How Accounting Firms Are Responding</h2>
+<p>In response to the shifting legal terrain, top-tier accounting firms are already overhauling their internal compliance mechanisms. Many are investing heavily in advanced audit technology to better document their decision-making processes and ensure that their teams are continuously trained on the evolving ethical boundaries.</p>
+<p>Firms are also revising their client acceptance and retention policies. If a client presents a high risk of non-compliance, auditors may be quicker to walk away rather than risk the severe malpractice liability that the new rules invite.</p>
+
+<h2>Looking Ahead</h2>
+<p>As these new ethics rules take full effect, both the accounting profession and the legal industry are bracing for a wave of precedent-setting cases. For auditors, the message is clear: the shield of "reasonable assurance" is shrinking, and the demand for absolute ethical vigilance has never been higher. For plaintiffs' attorneys, the new rules provide a sharper, more defined roadmap for pursuing malpractice claims.</p>`;
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "How the New Auditor Ethics Rule Will Reshape Malpractice Litigation",
+        "new-auditor-ethics-rule-reshapes-malpractice-litigation-2026",
+        content,
+        "Stringent new auditor ethics rules regarding independence and fraud reporting are expected to significantly shift the landscape of accounting malpractice litigation.",
+        "auditor_ethics_litigation.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        3,
+        "New Auditor Ethics Rules Reshape Malpractice Litigation",
+        "Discover how new, stringent auditor ethics rules are expanding liability and reshaping accounting malpractice litigation for firms and legal professionals."
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
