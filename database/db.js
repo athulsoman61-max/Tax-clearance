@@ -713,6 +713,36 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed:', e);
   }
+  // --- MIGRATION: Create Schedule E Hub ---
+  try {
+    const hubSlug = 'schedule-e';
+    let hub = await db.get("SELECT id FROM hubs WHERE slug = ?", [hubSlug]);
+    if (!hub) {
+      console.log('Migrating: Adding Schedule E Hub...');
+      const result = await db.run(`
+        INSERT INTO hubs (title, slug, description, featured_image) 
+        VALUES (?, ?, ?, ?)
+      `, [
+        "Schedule E",
+        hubSlug,
+        "Master the reporting of supplemental income, rental real estate, royalties, partnerships, and S-corporations on IRS Schedule E.",
+        "schedule_e_featured.png"
+      ]);
+      hub = { id: result.lastID };
+    }
+
+    // Link the article to this hub if not already linked
+    const schedEArticle = await db.get("SELECT id FROM articles WHERE slug = 'schedule-e-form-1040-complete-guide-supplemental-income-loss'");
+    if (schedEArticle && hub) {
+      const linked = await db.get("SELECT * FROM hub_articles WHERE hub_id = ? AND article_id = ?", [hub.id, schedEArticle.id]);
+      if (!linked) {
+        await db.run("INSERT INTO hub_articles (hub_id, article_id) VALUES (?, ?)", [hub.id, schedEArticle.id]);
+        console.log('Linked Schedule E article to Schedule E hub.');
+      }
+    }
+  } catch (e) {
+    console.error('Migration failed for Schedule E Hub:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
