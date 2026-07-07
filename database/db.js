@@ -933,6 +933,77 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed for Repairs vs Improvements:', e);
   }
+  // --- MIGRATION: Insert Trump Crypto Tax Article ---
+  try {
+    const trumpExists = await db.get("SELECT id FROM articles WHERE slug = 'trumps-2-2b-portfolio-driven-by-crypto-expert-taxes-2026'");
+    if (!trumpExists) {
+      console.log('Migrating: Adding Trump Crypto Tax article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'tax-news'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      
+      const content = `<p>Former President Donald Trump's financial portfolio has seen a massive surge, reportedly reaching a staggering <strong>$2.2 billion</strong>, driven largely by his ventures into the cryptocurrency space.</p>
+<p>According to recent financial disclosures, Trump's crypto-related ventures and meme coin holdings have generated an estimated <strong>$1.4 billion</strong> in income. While this represents a significant financial windfall, tax experts are warning that the resulting tax bill could be historic, potentially reaching into the hundreds of millions of dollars.</p>
+
+<h2>The Crypto Driven Surge</h2>
+<p>Unlike traditional political portfolios heavily invested in real estate, index funds, and standard equities, Trump's latest disclosure reveals a modern, highly volatile asset mix.</p>
+<p>A significant portion of the growth is attributed to digital assets, including branded meme coins, NFTs (Non-Fungible Tokens), and substantial holdings in major cryptocurrencies like Ethereum.</p>
+<p>This rapid accumulation of wealth highlights a broader trend of high-net-worth individuals diversifying into digital assets to capture exponential gains, but it brings massive tax complexities.</p>
+
+<h2>Breaking Down the Tax Implications</h2>
+<p>Generating $1.4 billion in crypto-related income isn't as simple as cashing a check. The IRS treats cryptocurrency as property, meaning every transaction, swap, or sale triggers a taxable event.</p>
+<p>Here's how experts believe the tax liabilities could break down:</p>
+
+<h3>1. Short-Term vs. Long-Term Capital Gains</h3>
+<p>If the assets were held for less than a year before being sold or swapped, the profits are subject to short-term capital gains tax. For a high earner like Trump, this falls into the highest federal income tax bracket of <strong>37%</strong>.</p>
+<p>If held for more than a year, the maximum long-term capital gains rate of <strong>20%</strong> would apply. Given the rapid rise of many meme coins, a large portion of this income is likely short-term.</p>
+
+<h3>2. Net Investment Income Tax (NIIT)</h3>
+<p>On top of the standard capital gains rate, high earners are subject to the <strong>3.8% Net Investment Income Tax (NIIT)</strong>. This would apply to almost the entirety of the crypto profits.</p>
+
+<h3>3. State and Local Taxes</h3>
+<p>Depending on residency at the time the income was realized (such as Florida, which has no state income tax, versus New York), state taxes could significantly impact the final bill.</p>
+
+<h2>Estimated Tax Bill: "Hundreds of Millions"</h2>
+<p>If a conservative estimate assumes a blend of long-term and short-term capital gains, plus the NIIT, the effective federal tax rate on the $1.4 billion could easily hover around <strong>25% to 35%</strong>.</p>
+<p>This means the federal tax liability alone could range from <strong>$350 million to over $490 million</strong>.</p>
+<p>"When you are dealing with billion-dollar crypto windfalls, the IRS scrutinizes every transaction," notes one tax analyst. "The blockchain provides a public ledger, making it very difficult to obscure the cost basis or the timing of trades."</p>
+
+<h2>What This Means for Everyday Crypto Investors</h2>
+<p>While most investors aren't dealing with billion-dollar portfolios, the underlying tax rules remain the same:</p>
+<ul>
+  <li><strong>Track Everything:</strong> The IRS requires you to report all crypto transactions, including swapping one coin for another.</li>
+  <li><strong>Understand the Holding Period:</strong> Holding an asset for over 365 days significantly reduces your tax burden.</li>
+  <li><strong>Prepare for Audits:</strong> The IRS has ramped up its enforcement on digital assets. Ensure your cost basis is well-documented.</li>
+</ul>
+
+<h2>Final Thoughts</h2>
+<p>The explosive growth of Trump's portfolio underscores the incredible wealth-generation potential of cryptocurrency. However, it also serves as a high-profile reminder that the IRS always takes its cut. As experts analyze the full scope of his financial disclosures, the looming tax bill is a stark lesson in the complexities of modern wealth management.</p>
+<blockquote style="font-style: italic; color: var(--gray-600); border-left: 4px solid var(--gray-300); padding-left: 1rem; margin-top: 1.5rem;"><strong>Disclaimer:</strong> This article is for informational purposes only and does not constitute financial, legal, or tax advice. Consult a tax professional regarding your specific situation.</blockquote>`;
+      
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "Trump's $2.2B Portfolio Driven by Crypto: Could Taxes on $1.4B Income Reach Hundreds of Millions?",
+        "trumps-2-2b-portfolio-driven-by-crypto-expert-taxes-2026",
+        content,
+        "Former President Donald Trump's financial portfolio has surged to $2.2 billion, heavily driven by cryptocurrency. Experts warn his tax bill on $1.4 billion in income could be historic.",
+        "trump_crypto_tax_featured.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        6,
+        "Trump's $2.2B Crypto Portfolio & Massive Tax Implications",
+        "An analysis of Donald Trump's $2.2B crypto-driven portfolio and why experts say his taxes on $1.4B in digital income could reach hundreds of millions of dollars."
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed for Trump Crypto Tax:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
