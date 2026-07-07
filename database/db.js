@@ -1004,6 +1004,86 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed for Trump Crypto Tax:', e);
   }
+  // --- MIGRATION: Insert FICA & Fringe Benefits Article ---
+  try {
+    const ficaExists = await db.get("SELECT id FROM articles WHERE slug = 'fringe-benefits-fica-tax-exemption-guide-2026'");
+    if (!ficaExists) {
+      console.log('Migrating: Adding FICA and Fringe Benefits article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'tax-filing-tips'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      
+      const content = `<p>Offering perks like company cars, gym memberships, or even the occasional box of donuts is a great way to attract and retain top talent. But for employers and payroll administrators, these "free" perks often come with a hidden headache: <strong>tax compliance.</strong></p>
+
+<p>One of the most common questions that plagues payroll departments is a seemingly simple one: <em>If a fringe benefit is exempt from federal income tax, does that automatically mean it is exempt from FICA (Social Security and Medicare) taxes as well?</em></p>
+
+<p>The short answer is: <strong>Usually, but not always.</strong> Let's cut through the confusion and look at how the IRS actually handles these perks.</p>
+
+<h2>The General Rule: The "Double Tax-Free" Shield</h2>
+
+<p>Here is the good news. Under the Internal Revenue Code (specifically Section 132), if a fringe benefit is explicitly excluded from an employee's gross income for federal income tax purposes, it is generally <strong>also excluded from wages for FICA and FUTA (unemployment) tax purposes.</strong></p>
+
+<p>In the payroll world, these are the holy grail of perks—completely tax-free for the employee and completely free of payroll tax matching for the employer. Some of the most popular "double tax-free" fringe benefits include:</p>
+
+<ul>
+  <li><strong>De Minimis Fringe Benefits:</strong> These are perks so small that accounting for them would be unreasonable or administratively impractical. Think occasional office snacks, holiday turkeys, or the use of the office copy machine.</li>
+  <li><strong>Working Condition Fringe Benefits:</strong> Property or services provided to an employee so they can perform their job. For example, providing a company-owned laptop or paying for an employee's professional licensing fees.</li>
+  <li><strong>Qualified Employee Discounts:</strong> Discounts on the company's own products or services, provided the discount doesn't exceed the gross profit margin.</li>
+  <li><strong>No-Additional-Cost Services:</strong> Services the employer provides to the public that are offered to employees for free (e.g., empty airline seats for airline employees).</li>
+</ul>
+
+<p>For these specific categories, if you don't have to report it as taxable income on their W-2, you don't have to withhold or pay FICA taxes on it.</p>
+
+<h2>The "Gotcha" Exceptions: Income Tax-Free, but FICA Taxable!</h2>
+
+<p>This is where payroll errors happen. The IRS has carved out specific exceptions where a benefit might be completely shielded from federal income tax withholding, but is <strong>still fully subject to FICA and FUTA taxes.</strong></p>
+
+<p>If you miss these, you could be on the hook for underpaid payroll taxes and penalties. The most notable exceptions include:</p>
+
+<h3>1. Adoption Assistance Programs</h3>
+<p>Employer-provided adoption assistance (up to the annual IRS limit) is generally excluded from an employee's gross income. It is a fantastic benefit for growing families. However, <strong>it is absolutely subject to FICA and FUTA taxes.</strong> Employers must withhold the employee's share of Social Security and Medicare taxes on these amounts and pay the employer match.</p>
+
+<h3>2. Group-Term Life Insurance Over $50,000</h3>
+<p>If you provide employees with group-term life insurance, the cost of the first $50,000 of coverage is entirely tax-free. But the cost of coverage <em>exceeding</em> $50,000 is subject to FICA taxes (specifically Social Security and Medicare), even though it may be handled differently for income tax withholding purposes depending on the setup.</p>
+
+<h2>Best Practices for Employers</h2>
+
+<p>Navigating the web of taxable and non-taxable fringe benefits requires precision. To avoid a costly audit, keep these best practices in mind:</p>
+
+<ul>
+  <li><strong>Never assume:</strong> Do not assume that just because a benefit doesn't trigger federal income tax, it is automatically exempt from payroll taxes.</li>
+  <li><strong>Check the Code:</strong> Rely on IRS Publication 15-B (Employer's Tax Guide to Fringe Benefits), which explicitly spells out the withholding requirements for every major type of fringe benefit.</li>
+  <li><strong>Audit Your Payroll Codes:</strong> Ensure your payroll software is correctly configured. A miscoded benefit can result in months of under-withheld FICA taxes, leaving the company liable to cover the shortfall.</li>
+</ul>
+
+<h2>The Bottom Line</h2>
+<p>Fringe benefits are an incredible tool for employee satisfaction, but they must be administered with care. While the tax code is generally forgiving—allowing many income-tax-free perks to escape FICA taxes as well—the exceptions are strict. When in doubt, consult with a payroll tax specialist or CPA to ensure your benefits package is as compliant as it is competitive.</p>
+
+<blockquote style="font-style: italic; color: var(--gray-600); border-left: 4px solid var(--gray-300); padding-left: 1rem; margin-top: 1.5rem;"><strong>Disclaimer:</strong> This article is for informational purposes only and does not constitute financial, legal, or tax advice. Tax laws change frequently; always consult a tax professional regarding your specific business situation.</blockquote>`;
+      
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "The Hidden Payroll Trap: Are Your Tax-Free Fringe Benefits Exempt from FICA?",
+        "fringe-benefits-fica-tax-exemption-guide-2026",
+        content,
+        "Many employers assume that if a fringe benefit is exempt from federal income tax, it's also exempt from FICA. Discover why this isn't always true and how to avoid costly payroll penalties.",
+        "fica_fringe_benefits_featured.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        5,
+        "Are Tax-Free Fringe Benefits Exempt from FICA Taxes?",
+        "Learn which tax-free fringe benefits are exempt from FICA and FUTA taxes, and which common perks (like adoption assistance) trigger unexpected payroll tax liabilities."
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed for FICA & Fringe Benefits:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
