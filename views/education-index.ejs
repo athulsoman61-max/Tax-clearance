@@ -12,7 +12,20 @@
   </div>
 </div>
 
-<div class="container" style="margin-top:3rem; padding-bottom:5rem;">
+<!-- Folder Sub-Navigation Buttons -->
+<div style="background:var(--white); border-bottom:1px solid var(--gray-200); position:sticky; top:0; z-index:10; margin-bottom: 2rem;">
+  <div class="container" style="display:flex; gap:1rem; padding:1rem 0; overflow-x:auto; align-items:center;">
+    <span style="font-weight:600; color:var(--gray-700); margin-right:0.5rem;">Topics:</span>
+    <a href="/education" class="btn btn-primary" style="border-radius:20px; padding:0.5rem 1.25rem; white-space:nowrap; font-size:0.9rem;">All Folders</a>
+    <% hubs.forEach(hub => { %>
+      <a href="/education/<%= hub.slug %>" class="btn btn-outline" style="border-radius:20px; padding:0.5rem 1.25rem; white-space:nowrap; font-size:0.9rem; border: 1px solid var(--gray-300); color:var(--gray-800); text-decoration:none;" onmouseover="this.style.background='var(--gray-100)';" onmouseout="this.style.background='transparent';">
+        📁 <%= hub.title %>
+      </a>
+    <% }); %>
+  </div>
+</div>
+
+<div class="container" style="margin-top:2rem; padding-bottom:5rem;">
   <% if (hubs.length === 0) { %>
     <div class="empty-state">
       <h2 style="font-family:var(--font-display);margin-bottom:0.5rem;">No hubs available yet</h2>
