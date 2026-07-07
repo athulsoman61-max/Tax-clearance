@@ -743,6 +743,196 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed for Schedule E Hub:', e);
   }
+  // --- MIGRATION: Insert Repairs vs Improvements Article ---
+  try {
+    const repairsExists = await db.get("SELECT id FROM articles WHERE slug = 'repairs-vs-improvements-rental-property-tax-difference-2026'");
+    if (!repairsExists) {
+      console.log('Migrating: Adding Repairs vs Improvements article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'tax-filing-tips'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      
+      const content = `<p>One of the most common mistakes rental property owners make is treating <strong>improvements</strong> as <strong>repairs</strong>.</p>
+<p>Although both involve spending money on your rental property, <strong>the IRS treats them very differently</strong>. Classifying an expense incorrectly can lead to disallowed deductions, amended returns, or even IRS penalties.</p>
+<p>Understanding the difference helps you maximize legitimate deductions while staying compliant.</p>
+
+<h2>Quick Answer</h2>
+<ul>
+  <li><strong>Repairs</strong> generally keep your property in good operating condition and are usually deductible in the year you pay for them.</li>
+  <li><strong>Improvements</strong> generally add value, restore the property, or extend its useful life. These costs are typically capitalized and recovered over time through depreciation.</li>
+</ul>
+
+<h2>What Is a Repair?</h2>
+<p>A repair keeps your rental property in its ordinary operating condition without significantly increasing its value or extending its life.</p>
+<img src="/images/minor_repair_plumbing.png" alt="Minor Plumbing Repair" class="article-inline-img" style="width:100%; border-radius:12px; margin:1rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+<h3>Common Repair Examples</h3>
+<ul>
+  <li>Fixing a leaking faucet</li>
+  <li>Repairing a broken window</li>
+  <li>Replacing a few damaged roof shingles</li>
+  <li>Patching drywall</li>
+  <li>Repairing plumbing leaks</li>
+  <li>Repainting one room after tenant damage</li>
+  <li>Replacing a broken light fixture</li>
+  <li>Repairing a damaged fence section</li>
+  <li>Servicing the HVAC system</li>
+  <li>Fixing electrical outlets</li>
+</ul>
+<p>These expenses are generally deductible in the year they are paid.</p>
+
+<h2>What Is an Improvement?</h2>
+<p>An improvement makes your property better than it was before, restores it after significant deterioration, or extends its useful life.</p>
+<img src="/images/major_improvement_kitchen.png" alt="Major Kitchen Improvement Remodel" class="article-inline-img" style="width:100%; border-radius:12px; margin:1rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+<h3>Common Improvement Examples</h3>
+<ul>
+  <li>Installing a new roof</li>
+  <li>Building a deck</li>
+  <li>Remodeling a kitchen</li>
+  <li>Remodeling a bathroom</li>
+  <li>Installing central air conditioning</li>
+  <li>Replacing all windows</li>
+  <li>Adding a garage</li>
+  <li>Installing a new HVAC system</li>
+  <li>Constructing an additional room</li>
+  <li>Replacing the entire plumbing system</li>
+</ul>
+<p>These costs generally cannot be deducted immediately. Instead, they are usually depreciated over the applicable recovery period.</p>
+
+<h2>The IRS "BAR" Test</h2>
+<p>The IRS often evaluates improvements using the <strong>BAR</strong> concept:</p>
+
+<h3>Betterment</h3>
+<p>An expense is generally a betterment if it corrects a pre-existing defect, increases the property's value, or significantly improves quality or capacity.</p>
+<p><strong>Example:</strong> Replacing old single-pane windows with modern energy-efficient windows throughout the property.</p>
+
+<h3>Adaptation</h3>
+<p>An expense generally adapts the property to a new or different use.</p>
+<p><strong>Example:</strong> Converting a residential rental into a retail storefront.</p>
+
+<h3>Restoration</h3>
+<p>An expense generally restores the property after major damage or replaces a major component.</p>
+<p><strong>Example:</strong> Replacing the entire roof after years of deterioration.</p>
+
+<h2>Repairs vs. Improvements Comparison</h2>
+<div style="overflow-x:auto;">
+  <table style="width:100%; border-collapse: collapse; margin-bottom: 1.5rem;">
+    <thead>
+      <tr style="background-color: var(--navy-700); color: white;">
+        <th style="padding: 10px; border: 1px solid var(--gray-600); text-align: left;">Repairs</th>
+        <th style="padding: 10px; border: 1px solid var(--gray-600); text-align: left;">Improvements</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Usually deductible in the current year</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Usually recovered through depreciation</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Maintain existing condition</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Increase value or extend useful life</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Small fixes</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Major upgrades</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Keep property operating</td>
+        <td style="padding: 10px; border: 1px solid var(--gray-700);">Improve or restore property</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Real-Life Examples</h2>
+<h3>Example 1: Roof</h3>
+<p><strong>Situation:</strong> Replace five damaged shingles after a storm.<br><strong>Tax Treatment:</strong> Generally a repair.</p>
+<h3>Example 2: Entire Roof</h3>
+<p><strong>Situation:</strong> Replace the entire roof.<br><strong>Tax Treatment:</strong> Generally an improvement that is capitalized and depreciated.</p>
+<h3>Example 3: Painting</h3>
+<p><strong>Situation:</strong> Paint one bedroom after a tenant moves out.<br><strong>Tax Treatment:</strong> Generally a repair.</p>
+<h3>Example 4: Complete Renovation</h3>
+<p><strong>Situation:</strong> Remodel the entire home with new flooring, cabinets, and bathrooms.<br><strong>Tax Treatment:</strong> Generally an improvement.</p>
+<h3>Example 5: Water Heater</h3>
+<p><strong>Situation:</strong> Repair the thermostat on the existing water heater.<br><strong>Tax Treatment:</strong> Generally a repair.</p>
+<p><strong>Situation:</strong> Install a brand-new water heater.<br><strong>Tax Treatment:</strong> Generally an improvement.</p>
+
+<h2>Why Proper Classification Matters</h2>
+<p>Correct classification can help you claim deductions allowed by law, avoid IRS adjustments, reduce audit risk, maintain accurate depreciation records, and prepare Schedule E correctly.</p>
+
+<h2>How Repairs Affect Schedule E</h2>
+<p>Most ordinary repair expenses are reported as current-year expenses on <strong>Schedule E (Form 1040)</strong> in the appropriate expense category, helping reduce taxable rental income for the year.</p>
+
+<h2>How Improvements Affect Taxes</h2>
+<p>Improvement costs generally become part of the property's basis and are recovered through depreciation rather than deducted all at once. Depending on the type of asset, different depreciation rules and recovery periods may apply.</p>
+
+<h2>Common Mistakes Rental Owners Make</h2>
+<ul>
+  <li>❌ Deducting a complete roof replacement as a repair</li>
+  <li>❌ Treating a kitchen remodel as maintenance</li>
+  <li>❌ Forgetting to depreciate improvements</li>
+  <li>❌ Mixing personal home expenses with rental expenses</li>
+  <li>❌ Not keeping invoices and supporting documentation</li>
+</ul>
+
+<h2>Best Practices</h2>
+<ul>
+  <li>✔ Keep detailed receipts and invoices.</li>
+  <li>✔ Document the purpose of every project.</li>
+  <li>✔ Separate repair expenses from capital improvements in your records.</li>
+  <li>✔ Review improvement projects before filing your tax return.</li>
+  <li>✔ Maintain depreciation schedules for capitalized assets.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+<h3>Can I deduct painting?</h3>
+<p>Often yes, if the painting is ordinary maintenance rather than part of a major renovation.</p>
+
+<h3>Is replacing carpet a repair?</h3>
+<p>It depends on the facts and circumstances. Replacing small damaged sections may be treated differently from replacing all flooring throughout the property.</p>
+
+<h3>Is replacing an HVAC system a repair?</h3>
+<p>A complete replacement is generally treated as an improvement.</p>
+
+<h3>Can I deduct remodeling costs immediately?</h3>
+<p>Generally, no. Major remodeling projects are typically capitalized and recovered through depreciation.</p>
+
+<h2>Final Thoughts</h2>
+<p>Correctly distinguishing between repairs and improvements is one of the most important aspects of rental property taxation.</p>
+<p>Repairs generally provide an immediate deduction, while improvements typically provide long-term tax benefits through depreciation. Keeping accurate records and classifying expenses properly can help you prepare a more accurate Schedule E and reduce the likelihood of IRS issues.</p>
+<blockquote style="font-style: italic; color: var(--gray-600); border-left: 4px solid var(--gray-300); padding-left: 1rem; margin-top: 1.5rem;"><strong>Disclaimer:</strong> This article is for educational purposes only and does not constitute legal or tax advice. Tax treatment depends on the specific facts and circumstances of each property and expense.</blockquote>`;
+      
+      const result = await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "Repairs vs. Improvements for Rental Property: What's the Tax Difference?",
+        "repairs-vs-improvements-rental-property-tax-difference-2026",
+        content,
+        "Understand the critical tax differences between deductible repairs and capitalized improvements for your rental property to maximize savings and avoid IRS penalties.",
+        "repairs_vs_improvements_featured.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        8,
+        "Repairs vs. Improvements: Tax Guide for Rental Property Owners",
+        "Learn how the IRS differentiates between repairs and improvements on rental properties, and how to properly report these expenses on Schedule E."
+      ]);
+
+      const articleId = result.lastID;
+
+      // Link to Schedule E Hub
+      const hub = await db.get("SELECT id FROM hubs WHERE slug = 'schedule-e'");
+      if (hub) {
+        await db.run("INSERT INTO hub_articles (hub_id, article_id) VALUES (?, ?)", [hub.id, articleId]);
+        console.log('Linked Repairs vs Improvements article to Schedule E hub.');
+      }
+    }
+  } catch (e) {
+    console.error('Migration failed for Repairs vs Improvements:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
