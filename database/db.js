@@ -1084,6 +1084,136 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed for FICA & Fringe Benefits:', e);
   }
+  // --- MIGRATION: Insert Form 2441 Article ---
+  try {
+    const f2441Exists = await db.get("SELECT id FROM articles WHERE slug = 'form-2441-child-dependent-care-credit-guide-2026'");
+    if (!f2441Exists) {
+      console.log('Migrating: Adding Form 2441 article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'tax-filing-tips'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      
+      const content = `<p>Did you spend a small fortune on daycare, a neighborhood babysitter, preschool, or adult day care this year just so you could go to work? If so, you're not alone—and the IRS actually has a tax break designed specifically for you.</p>
+
+<p>Enter the <strong>Child and Dependent Care Credit</strong>. By properly filing <strong>Form 2441</strong>, you can significantly reduce your federal income tax dollar-for-dollar. Unfortunately, because tax forms can be intimidating, many families leave this money on the table. Here is your complete, jargon-free guide to understanding Form 2441 for the 2026 tax year.</p>
+
+<h2>What Exactly is Form 2441?</h2>
+
+<p>Think of Form 2441 as your receipt book for the IRS. Officially titled <em>Child and Dependent Care Expenses</em>, this form attaches directly to your Form 1040. You use it for three main reasons:</p>
+<ul>
+  <li>To calculate and claim the Child and Dependent Care Credit.</li>
+  <li>To report any dependent care benefits your employer provided (such as money diverted into a Dependent Care FSA).</li>
+  <li>To determine how much of those employer benefits can be excluded from your taxable income.</li>
+</ul>
+
+<h2>Do You Qualify to File Form 2441?</h2>
+
+<p>The IRS has a few strict hoops you need to jump through to claim this credit. Generally, you qualify if you meet all of the following criteria:</p>
+<ul>
+  <li>✅ <strong>The "Work" Requirement:</strong> You paid for the care specifically so you (and your spouse, if you file jointly) could actively work or look for work.</li>
+  <li>✅ <strong>The Income Requirement:</strong> You must have earned income. <em>(Note: There are special exceptions if your spouse is a full-time student or disabled).</em></li>
+  <li>✅ <strong>The Qualifying Person:</strong> The care was provided for a qualifying dependent.</li>
+  <li>✅ <strong>The Paper Trail:</strong> You have the exact name, address, and Taxpayer Identification Number (SSN or EIN) of your care provider.</li>
+</ul>
+
+<img src="/images/daycare_childcare.png" alt="Bright and colorful daycare center" class="article-inline-img" style="width:100%; border-radius:12px; margin:1.5rem 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+
+<h2>Who Counts as a "Qualifying Person"?</h2>
+<p>To claim the credit, the person receiving care must be:</p>
+<ul>
+  <li>A qualifying child who was <strong>under age 13</strong> when the care was provided.</li>
+  <li>A spouse who is physically or mentally incapable of self-care and lived with you for more than half the year.</li>
+  <li>Any other dependent who is incapable of self-care and lived with you for more than half the year.</li>
+</ul>
+
+<h2>What Expenses Actually Count?</h2>
+<p>Not everything you pay for your child qualifies for this tax credit. The IRS is very specific about what constitutes "care."</p>
+
+<h3>✅ Eligible Expenses Include:</h3>
+<ul>
+  <li>Traditional Daycare centers</li>
+  <li>Babysitters (even if they watch the child in your home)</li>
+  <li>Preschool and nursery school tuition</li>
+  <li>Before-school and after-school care programs</li>
+  <li>Summer day camps</li>
+  <li>Adult day care programs for qualifying adult dependents</li>
+</ul>
+
+<h3>❌ Non-Eligible Expenses:</h3>
+<ul>
+  <li>Overnight camps (a very common mistake!)</li>
+  <li>Kindergarten tuition (or higher grade levels)</li>
+  <li>Private tutoring</li>
+  <li>Food, clothing, and entertainment (if billed separately from the care)</li>
+</ul>
+
+<h2>How Much Can You Save? (The 2026 Limits)</h2>
+<p>The IRS caps the amount of expenses you can use to calculate the credit:</p>
+<ul>
+  <li><strong>One Qualifying Person:</strong> Up to $3,000 in expenses.</li>
+  <li><strong>Two or More Qualifying Persons:</strong> Up to $6,000 in expenses.</li>
+</ul>
+<p>Your actual credit is a percentage of those expenses—typically ranging from <strong>20% to 35%</strong>—depending on your Adjusted Gross Income (AGI). The higher your income, the lower the percentage.</p>
+
+<div style="background-color: var(--gray-50); border-left: 4px solid var(--indigo-500); padding: 1.5rem; margin: 2rem 0; border-radius: 4px;">
+  <h3 style="margin-top: 0; color: var(--indigo-700);">Real-Life Example</h3>
+  <p>Emily is a single mother working full-time. She paid <strong>$5,000</strong> in daycare tuition for her 4-year-old daughter this year.</p>
+  <p>Because she has one qualifying child, the IRS caps her eligible expenses at <strong>$3,000</strong>.</p>
+  <p>Based on Emily's income, her credit rate is <strong>20%</strong>.</p>
+  <p>Emily's tax credit = $3,000 &times; 20% = <strong>$600</strong>.</p>
+  <p><em>That is a $600 dollar-for-dollar reduction in her federal tax bill!</em></p>
+</div>
+
+<h2>The Dependent Care FSA Factor (Check Box 10!)</h2>
+<p>If your employer offers a Dependent Care Flexible Spending Account (FSA) and you contributed pre-tax money to it, you <strong>must</strong> report this on Form 2441.</p>
+<p>Look at your <strong>Form W-2, Box 10</strong>. If there is a number there, you received employer-provided dependent care benefits. You have to fill out Part III of Form 2441 to calculate how much of that benefit is tax-free before you can even touch Part II to calculate any remaining credit.</p>
+<p><em>Crucial Rule:</em> You cannot "double-dip." You can't use the same expenses paid with tax-free FSA money to claim the tax credit.</p>
+
+<h2>Your Tax Prep Checklist</h2>
+<p>Before you sit down to file your taxes, make sure you have gathered:</p>
+<ul>
+  <li>Your child's Social Security Number (SSN).</li>
+  <li>The care provider's exact legal name and address.</li>
+  <li>The care provider's SSN or Employer Identification Number (EIN). <em>(If they refuse to provide it, you must demonstrate due diligence in trying to get it).</em></li>
+  <li>The total exact amount paid to that specific provider during the tax year.</li>
+  <li>Your Form W-2.</li>
+</ul>
+
+<h2>Frequently Asked Questions</h2>
+<h3>Does preschool qualify?</h3>
+<p>Generally, yes! As long as the primary purpose of the preschool is to provide care so you can work, the tuition is an eligible expense. Once they hit Kindergarten, tuition no longer qualifies.</p>
+
+<h3>Can I pay a grandparent to watch my kids?</h3>
+<p>Sometimes. You can claim expenses paid to a relative, <strong>unless</strong> that relative is your spouse, the parent of the child, your dependent, or your child who is under age 19. If grandma doesn't fit into those disallowed categories, and she claims the income on her own taxes, it counts!</p>
+
+<h2>Final Thoughts</h2>
+<p>Childcare is one of the biggest line items in a working family's budget. While Form 2441 might look like just another piece of confusing IRS paperwork, taking the time to fill it out accurately can yield one of the most valuable credits on your tax return. Gather your daycare receipts, track down those Tax IDs, and make sure you aren't leaving your hard-earned money on the table!</p>
+
+<blockquote style="font-style: italic; color: var(--gray-600); border-left: 4px solid var(--gray-300); padding-left: 1rem; margin-top: 1.5rem;"><strong>Disclaimer:</strong> This article is for educational purposes only and does not constitute legal or tax advice. Tax rules change frequently; consult a licensed tax professional regarding your specific family situation.</blockquote>`;
+      
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "Form 2441 Explained (2026): Child and Dependent Care Credit Guide",
+        "form-2441-child-dependent-care-credit-guide-2026",
+        content,
+        "Did you pay for daycare or a babysitter so you could work? Learn how to use Form 2441 to claim the Child and Dependent Care Credit and reduce your federal tax bill.",
+        "form_2441_featured.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        6,
+        "Form 2441 Explained (2026): Child & Dependent Care Tax Credit",
+        "A complete, easy-to-understand guide to IRS Form 2441. Learn what expenses qualify, how to calculate the Child and Dependent Care Credit, and avoid common mistakes."
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed for Form 2441 Article:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
