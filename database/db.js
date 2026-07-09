@@ -1294,6 +1294,83 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed for IRS CRAT Article:', e);
   }
+  // --- MIGRATION: Insert ACA Age 26 Article ---
+  try {
+    const acaExists = await db.get("SELECT id FROM articles WHERE slug = 'aca-age-26-dependent-coverage-ale-penalty-trap-2026'");
+    if (!acaExists) {
+      console.log('Migrating: Adding ACA Age 26 article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'irs-updates'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      
+      const content = `<p>If your company is an Applicable Large Employer (ALE) offering group health plans, you already know the Affordable Care Act (ACA) requires you to offer coverage to eligible employees and their dependent children up to age 26. But what happens when that 26th birthday finally arrives?</p>
+
+<p>When exactly can human resources pull the plug on that dependent's coverage? If your payroll or benefits team gets the timing wrong by even a few days, your company could be exposed to devastating IRS Employer Shared Responsibility penalties.</p>
+
+<h2>The General ACA Rule vs. The ALE Penalty Trap</h2>
+
+<p>Here is where the confusion starts, and where many employers make a costly mistake. There are actually two different timelines you have to think about.</p>
+
+<p>Under the <em>general</em> ACA dependent coverage mandate—which applies to all plans, regardless of company size—a health plan is only strictly required to provide coverage up through <strong>the day before the child's 26th birthday</strong>.</p>
+
+<p>However, if you are an Applicable Large Employer (ALE) trying to avoid the infamous "Subsection (a)" or "Subsection (b)" penalty taxes, that general rule will get you in trouble.</p>
+
+<h2>The End-of-the-Month Rule for ALEs</h2>
+
+<p>To safely avoid Employer Shared Responsibility penalties, the IRS dictates that an ALE must treat the child as a dependent for the <strong>entire calendar month</strong> during which they reach age 26.</p>
+
+<p>You cannot simply terminate their coverage on their birthday. The coverage must be offered through the absolute last day of that birth month.</p>
+
+<div style="background-color: var(--gray-50); border-left: 4px solid var(--indigo-500); padding: 1.5rem; margin: 2rem 0; border-radius: 4px;">
+  <h3 style="margin-top: 0; color: var(--indigo-700);">The April 10th Example</h3>
+  <p>Let's say one of your employee's covered dependent children was born on <strong>April 10th</strong>.</p>
+  <p>The general ACA dependent mandate only requires you to cover them through <strong>April 9th</strong>.</p>
+  <p>However, to shield your company from ALE shared responsibility penalties, you <em>must</em> continue to offer that child coverage through <strong>April 30th</strong>. If you automatically terminate their coverage on April 9th, you have technically failed to offer adequate coverage for that month, exposing the company to IRS penalty taxes.</p>
+</div>
+
+<h2>Who Actually Counts as a "Dependent" for This Rule?</h2>
+
+<p>It's important to note that the IRS's definition of a "dependent" for ALE penalty purposes is very specific. The age 26 extension rule applies to biological children and children who have been legally adopted (or placed for adoption).</p>
+
+<p>For the purposes of this specific ALE penalty, a dependent <strong>does not include</strong>:</p>
+<ul>
+  <li>Stepchildren</li>
+  <li>Foster children</li>
+  <li>A child who does not reside in the US (or a contiguous country) and is not a US citizen or national.</li>
+  <li>Spouses (spouses are never considered dependents under this specific ACA child-coverage mandate).</li>
+</ul>
+
+<h2>Action Plan for HR and Benefits Administrators</h2>
+
+<p>To avoid massive compliance headaches, your HR and benefits administration software should be configured to handle dependent age-outs correctly.</p>
+
+<p>Do not set your systems to automatically drop dependents on the stroke of midnight on their 26th birthday. Ensure your policy—and your automated termination dates—extend coverage through the final calendar day of their birth month.</p>
+
+<blockquote style="font-style: italic; color: var(--gray-600); border-left: 4px solid var(--gray-300); padding-left: 1rem; margin-top: 1.5rem;"><strong>Disclaimer:</strong> This article is for informational purposes only and does not constitute financial, legal, or tax advice. Consult a benefits attorney or tax professional regarding your specific corporate compliance strategy.</blockquote>`;
+      
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "The Age 26 ACA Trap: When Exactly Does Dependent Coverage End for ALEs?",
+        "aca-age-26-dependent-coverage-ale-penalty-trap-2026",
+        content,
+        "When a dependent turns 26, terminating their health coverage too early can trigger massive IRS penalties for Applicable Large Employers. Learn the 'End-of-the-Month' rule.",
+        "aca_age_26_dependent_coverage_featured.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        5,
+        "ACA Dependent Coverage Rules: When to Drop Dependents at Age 26",
+        "Applicable Large Employers (ALEs) must navigate tricky ACA rules when a dependent turns 26. Discover how to avoid Employer Shared Responsibility penalties."
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed for ACA Age 26 Article:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
