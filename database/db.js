@@ -1214,6 +1214,86 @@ async function initializeDatabase() {
   } catch (e) {
     console.error('Migration failed for Form 2441 Article:', e);
   }
+  // --- MIGRATION: Insert IRS CRAT Article ---
+  try {
+    const cratExists = await db.get("SELECT id FROM articles WHERE slug = 'irs-crat-listed-transaction-crackdown-2026'");
+    if (!cratExists) {
+      console.log('Migrating: Adding IRS CRAT article...');
+      const admin = await db.get("SELECT id FROM users LIMIT 1");
+      let cat = await db.get("SELECT id FROM categories WHERE slug = 'irs-updates'");
+      if (!cat) cat = await db.get("SELECT id FROM categories LIMIT 1");
+      
+      const content = `<p>The IRS just slammed the door on a highly lucrative tax dodge favored by high-net-worth individuals, officially designating certain Charitable Remainder Annuity Trust (CRAT) maneuvers as <strong>"listed transactions."</strong></p>
+
+<p>In a sweeping move by the Treasury Department and the IRS, final regulations have been issued to combat a complex scheme designed to magically erase capital gains taxes on highly appreciated assets under the guise of charitable giving.</p>
+
+<p>Here is what taxpayers, estate planners, and financial advisors need to know about the crackdown—and the brutal penalties for failing to comply.</p>
+
+<h2>The Anatomy of the CRAT Scheme</h2>
+
+<p>To understand why the IRS is furious, you have to understand how the loophole worked. A Charitable Remainder Annuity Trust (CRAT) is normally a perfectly legal and highly effective estate planning tool. You put assets into a trust, the trust pays you a fixed annuity for a set number of years, and whatever is left over goes to a charity.</p>
+
+<p>But aggressive tax promoters twisted this tool into a tax evasion strategy. Here is the playbook they used:</p>
+
+<ol>
+  <li><strong>The Transfer:</strong> A taxpayer transfers highly appreciated property (like real estate, a business, or stock) into a newly formed CRAT. Let's say the property has a basis of zero and is worth $10 million.</li>
+  <li><strong>The Tax-Free Sale:</strong> Because the CRAT is a tax-exempt entity, it immediately sells the $10 million property. No capital gains tax is triggered at the trust level.</li>
+  <li><strong>The Annuity Purchase:</strong> Instead of holding a diversified portfolio, the CRAT uses the $10 million cash to purchase a <em>Single Premium Immediate Annuity (SPIA)</em>.</li>
+  <li><strong>The Tax Dodge:</strong> When the SPIA begins making massive payout distributions back to the taxpayer, the taxpayer falsely reports those payments on their tax return as a <em>non-taxable return of principal (corpus)</em> from the annuity, rather than as taxable capital gains.</li>
+</ol>
+
+<p>The result? The taxpayer effectively cashed out $10 million of highly appreciated assets and paid zero capital gains tax.</p>
+
+<h2>The IRS Strikes Back: "Listed Transactions"</h2>
+
+<p>The IRS is no longer treating these specific setups as a gray area. Under the newly finalized regulations, if you engage in a transaction that is the same as, or substantially similar to, the SPIA-CRAT strategy outlined above, it is officially a <strong>"listed transaction."</strong></p>
+
+<p>A listed transaction is the IRS's highest level of warning. It means the agency has determined the transaction is an abusive tax avoidance scheme.</p>
+
+<h2>What This Means for Taxpayers</h2>
+
+<p>If you or your clients are currently utilizing one of these structures, the fallout is immediate and severe.</p>
+
+<h3>1. Mandatory Disclosure (Form 8886)</h3>
+<p>Taxpayers who have participated in these CRAT schemes must immediately disclose their participation to the IRS by filing <strong>Form 8886, Reportable Transaction Disclosure Statement</strong>. This applies not just to the taxpayer, but to any material advisors who helped facilitate the trust.</p>
+
+<h3>2. Massive Penalties</h3>
+<p>Failing to file Form 8886 for a listed transaction triggers monstrous penalties under IRC Section 6707A. The penalty is 75% of the tax savings from the transaction, up to a maximum of <strong>$200,000 for individuals</strong> and $200,000 for entities.</p>
+
+<h3>3. An Open Season on Audits</h3>
+<p>Perhaps most dangerously, failing to disclose a listed transaction keeps the statute of limitations wide open. The IRS can come back and audit that specific tax return years, or even decades, after it was filed.</p>
+
+<h2>The Bottom Line</h2>
+
+<p>Charitable Remainder Annuity Trusts remain a fantastic vehicle for philanthropic giving and legitimate income structuring. However, using them to "launder" capital gains through an immediate annuity is officially a dead strategy.</p>
+
+<p>If you have a CRAT in your portfolio and are unsure if its internal mechanics trigger these new listed transaction rules, contact a qualified tax attorney or CPA immediately to review the trust's investments and distributions before the IRS comes knocking.</p>
+
+<blockquote style="font-style: italic; color: var(--gray-600); border-left: 4px solid var(--gray-300); padding-left: 1rem; margin-top: 1.5rem;"><strong>Disclaimer:</strong> This article is for informational purposes only and does not constitute financial, legal, or tax advice. Consult a licensed tax attorney or CPA regarding your specific estate plan.</blockquote>`;
+      
+      await db.run(`
+        INSERT INTO articles (
+          title, slug, content, excerpt, featured_image, 
+          author_id, category_id, status, publish_date, views, reading_time, seo_title, seo_description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?, ?)
+      `, [
+        "IRS Cracks Down on Charitable Remainder Annuity Trust (CRAT) Schemes",
+        "irs-crat-listed-transaction-crackdown-2026",
+        content,
+        "The IRS has finalized regulations designating certain Charitable Remainder Annuity Trust (CRAT) transactions as abusive 'listed transactions.' Learn who is affected.",
+        "crat_irs_crackdown_featured.png",
+        admin ? admin.id : 1,
+        cat ? cat.id : 1,
+        "published",
+        0,
+        5,
+        "IRS Crackdown: CRATs Named as Listed Transactions (2026)",
+        "The Treasury and IRS have designated certain Charitable Remainder Annuity Trust (CRAT) maneuvers as listed transactions. Discover the severe penalties for non-disclosure."
+      ]);
+    }
+  } catch (e) {
+    console.error('Migration failed for IRS CRAT Article:', e);
+  }
   // ------------------------------------------------
 
   // Check if database is already seeded
