@@ -90,8 +90,35 @@ app.use((err, req, res, next) => {
 const { initializeDatabase, db } = require('./database/db');
 const PORT = process.env.PORT || 3000;
 
-// All known committed images in public/uploads/
+// All known committed images in public/uploads/ and public/images/
 const SLUG_IMAGE_MAP = [
+  { slugPart: 'section-179',            image: '/uploads/section_179_vs_bonus_depreciation_2026.jpg' },
+  { slugPart: 'bonus-deprec',           image: '/uploads/section_179_vs_bonus_depreciation_2026.jpg' },
+  { slugPart: 'dependency-rule',        image: '/uploads/irs_dependency_rules_guide_2026.jpg' },
+  { slugPart: 'qualifying-child',       image: '/uploads/irs_dependency_rules_guide_2026.jpg' },
+  { slugPart: 'spains-50m',             image: '/uploads/world_cup_tax_spain_2026.png' },
+  { slugPart: 'world-cup-prize',        image: '/uploads/spain_world_cup_tax_2026.png' },
+  { slugPart: 'world-cup',              image: '/uploads/world_cup_tax_spain_2026.png' },
+  { slugPart: 'sell-your-home',         image: '/uploads/home_sale_tax_free_2026.png' },
+  { slugPart: 'home-sale',              image: '/uploads/home_sale_tax_free_2026.png' },
+  { slugPart: 'capital-gains-tax-rates',image: '/uploads/capital_gains_tax_2026.png' },
+  { slugPart: 'capital-gains',          image: '/uploads/capital_gains_tax_realistic.png' },
+  { slugPart: 'qcd',                    image: '/uploads/charitable_contributions.png' },
+  { slugPart: 'tariff-brazil',          image: '/uploads/us_brazil_tariff_2026.png' },
+  { slugPart: 'mileage-rate',           image: '/uploads/gas_pump_mileage_rate_2026.png' },
+  { slugPart: 'rmd-penalty',            image: '/uploads/missed_rmd_form_5329.png' },
+  { slugPart: 'required-minimum',       image: '/uploads/missed_rmd_form_5329.png' },
+  { slugPart: 'form-8606',              image: '/uploads/ira_double_tax_form_8606.png' },
+  { slugPart: 'taxed-twice-ira',        image: '/uploads/ira_double_tax_form_8606.png' },
+  { slugPart: 'voids-trump-irs',        image: '/uploads/irs_settlement_voided_macro_2026.png' },
+  { slugPart: 'gig-economy',            image: '/uploads/gig_economy_social_security_2026.png' },
+  { slugPart: 'reps-audit',             image: '/uploads/reps_audit_trap_2026.png' },
+  { slugPart: 'form-1099-r',            image: '/uploads/form_1099r_tax_realistic_2026.png' },
+  { slugPart: 'diy-taxes',              image: '/uploads/diy_vs_pro_taxes.png' },
+  { slugPart: 'freelancers-schedule',   image: '/uploads/freelancer_outside.png' },
+  { slugPart: 'automates-penalty',      image: '/uploads/irs_penalty_relief.png' },
+  { slugPart: 'tax-bracket-updates',    image: '/img/articles/tax-brackets-2025.png' },
+  { slugPart: 'overlooked-tax-deduct',  image: '/img/articles/standard-deduction-2025.png' },
   { slugPart: 'june-jobs',              image: '/uploads/june_jobs_report.png' },
   { slugPart: 'us-job-growth',          image: '/uploads/june_jobs_report.png' },
   { slugPart: 'jobs-report',            image: '/uploads/june_jobs_report.png' },
@@ -115,9 +142,7 @@ const SLUG_IMAGE_MAP = [
 
 function fileExists(imgPath) {
   try {
-    // Strip leading slash so path.join doesn't treat it as an absolute path root
     let normalizedPath = imgPath.startsWith('/') ? imgPath.slice(1) : imgPath;
-    // If it's just a filename with no directory, assume images/
     if (!normalizedPath.includes('/')) {
       normalizedPath = 'images/' + normalizedPath;
     }
@@ -131,8 +156,20 @@ async function fixImagePaths() {
     let fixed = 0;
     for (const article of articles) {
       const cur = article.featured_image || '';
-      // Skip if current file actually exists on disk
-      if (cur && fileExists(cur)) continue;
+      
+      // Ensure leading slash for relative filenames (e.g., aca_age_26...)
+      if (cur && !cur.startsWith('/')) {
+        let testPath = cur.includes('/') ? '/' + cur : '/images/' + cur;
+        if (fileExists(testPath)) {
+          await db.run('UPDATE articles SET featured_image = ? WHERE id = ?', [testPath, article.id]);
+          console.log(`🖼️  Image prefix fixed: [${article.id}] ${article.slug} => ${testPath}`);
+          fixed++;
+          continue;
+        }
+      }
+
+      // Skip if current file actually exists on disk and starts with a slash
+      if (cur && cur.startsWith('/') && fileExists(cur)) continue;
 
       // Find a replacement based on slug
       const fix = SLUG_IMAGE_MAP.find(m => article.slug && article.slug.includes(m.slugPart));
