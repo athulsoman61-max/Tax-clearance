@@ -20,17 +20,11 @@
   .order-mobile-4 { order: 4; }
   .order-mobile-5 { order: 5; }
 
-  /* Ultra compact article feed */
-  .article-feed .article-card { flex-direction: row !important; padding: 0.75rem !important; gap: 1rem !important; align-items: center !important; border-radius: var(--radius-md) !important; height: auto !important; }
-  .article-feed .article-card-img { width: 90px !important; height: 90px !important; border-radius: var(--radius-sm) !important; flex-shrink: 0; }
-  .article-feed .article-card-cat-badge { display: none !important; }
-  .article-feed .article-card-body { padding: 0 !important; justify-content: center !important; }
-  .article-feed .article-card-body h2 { font-size: 0.92rem !important; margin: 0 0 0.35rem 0 !important; line-height: 1.3 !important; }
-  .article-feed .article-card-excerpt { display: none !important; }
-  .article-feed .article-card-footer { display: none !important; }
-  .article-feed .article-card-meta { margin-bottom: 0.35rem !important; font-size: 0.7rem !important; flex-wrap: wrap !important; gap: 0.2rem 0.5rem !important; }
-  .article-feed .meta-separator { display: none !important; }
-  .article-feed .meta-time { display: none !important; }
+  /* Compact but readable article feed */
+  .article-card-img { height: 180px !important; }
+  .article-card-body { padding: 1.2rem !important; }
+  .article-card-body h2 { font-size: 1.2rem !important; margin-bottom: 0.6rem !important; }
+  .article-card-excerpt { font-size: 0.9rem !important; margin-bottom: 1rem !important; line-height: 1.5 !important; }
   
   /* Compact glance carousel */
   .glance-card-img-wrapper { height: 130px !important; }
@@ -332,6 +326,60 @@
   </div>
 </div>
 
+<!-- ② Trending Article Carousel (mobile order 2) -->
+<div class="container order-mobile-2" style="margin-top: 1rem; margin-bottom: 2rem;">
+  <div class="glance-section" id="articleCarousel" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); padding: 2rem; border-radius: var(--radius-lg);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;">
+      <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin: 0; color: var(--white); display: flex; align-items: center; gap: 0.5rem;">
+        <span style="display: inline-block; width: 8px; height: 24px; background: var(--amber); border-radius: 4px;"></span> 🔥 Most Read & Trending Articles
+      </h2>
+      <a href="/articles" style="color: var(--indigo-400); font-weight: 700; font-size: 0.9rem; transition: var(--transition);">View Complete Archive →</a>
+    </div>
+    <div class="swipe-hint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Swipe sideways to explore more popular reads
+    </div>
+    <div class="carousel-wrapper" id="newsCarouselWrapper">
+      <button class="scroll-btn prev hidden" id="newsPrev" aria-label="Previous">&#8249;</button>
+      <button class="scroll-btn next" id="newsNext" aria-label="Next">&#8250;</button>
+      <div class="glance-track" id="newsTrack">
+        <% articles.slice(0, 8).forEach((article, i) => { %>
+          <div class="glance-card">
+            <a href="/article/<%= article.slug %>" style="display: block; position: relative;">
+              <div class="glance-card-img-wrapper">
+                <% if (article.featured_image) { %>
+                  <% const imgPath = article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image; %>
+                <img src="<%= imgPath %>" class="glance-card-img" alt="<%= article.title %>" loading="lazy"
+                  onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;\'><%= article.category_icon || '📋' %></div>'">
+                <% } else { %>
+                  <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;"><%= article.category_icon || '📋' %></div>
+                <% } %>
+                <div class="glance-card-num"><%= (i + 1).toString().padStart(2, '0') %></div>
+              </div>
+            </a>
+            <div class="glance-card-body">
+              <div style="margin-bottom: 0.5rem;">
+                <span style="color:<%= article.category_color %>; font-size: 0.72rem; font-weight: 700; background: <%= article.category_color %>22; padding: 0.2rem 0.5rem; border-radius: 4px;"><%= article.category_name || 'General' %></span>
+              </div>
+              <h3 style="font-size: 1rem; line-height: 1.4; margin: 0 0 0.5rem 0; flex: 1;">
+                <a href="/article/<%= article.slug %>" style="color: var(--white); text-decoration: none;"><%= article.title %></a>
+              </h3>
+              <div style="font-size: 0.78rem; color: var(--gray-400);">
+                <span><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) %></span>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+    <div class="scroll-dots" id="newsDots">
+      <% articles.slice(0, 8).forEach((_, i) => { %>
+        <div class="scroll-dot <%= i === 0 ? 'active' : '' %>" data-track="newsTrack" data-index="<%= i %>"></div>
+      <% }); %>
+    </div>
+  </div>
+</div>
+
 <!-- ③ Main Article Feed (mobile order 3 - COMPACT LIST for mobile readers!) -->
 <div class="container order-mobile-3" style="margin-top: 1.5rem;">
   <div class="home-layout">
@@ -447,59 +495,7 @@
   </div>
 </div>
 
-<!-- ② Trending Article Carousel (mobile order 2) -->
-<div class="container order-mobile-2" style="margin-top: 1rem; margin-bottom: 2rem;">
-  <div class="glance-section" id="articleCarousel" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); padding: 2rem; border-radius: var(--radius-lg);">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;">
-      <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin: 0; color: var(--white); display: flex; align-items: center; gap: 0.5rem;">
-        <span style="display: inline-block; width: 8px; height: 24px; background: var(--amber); border-radius: 4px;"></span> 🔥 Most Read & Trending Articles
-      </h2>
-      <a href="/articles" style="color: var(--indigo-400); font-weight: 700; font-size: 0.9rem; transition: var(--transition);">View Complete Archive →</a>
-    </div>
-    <div class="swipe-hint">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      Swipe sideways to explore more popular reads
-    </div>
-    <div class="carousel-wrapper" id="newsCarouselWrapper">
-      <button class="scroll-btn prev hidden" id="newsPrev" aria-label="Previous">&#8249;</button>
-      <button class="scroll-btn next" id="newsNext" aria-label="Next">&#8250;</button>
-      <div class="glance-track" id="newsTrack">
-        <% articles.slice(0, 8).forEach((article, i) => { %>
-          <div class="glance-card">
-            <a href="/article/<%= article.slug %>" style="display: block; position: relative;">
-              <div class="glance-card-img-wrapper">
-                <% if (article.featured_image) { %>
-                  <% const imgPath = article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image; %>
-                <img src="<%= imgPath %>" class="glance-card-img" alt="<%= article.title %>" loading="lazy"
-                  onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;\'><%= article.category_icon || '📋' %></div>'">
-                <% } else { %>
-                  <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;"><%= article.category_icon || '📋' %></div>
-                <% } %>
-                <div class="glance-card-num"><%= (i + 1).toString().padStart(2, '0') %></div>
-              </div>
-            </a>
-            <div class="glance-card-body">
-              <div style="margin-bottom: 0.5rem;">
-                <span style="color:<%= article.category_color %>; font-size: 0.72rem; font-weight: 700; background: <%= article.category_color %>22; padding: 0.2rem 0.5rem; border-radius: 4px;"><%= article.category_name || 'General' %></span>
-              </div>
-              <h3 style="font-size: 1rem; line-height: 1.4; margin: 0 0 0.5rem 0; flex: 1;">
-                <a href="/article/<%= article.slug %>" style="color: var(--white); text-decoration: none;"><%= article.title %></a>
-              </h3>
-              <div style="font-size: 0.78rem; color: var(--gray-400);">
-                <span><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) %></span>
-              </div>
-            </div>
-          </div>
-        <% }); %>
-      </div>
-    </div>
-    <div class="scroll-dots" id="newsDots">
-      <% articles.slice(0, 8).forEach((_, i) => { %>
-        <div class="scroll-dot <%= i === 0 ? 'active' : '' %>" data-track="newsTrack" data-index="<%= i %>"></div>
-      <% }); %>
-    </div>
-  </div>
-</div>
+
 
 <!-- ④ Community Discussions & Q&A (mobile order 4) -->
 <div class="container order-mobile-4" style="margin-top: 1rem; margin-bottom: 2rem;">
