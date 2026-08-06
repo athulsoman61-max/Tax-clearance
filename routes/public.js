@@ -2,6 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { db, getAllSettings, getSetting, getCategories, getTotalArticles } = require('../database/db');
 
+// SEO Trailing Slash Redirect
+router.use((req, res, next) => {
+  if (req.path.endsWith('/') && req.path.length > 1) {
+    const query = req.url.slice(req.path.length);
+    res.redirect(301, req.path.slice(0, -1) + query);
+  } else {
+    next();
+  }
+});
+
 // Homepage
 router.get('/', async (req, res, next) => {
   try {
@@ -421,11 +431,63 @@ router.get('/sitemap.xml', async (req, res, next) => {
   }
 });
 
+// RSS Feed
+router.get('/rss.xml', async (req, res, next) => {
+  try {
+    const [settings, articles] = await Promise.all([
+      getAllSettings(),
+      db.all(`
+        SELECT a.id, a.title, a.slug, a.excerpt, a.publish_date, a.created_at,
+               c.name as category_name, u.display_name as author_name
+        FROM articles a
+        LEFT JOIN categories c ON a.category_id = c.id
+        LEFT JOIN users u ON a.author_id = u.id
+        WHERE a.status = 'published' AND (a.publish_date IS NULL OR a.publish_date <= CURRENT_TIMESTAMP)
+        ORDER BY a.publish_date DESC, a.created_at DESC
+        LIMIT 50
+      `)
+    ]);
+    const siteUrl = process.env.SITE_URL || (req.protocol + '://' + req.get('host'));
+    const siteName = settings.site_name || 'Tax Clearance';
+    const siteDesc = settings.site_description || 'Independent Tax Publication';
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title><![CDATA[${siteName}]]></title>
+    <link>${siteUrl}</link>
+    <description><![CDATA[${siteDesc}]]></description>
+    <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>`;
+
+    articles.forEach(a => {
+      const pubDate = new Date(a.publish_date || a.created_at).toUTCString();
+      xml += `
+    <item>
+      <title><![CDATA[${a.title}]]></title>
+      <link>${siteUrl}/article/${a.slug}</link>
+      <guid>${siteUrl}/article/${a.slug}</guid>
+      <pubDate>${pubDate}</pubDate>
+      <description><![CDATA[${a.excerpt || ''}]]></description>
+      ${a.category_name ? `<category><![CDATA[${a.category_name}]]></category>` : ''}
+    </item>`;
+    });
+
+    xml += `
+  </channel>
+</rss>`;
+    res.set('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Robots.txt
 router.get('/robots.txt', (req, res) => {
   const siteUrl = process.env.SITE_URL || (req.protocol + '://' + req.get('host'));
   res.set('Content-Type', 'text/plain');
-  res.send(`User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${siteUrl}/sitemap.xml\n`);
+  res.send(`User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${siteUrl}/sitemap.xml\nSitemap: ${siteUrl}/rss.xml\n`);
 });
 
 

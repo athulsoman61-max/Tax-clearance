@@ -24,6 +24,11 @@ const pageDesc = locals.description || settings?.site_description || '';
   <% if (ogImg) { %><meta property="og:image" content="<%= siteUrl %><%= ogImg %>"><% } %>
   <meta property="og:url" content="<%= canonicalUrl %>">
   <meta property="og:site_name" content="<%= siteName %>">
+  <% if (locals.article) { %>
+  <meta property="article:published_time" content="<%= new Date(locals.article.publish_date || locals.article.created_at).toISOString() %>">
+  <% if (locals.article.updated_at) { %><meta property="article:modified_time" content="<%= new Date(locals.article.updated_at).toISOString() %>"><% } %>
+  <% if (locals.article.author_name) { %><meta property="article:author" content="<%= locals.article.author_name %>"><% } %>
+  <% } %>
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
