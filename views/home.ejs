@@ -14,11 +14,11 @@
   50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); border-color: rgba(16, 185, 129, 0.7); }
 }
 @media (max-width: 768px) {
-  .order-mobile-1 { order: 1; }
-  .order-mobile-2 { order: 2; }
-  .order-mobile-3 { order: 3; }
-  .order-mobile-4 { order: 4; }
-  .order-mobile-5 { order: 5; }
+  .order-mobile-1 { display: none !important; } /* Hide massive hero on mobile */
+  .order-mobile-2 { order: 1; margin-top: 1rem !important; } /* Carousel at top */
+  .order-mobile-3 { order: 2; } /* Glance Feed */
+  .order-mobile-4 { order: 3; }
+  .order-mobile-5 { order: 4; }
 
   /* GLANCE-STYLE FULL-SCREEN MOBILE FEED */
   .order-mobile-3 { margin-top: 0 !important; padding: 0 !important; max-width: 100% !important; }
