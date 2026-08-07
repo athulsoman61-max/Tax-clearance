@@ -28,8 +28,8 @@
     position: relative !important;
     height: 85vh !important;
     min-height: 600px !important;
-    width: 100vw !important;
-    margin-left: calc(-50vw + 50%) !important; /* Full bleed hack */
+    width: 100% !important;
+    
     border-radius: 0 !important;
     border: none !important;
     margin-bottom: 0 !important;
@@ -67,6 +67,8 @@
     display: flex !important;
     flex-direction: column !important;
     justify-content: flex-end !important;
+    align-items: center !important;
+    text-align: center !important;
     background: transparent !important;
   }
 
@@ -96,7 +98,8 @@
   
   .article-card-cat-badge {
     top: 1.5rem !important;
-    left: 1.5rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
   }
   
   .article-card-footer a.btn {
