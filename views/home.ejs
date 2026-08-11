@@ -170,10 +170,36 @@
 
   /* ① Hide desktop hero */
   .order-mobile-1 { display: none !important; }
-  .order-mobile-2 { order: 1; }
+  /* Carousel is first — flush under navbar */
+  .order-mobile-2 {
+    order: 1;
+    padding-top: var(--nav-height) !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
   .order-mobile-3 { order: 2; }
   .order-mobile-4 { order: 3; }
   .order-mobile-5 { order: 4; }
+  /* Category pills sit BELOW carousel, ABOVE article feed */
+  .mobile-topic-scroll-below {
+    display: flex !important; overflow-x: auto;
+    gap: 0.5rem; padding: 0.75rem 1rem;
+    scrollbar-width: none; -ms-overflow-style: none;
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    border-top: 1px solid #f1f5f9;
+  }
+  .mobile-topic-scroll-below::-webkit-scrollbar { display: none; }
+  .mobile-topic-scroll-below .cat-pill {
+    background: #f1f5f9 !important; border: none !important;
+    color: #475569 !important; font-size: 0.8rem !important;
+    font-weight: 600 !important; border-radius: 50px !important;
+    padding: 0.4rem 1rem !important; flex-shrink: 0 !important;
+    white-space: nowrap !important; box-shadow: none !important;
+  }
+  .mobile-topic-scroll-below .cat-pill:first-child {
+    background: #2563eb !important; color: #ffffff !important;
+  }
 
   /* ── Mobile Topic Pill Row ──────────────────── */
   .mobile-topic-scroll {
@@ -450,28 +476,8 @@
   </div>
   <% } %>
 
-  <div style="margin-top:1.5rem;margin-bottom:0.5rem;">
-    <div style="font-size:0.78rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.7rem;">Explore Articles by Topic:</div>
-    <div class="cat-pills">
-      <a href="/" class="cat-pill <%= !locals.activeCat ? 'active' : '' %>">🔥 All Topics (<%= totalArticles || '85+' %>)</a>
-      <% categories.slice(0,10).forEach(cat => { %>
-      <a href="/category/<%= cat.slug %>" class="cat-pill"><span><%= cat.icon %></span> <span><%= cat.name %></span></a>
-      <% }); %>
-      <a href="/articles" class="cat-pill" style="border-color:var(--indigo);color:var(--indigo-400);">📚 View All →</a>
-    </div>
-  </div>
-</div>
-
-<!-- ② "Hottest News" Swipe Carousel (mobile order 1) -->
+  <div style="margin-top:1.5rem;marg<!-- ② "Hottest News" Swipe Carousel — FIRST on mobile, flush under navbar -->
 <div class="container order-mobile-2" style="margin-top:1rem;margin-bottom:2rem;">
-
-  <!-- Mobile-only: Topic pill row -->
-  <div class="mobile-topic-scroll" style="display:none;">
-    <a href="/" class="cat-pill">All</a>
-    <% categories.slice(0,8).forEach(cat => { %>
-    <a href="/category/<%= cat.slug %>" class="cat-pill"><%= cat.name %></a>
-    <% }); %>
-  </div>
 
   <div class="glance-section" id="articleCarousel" style="background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);padding:2rem;border-radius:var(--radius-lg);">
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.5rem;">
@@ -526,7 +532,16 @@
   </div>
 </div>
 
-<!-- ③ Latest Articles Feed (mobile order 2 — vertical scroll) -->
+<!-- Category pills row — mobile only, sits between carousel and feed -->
+<div class="mobile-topic-scroll-below" style="display:none;">
+  <a href="/" class="cat-pill">All</a>
+  <% categories.slice(0,8).forEach(cat => { %>
+  <a href="/category/<%= cat.slug %>" class="cat-pill"><%= cat.name %></a>
+  <% }); %>
+</div>
+
+
+<!-- ③ Latest Articles Feed (vertical scroll) -->
 <div class="container order-mobile-3" style="margin-top:1.5rem;">
   <div class="home-layout">
     <main class="article-feed">
