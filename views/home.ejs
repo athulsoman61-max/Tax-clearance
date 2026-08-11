@@ -2,157 +2,27 @@
 <%- include('partials/navbar') %>
 
 <style>
-/* ── Home page layout & ordering ─────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   HOME PAGE — MODERN APP-STYLE (Reference Match)
+   ═══════════════════════════════════════════════ */
+
 .home-layout-wrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
   overflow-x: hidden;
 }
+
 @keyframes pulseBadge {
-  0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.25); border-color: rgba(99, 102, 241, 0.5); }
-  50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); border-color: rgba(16, 185, 129, 0.7); }
-}
-@media (max-width: 768px) {
-  html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100vw !important; background: #ffffff !important; }
-
-  .order-mobile-1 { display: none !important; }
-  
-  .mobile-topic-scroll {
-    display: flex !important;
-    overflow-x: auto;
-    gap: 0.75rem;
-    padding: 1.5rem 1.5rem 1rem 1.5rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    background: #ffffff;
-  }
-  .mobile-topic-scroll::-webkit-scrollbar { display: none; }
-  .mobile-topic-scroll .cat-pill {
-    background: var(--true-white) !important;
-    border: 1px solid rgba(0,0,0,0.08) !important;
-    color: var(--gray-400) !important;
-    font-weight: 500 !important;
-    border-radius: var(--radius-full) !important;
-    padding: 0.5rem 1rem !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important;
-  }
-  .mobile-topic-scroll .cat-pill:hover, .mobile-topic-scroll .cat-pill:first-child { 
-    background: var(--indigo) !important; 
-    border-color: var(--indigo) !important; 
-    color: var(--true-white) !important; 
-  }
-
-  .order-mobile-2 { order: 1; margin-top: 0 !important; margin-bottom: 2rem !important; }
-  
-  /* Hottest News Carousel (Full Image + Text Overlay) */
-  .glance-track { gap: 1rem !important; padding-bottom: 0.5rem !important; }
-  .glance-card {
-  scroll-snap-align: start;
-  flex: 0 0 82%;
-  max-width: 340px;
-  background: var(--true-white);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: var(--shadow-md);
-  border: 1px solid rgba(0,0,0,0.06);
-  transition: var(--transition);
-}
-  .glance-card-img-wrapper { height: 100% !important; width: 100% !important; border-radius: var(--radius-lg) !important; }
-  
-  .glance-card::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
-    pointer-events: none;
-  }
-  .glance-card-body { padding: 1.2rem; display: flex; flex-direction: column; flex: 1; background: var(--true-white); }
-  .glance-card-title { color: var(--true-white) !important; font-size: 1.1rem !important; font-weight: 700 !important; margin-bottom: 0 !important; }
-  .glance-card-num {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: var(--true-white);
-  color: var(--indigo);
-  font-weight: 700;
-  font-size: 0.75rem;
-  padding: 0.3rem 0.8rem;
-  border-radius: var(--radius-full);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-  
-  /* Vertical Feed Section (Latest Published) */
-  .order-mobile-3 { order: 2; margin-top: 0 !important; padding: 0 1.5rem !important; }
-  .article-feed { gap: 1.25rem !important; }
-  
-  /* Row Layout for Recommended Cards */
-  .article-card {
-    display: flex !important;
-    flex-direction: row !important;
-    height: 110px !important;
-    min-height: auto !important;
-    width: 100% !important;
-    background: var(--true-white) !important;
-    border: none !important;
-    border-radius: var(--radius-lg) !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.04) !important;
-    padding: 0.75rem !important;
-    align-items: center !important;
-  }
-  
-  .article-card-img {
-    height: 90px !important;
-    flex: 0 0 90px !important; 
-    border-radius: var(--radius-md) !important;
-    overflow: hidden !important;
-    position: relative !important;
-  }
-  .article-card-img img { height: 100% !important; width: 100% !important; object-fit: cover !important; }
-  .article-card::after { display: none !important; }
-
-  .article-card-body {
-    flex: 1 !important;
-    padding: 0 0 0 1rem !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    background: transparent !important;
-  }
-
-  .article-card-body h2 {
-    font-size: 0.95rem !important;
-    font-weight: 700 !important;
-    color: var(--white) !important;
-    margin-bottom: 0.3rem !important;
-    line-height: 1.35 !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-  }
-  .article-card-body h2 a { color: var(--white) !important; }
-
-  .article-card-cat {
-    font-size: 0.65rem !important;
-    color: var(--gray-400) !important;
-    font-weight: 500 !important;
-    text-transform: none !important;
-    margin-bottom: 0.2rem !important;
-  }
-
-  .article-card-date { font-size: 0.7rem !important; color: var(--gray-400) !important; }
-  .article-card-excerpt, .article-card-cat-badge, .article-card-footer { display: none !important; }
+  0%, 100% { box-shadow: 0 0 15px rgba(99,102,241,0.25); }
+  50%       { box-shadow: 0 0 25px rgba(16,185,129,0.4); }
 }
 
-/* ── Scroll Carousel Wrapper ──────────────────────────────────── */
-.carousel-wrapper {
-  position: relative;
-}
+/* ── Carousel Wrapper (desktop arrows) ─────── */
+.carousel-wrapper { position: relative; }
 .carousel-wrapper::after {
   content: '';
-  position: absolute;
-  top: 0; right: 0; bottom: 1.5rem;
+  position: absolute; top: 0; right: 0; bottom: 1.5rem;
   width: 60px;
   background: linear-gradient(to right, transparent, var(--navy));
   pointer-events: none;
@@ -160,165 +30,99 @@
   z-index: 2;
 }
 .scroll-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-60%);
-  z-index: 10;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--indigo);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute; top: 50%; transform: translateY(-60%);
+  z-index: 10; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--indigo); color: #fff; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   transition: opacity 0.2s, transform 0.2s;
-  opacity: 0.9;
-  font-size: 1rem;
-  line-height: 1;
+  opacity: 0.9; font-size: 1rem; line-height: 1;
 }
 .scroll-btn:hover { opacity: 1; transform: translateY(-60%) scale(1.1); }
 .scroll-btn.prev { left: -14px; }
 .scroll-btn.next { right: -14px; }
 .scroll-btn.hidden { opacity: 0.4; cursor: default; }
 
-.scroll-dots {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 0.5rem;
-}
+.scroll-dots { display: flex; justify-content: center; gap: 6px; margin-top: 0.75rem; }
 .scroll-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--gray-500);
-  transition: background 0.25s, transform 0.25s;
-  cursor: pointer;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gray-500); transition: background 0.25s, transform 0.25s; cursor: pointer;
 }
-.scroll-dot.active {
-  background: var(--indigo);
-  transform: scale(1.35);
-}
+.scroll-dot.active { background: #2563eb; transform: scale(1.35); }
+
 .swipe-hint {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.72rem;
-  color: var(--gray-500);
-  margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.35rem;
+  font-size: 0.72rem; color: var(--gray-500); margin-bottom: 0.6rem;
 }
 .swipe-hint svg { opacity: 0.6; }
 @media (min-width: 769px) { .swipe-hint { display: none; } }
 
-/* ── App-like Glance Carousel ─────────────────────────────────── */
+/* ── Glance Carousel (desktop style) ────────── */
 .glance-section { margin-bottom: 0; }
 .glance-track {
-  display: flex;
-  overflow-x: auto;
+  display: flex; overflow-x: auto;
   scroll-snap-type: x mandatory;
-  gap: 1.5rem;
-  padding-bottom: 1.5rem;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  gap: 1.5rem; padding-bottom: 1.5rem;
+  -ms-overflow-style: none; scrollbar-width: none;
 }
 .glance-track::-webkit-scrollbar { display: none; }
 
 .glance-card {
   scroll-snap-align: start;
-  flex: 0 0 82%;
-  max-width: 340px;
+  flex: 0 0 82%; max-width: 340px;
   background: var(--navy-800);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  border-radius: var(--radius-lg); overflow: hidden;
+  display: flex; flex-direction: column;
   box-shadow: var(--shadow-md);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255,255,255,0.12);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
-.glance-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-glow);
-  border-color: var(--indigo);
-}
+.glance-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-glow); border-color: var(--indigo); }
 .glance-card-img-wrapper {
-  position: relative;
-  height: 180px;
-  width: 100%;
-  background: var(--navy-700);
-  flex-shrink: 0;
+  position: relative; height: 180px; width: 100%;
+  background: var(--navy-700); flex-shrink: 0;
 }
 .glance-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
 .glance-card:hover .glance-card-img { transform: scale(1.04); }
 .glance-card-body { padding: 1.2rem; display: flex; flex-direction: column; flex: 1; background: var(--navy-800); }
 .glance-card-num {
-  position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
-  background: rgba(10, 14, 26, 0.85);
-  backdrop-filter: blur(8px);
-  color: var(--indigo-400);
-  font-weight: 800;
-  font-size: 0.9rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  position: absolute; top: 0.75rem; left: 0.75rem;
+  background: rgba(10,14,26,0.85); backdrop-filter: blur(8px);
+  color: var(--indigo-400); font-weight: 800; font-size: 0.9rem;
+  padding: 0.2rem 0.6rem; border-radius: var(--radius-sm);
+  border: 1px solid rgba(16,185,129,0.3);
 }
 
 .glance-community-card {
-  flex: 0 0 82%;
-  max-width: 340px;
-  background: var(--navy-800);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  scroll-snap-align: start;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  flex: 0 0 82%; max-width: 340px;
+  background: var(--navy-800); border-radius: var(--radius-lg);
+  padding: 1.25rem; scroll-snap-align: start;
+  display: flex; flex-direction: column; gap: 1rem;
   box-shadow: var(--shadow-md);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255,255,255,0.12);
   border-left: 4px solid var(--indigo);
 }
 
-/* ── Category Pills ───────────────────────────────────────────── */
-.cat-pills {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
+/* ── Category Pills ──────────────────────────── */
+.cat-pills { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
 .cat-pill {
-  padding: 0.5rem 1.1rem;
-  border-radius: var(--radius-full);
-  font-size: 0.85rem;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--gray-300);
-  transition: var(--transition);
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  text-decoration: none;
+  padding: 0.5rem 1.1rem; border-radius: var(--radius-full);
+  font-size: 0.85rem; font-weight: 600;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--gray-300); transition: var(--transition);
+  white-space: nowrap; display: inline-flex; align-items: center;
+  gap: 0.4rem; text-decoration: none;
 }
 .cat-pill:hover, .cat-pill.active {
-  background: var(--indigo-light);
-  border-color: var(--indigo);
-  color: var(--white);
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+  background: var(--indigo-light); border-color: var(--indigo);
+  color: var(--white); box-shadow: 0 0 15px rgba(16,185,129,0.2);
 }
 
-/* ── Main 2-col layout (desktop) ──────────────────────────────── */
+/* ── Main 2-col layout (desktop) ─────────────── */
 .home-layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 2.5rem;
-  align-items: start;
-  padding-bottom: 2rem;
+  display: grid; grid-template-columns: 1fr 340px;
+  gap: 2.5rem; align-items: start; padding-bottom: 2rem;
 }
 @media (max-width: 1100px) {
   .home-layout { grid-template-columns: 1fr; }
@@ -328,16 +132,12 @@
 .sidebar { position: sticky; top: calc(var(--nav-height) + 1.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
 
 .sidebar-widget {
-  background: var(--navy-800);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-md);
+  background: var(--navy-800); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: var(--shadow-md);
 }
 .newsletter-widget {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 21, 38, 0.95) 100%);
-  border-color: rgba(16, 185, 129, 0.3);
-  text-align: center;
+  background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(15,21,38,0.95) 100%);
+  border-color: rgba(16,185,129,0.3); text-align: center;
 }
 .newsletter-icon { font-size: 2.2rem; margin-bottom: 0.5rem; }
 .newsletter-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 800; margin-bottom: 0.4rem; color: var(--white); }
@@ -346,122 +146,372 @@
 
 .sidebar-cats { display: flex; flex-direction: column; gap: 0.35rem; }
 .sidebar-cat {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0.8rem;
-  border-radius: var(--radius-sm);
-  transition: var(--transition);
-  color: var(--gray-300);
-  font-size: 0.9rem;
-  border: 1px solid transparent;
-  text-decoration: none;
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.6rem 0.8rem; border-radius: var(--radius-sm);
+  transition: var(--transition); color: var(--gray-300);
+  font-size: 0.9rem; border: 1px solid transparent; text-decoration: none;
 }
-.sidebar-cat:hover { background: rgba(255, 255, 255, 0.05); color: var(--white); border-color: rgba(255, 255, 255, 0.1); }
-.sidebar-cat-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(255, 255, 255, 0.06); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; }
+.sidebar-cat:hover { background: rgba(255,255,255,0.05); color: var(--white); border-color: rgba(255,255,255,0.1); }
+.sidebar-cat-icon { width: 32px; height: 32px; border-radius: var(--radius-sm); background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; }
 .sidebar-cat-name { flex: 1; font-weight: 600; }
-.sidebar-cat-count { font-size: 0.78rem; color: var(--indigo-400); font-weight: 700; background: rgba(16, 185, 129, 0.12); padding: 0.1rem 0.5rem; border-radius: var(--radius-full); }
+.sidebar-cat-count { font-size: 0.78rem; color: var(--indigo-400); font-weight: 700; background: rgba(16,185,129,0.12); padding: 0.1rem 0.5rem; border-radius: var(--radius-full); }
+
+/* ════════════════════════════════════════════════
+   MOBILE OVERRIDES (≤768px)
+   Matches the reference mockup exactly.
+   ════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden !important;
+    width: 100vw !important; max-width: 100vw !important;
+    background: #f8fafc !important;
+  }
+  body { padding-bottom: 72px !important; }
+
+  /* ① Hide desktop hero */
+  .order-mobile-1 { display: none !important; }
+  .order-mobile-2 { order: 1; }
+  .order-mobile-3 { order: 2; }
+  .order-mobile-4 { order: 3; }
+  .order-mobile-5 { order: 4; }
+
+  /* ── Mobile Topic Pill Row ──────────────────── */
+  .mobile-topic-scroll {
+    display: flex !important; overflow-x: auto;
+    gap: 0.5rem; padding: 0.85rem 1rem;
+    scrollbar-width: none; -ms-overflow-style: none;
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .mobile-topic-scroll::-webkit-scrollbar { display: none; }
+  .mobile-topic-scroll .cat-pill {
+    background: #f1f5f9 !important; border: none !important;
+    color: #475569 !important; font-size: 0.8rem !important;
+    font-weight: 600 !important; border-radius: 50px !important;
+    padding: 0.4rem 1rem !important; flex-shrink: 0 !important;
+    box-shadow: none !important;
+  }
+  .mobile-topic-scroll .cat-pill:first-child {
+    background: #2563eb !important; color: #ffffff !important;
+  }
+
+  /* ── Hottest News Section ───────────────────── */
+  .order-mobile-2 {
+    margin-top: 0 !important; margin-bottom: 0 !important;
+    background: #ffffff;
+  }
+  .glance-section {
+    background: #ffffff !important;
+    border: none !important; border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 1.25rem 0 0.5rem 1rem !important;
+  }
+  .glance-section > div:first-child {
+    padding-right: 1rem !important; margin-bottom: 0.75rem !important;
+  }
+  .glance-section > div:first-child h2 {
+    font-size: 1rem !important; font-weight: 800 !important;
+    color: #0f172a !important;
+  }
+  .glance-section > div:first-child a {
+    font-size: 0.8rem !important; color: #2563eb !important;
+    font-weight: 600 !important;
+  }
+  .glance-track {
+    gap: 0.75rem !important; padding-bottom: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Carousel Card: full-image with gradient overlay */
+  .glance-card {
+    position: relative !important;
+    flex: 0 0 70% !important; max-width: 250px !important;
+    height: 190px !important;
+    border-radius: 16px !important; overflow: hidden !important;
+    display: block !important; flex-direction: unset !important;
+    background: #cbd5e1 !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12) !important;
+    border: none !important;
+    transition: none !important;
+  }
+  .glance-card:hover { transform: none !important; box-shadow: 0 6px 20px rgba(0,0,0,0.12) !important; border-color: transparent !important; }
+
+  .glance-card-img-wrapper {
+    position: absolute !important; inset: 0 !important;
+    height: 100% !important; width: 100% !important;
+    border-radius: 0 !important; background: transparent !important;
+  }
+  .glance-card-img { width: 100% !important; height: 100% !important; object-fit: cover !important; transition: none !important; }
+  .glance-card:hover .glance-card-img { transform: none !important; }
+
+  /* Dark gradient overlay */
+  .glance-card::after {
+    content: '' !important; position: absolute !important; inset: 0 !important;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 25%, rgba(0,0,0,0.82) 100%) !important;
+    pointer-events: none !important; z-index: 1 !important;
+  }
+
+  /* Number badge — top-left white pill */
+  .glance-card-num {
+    position: absolute !important; top: 0.75rem !important; left: 0.75rem !important;
+    background: #ffffff !important; color: #2563eb !important;
+    font-weight: 800 !important; font-size: 0.7rem !important;
+    padding: 0.2rem 0.6rem !important; border-radius: 20px !important;
+    z-index: 3 !important; border: none !important; backdrop-filter: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  }
+
+  /* Card body at bottom of image */
+  .glance-card-body {
+    position: absolute !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+    z-index: 2 !important; padding: 0.875rem !important;
+    background: transparent !important;
+    display: flex !important; flex-direction: column !important;
+    gap: 0.2rem !important; flex: unset !important;
+  }
+  .glance-card-body > div:first-child span {
+    display: inline-block !important;
+    background: rgba(255,255,255,0.15) !important; color: #fff !important;
+    backdrop-filter: blur(6px) !important; -webkit-backdrop-filter: blur(6px) !important;
+    border-radius: 4px !important; font-size: 0.62rem !important; font-weight: 700 !important;
+    padding: 0.12rem 0.45rem !important; text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+  }
+  .glance-card-body h3 { margin: 0 !important; }
+  .glance-card-body h3 a {
+    color: #ffffff !important; font-size: 0.88rem !important; font-weight: 700 !important;
+    line-height: 1.3 !important; text-shadow: 0 1px 4px rgba(0,0,0,0.6) !important;
+    display: -webkit-box !important; -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important; overflow: hidden !important;
+    text-decoration: none !important;
+  }
+  .glance-card-body > div:last-child {
+    color: rgba(255,255,255,0.72) !important; font-size: 0.67rem !important;
+  }
+
+  /* ── Latest Articles Feed Section ──────────── */
+  .order-mobile-3 {
+    margin-top: 0 !important; padding: 0 !important;
+    background: #f8fafc !important;
+  }
+
+  /* Section header */
+  .order-mobile-3 > .container > .home-layout > main > div:first-child {
+    display: flex !important; align-items: center !important;
+    justify-content: space-between !important;
+    padding: 1.25rem 1rem 0.75rem 1rem !important;
+    border-bottom: none !important;
+    background: #f8fafc !important;
+  }
+  .order-mobile-3 > .container > .home-layout > main > div:first-child h2 {
+    font-size: 1rem !important; font-weight: 800 !important;
+    color: #0f172a !important; display: flex !important; align-items: center !important;
+  }
+  .order-mobile-3 > .container > .home-layout > main > div:first-child span { display: none !important; }
+
+  /* Hide sidebar */
+  .home-layout { display: block !important; }
+  .sidebar { display: none !important; }
+
+  /* Article feed container */
+  .article-feed {
+    gap: 0 !important; padding: 0 !important; background: #ffffff !important;
+    border-radius: 12px !important; overflow: hidden !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04) !important;
+    margin: 0 0.75rem !important;
+  }
+
+  /* ── Each article card: horizontal row ─────── */
+  article.article-card {
+    all: unset !important;
+    display: flex !important; flex-direction: row !important;
+    align-items: flex-start !important;
+    width: 100% !important; box-sizing: border-box !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 1rem !important; gap: 0.875rem !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease !important;
+  }
+  article.article-card:last-child { border-bottom: none !important; }
+  article.article-card:hover { background: #f8fafc !important; }
+
+  /* Thumbnail — left */
+  article.article-card > a.article-card-img {
+    all: unset !important;
+    display: block !important;
+    flex: 0 0 96px !important; height: 76px !important;
+    border-radius: 12px !important; overflow: hidden !important;
+    background: #e2e8f0 !important; position: relative !important;
+    flex-shrink: 0 !important;
+  }
+  article.article-card > a.article-card-img img {
+    position: absolute !important; inset: 0 !important;
+    width: 100% !important; height: 100% !important;
+    object-fit: cover !important;
+  }
+  article.article-card > a.article-card-img .article-card-cat-badge { display: none !important; }
+  article.article-card::after { display: none !important; }
+  article.article-card::before { display: none !important; }
+
+  /* Text — right */
+  article.article-card > div.article-card-body {
+    all: unset !important;
+    flex: 1 !important; display: flex !important;
+    flex-direction: column !important; gap: 0.18rem !important;
+    justify-content: flex-start !important;
+    min-width: 0 !important;
+  }
+
+  /* Category label */
+  article.article-card .article-card-meta {
+    font-size: 0.65rem !important; color: #2563eb !important;
+    font-weight: 700 !important; text-transform: uppercase !important;
+    letter-spacing: 0.04em !important; margin-bottom: 0.1rem !important;
+    display: flex !important; align-items: center !important; gap: 0.3rem !important;
+  }
+  article.article-card .article-card-meta span.meta-separator,
+  article.article-card .article-card-meta span.meta-time,
+  article.article-card .article-card-meta span.meta-author { display: none !important; }
+
+  /* Title */
+  article.article-card h2 {
+    font-family: var(--font-sans) !important;
+    font-size: 0.92rem !important; font-weight: 700 !important;
+    line-height: 1.38 !important; color: #0f172a !important;
+    margin: 0 0 0.2rem 0 !important; text-shadow: none !important;
+    display: -webkit-box !important; -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important; overflow: hidden !important;
+    -webkit-text-fill-color: unset !important;
+  }
+  article.article-card h2 a {
+    color: #0f172a !important; text-decoration: none !important;
+    -webkit-text-fill-color: unset !important;
+  }
+
+  /* Author / date row */
+  article.article-card .article-card-footer {
+    display: flex !important; align-items: center !important;
+    gap: 0.35rem !important; margin-top: 0.25rem !important;
+    padding-top: 0 !important; border-top: none !important;
+    flex-wrap: nowrap !important;
+  }
+  article.article-card .article-card-footer a.btn { display: none !important; }
+
+  /* Date shown as text */
+  article.article-card .article-card-meta span:first-child {
+    display: inline !important; /* show the date span */
+  }
+
+  /* Hide excerpt */
+  article.article-card p.article-card-excerpt { display: none !important; }
+
+  /* CTA at bottom of feed */
+  .article-feed + div { margin: 1rem 0.75rem !important; border-radius: 12px !important; }
+
+  /* Hide Q&A section on mobile */
+  .order-mobile-4 { display: none !important; }
+}
 </style>
 
 <div class="home-layout-wrapper">
 
-<!-- ① Editorial Header & Category Filters (mobile order 1) -->
+<!-- ① Editorial Hero (hidden on mobile) -->
 <div class="container order-mobile-1" style="padding-top: calc(var(--nav-height) + 2rem); margin-bottom: 1.5rem;">
   <div style="background: var(--gradient-card); border: 1px solid rgba(255,255,255,0.12); padding: 2.2rem 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); position: relative; overflow: hidden;">
     <div style="max-width: 820px; position: relative; z-index: 2;">
-      <div style="display: inline-flex; align-items: center; gap: 0.6rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(16, 185, 129, 0.2) 100%); border: 1px solid rgba(99, 102, 241, 0.6); color: var(--indigo-400); padding: 0.45rem 1.1rem; border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem; box-shadow: 0 0 15px rgba(99, 102, 241, 0.25); animation: pulseBadge 3s infinite ease-in-out;">
-        <span style="font-size: 1rem;">📚</span>
-        <span>Independent Tax Publication • <strong style="color: var(--white);"><%= totalArticles || '85+' %>+ Published Articles & Guides</strong></span>
+      <div style="display: inline-flex; align-items: center; gap: 0.6rem; background: linear-gradient(135deg,rgba(99,102,241,0.25),rgba(16,185,129,0.2)); border: 1px solid rgba(99,102,241,0.6); color: var(--indigo-400); padding: 0.45rem 1.1rem; border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.2rem; animation: pulseBadge 3s infinite ease-in-out;">
+        <span style="font-size:1rem;">📚</span>
+        <span>Independent Tax Publication • <strong style="color:var(--white);"><%= totalArticles || '85+' %>+ Published Articles &amp; Guides</strong></span>
       </div>
-      <h1 style="font-family: var(--font-display); font-size: 2.6rem; font-weight: 800; line-height: 1.22; margin: 0 0 0.85rem 0; color: var(--white); letter-spacing: -0.5px;">
-        Your Trusted Source for <span style="color: var(--amber); background: linear-gradient(to right, var(--amber), #fde68a); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tax News</span> & <span style="color: var(--indigo-400); background: linear-gradient(to right, var(--indigo-400), #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Expert Articles</span>.
+      <h1 style="font-family:var(--font-display);font-size:2.6rem;font-weight:800;line-height:1.22;margin:0 0 0.85rem 0;color:var(--white);letter-spacing:-0.5px;">
+        Your Trusted Source for <span style="color:var(--amber);background:linear-gradient(to right,var(--amber),#fde68a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Tax News</span> &amp; <span style="color:var(--indigo-400);background:linear-gradient(to right,var(--indigo-400),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Expert Articles</span>.
       </h1>
-      <p style="color: var(--gray-300); margin: 0 0 1.5rem 0; font-size: 1.1rem; line-height: 1.65; max-width: 740px;">
-        Explore our comprehensive public archive of over <strong style="color: var(--white);"><%= totalArticles || '85' %>+ in-depth tax articles</strong>, breaking IRS updates, tax refund tracking guides, and deduction checklists designed to simplify complex tax rules.
+      <p style="color:var(--gray-300);margin:0 0 1.5rem 0;font-size:1.1rem;line-height:1.65;max-width:740px;">
+        Explore our comprehensive public archive of over <strong style="color:var(--white);"><%= totalArticles || '85' %>+ in-depth tax articles</strong>, breaking IRS updates, tax refund tracking guides, and deduction checklists.
       </p>
-      
-      <form action="/search" method="GET" style="display: flex; gap: 0.6rem; max-width: 540px; flex-wrap: wrap;">
-        <input type="text" name="q" placeholder="Search <%= totalArticles || '85' %>+ tax articles (e.g., child tax credit, LLC, crypto)..." required
-          style="flex: 1; min-width: 240px; padding: 0.8rem 1.4rem; border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.2); background: rgba(15, 23, 42, 0.85); color: var(--white); font-size: 0.95rem; outline: none; transition: var(--transition);">
-        <button type="submit" class="btn btn-primary" style="border-radius: var(--radius-full); padding: 0.8rem 1.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);">
-          <span>Search Archive</span> 🔍
-        </button>
+      <form action="/search" method="GET" style="display:flex;gap:0.6rem;max-width:540px;flex-wrap:wrap;">
+        <input type="text" name="q" placeholder="Search <%= totalArticles || '85' %>+ tax articles..." required
+          style="flex:1;min-width:240px;padding:0.8rem 1.4rem;border-radius:var(--radius-full);border:1px solid rgba(255,255,255,0.2);background:rgba(15,23,42,0.85);color:var(--white);font-size:0.95rem;outline:none;">
+        <button type="submit" class="btn btn-primary" style="border-radius:var(--radius-full);padding:0.8rem 1.8rem;font-weight:700;">Search 🔍</button>
       </form>
     </div>
   </div>
 
-  <!-- IRS Ticker Banner -->
   <% if (irsUpdates && irsUpdates.length > 0) { %>
-  <div class="irs-ticker" style="margin-top: 1.2rem; border-radius: var(--radius-md);">
+  <div class="irs-ticker" style="margin-top:1.2rem;border-radius:var(--radius-md);">
     <span class="ticker-label">🔴 BREAKING IRS</span>
-    <div class="ticker-items" style="flex: 1; overflow: hidden; min-width: 0;">
+    <div class="ticker-items" style="flex:1;overflow:hidden;min-width:0;">
       <div class="ticker-track">
-        <% irsUpdates.forEach(u => { %>
-        <a href="/article/<%= u.slug %>" class="ticker-item">⚡ <%= u.title %></a>
-        <% }); %>
-        <% irsUpdates.forEach(u => { %>
-        <a href="/article/<%= u.slug %>" class="ticker-item">⚡ <%= u.title %></a>
-        <% }); %>
+        <% irsUpdates.forEach(u => { %><a href="/article/<%= u.slug %>" class="ticker-item">⚡ <%= u.title %></a><% }); %>
+        <% irsUpdates.forEach(u => { %><a href="/article/<%= u.slug %>" class="ticker-item">⚡ <%= u.title %></a><% }); %>
       </div>
     </div>
   </div>
   <% } %>
 
-  <!-- Topic Pills -->
-  <div style="margin-top: 1.5rem; margin-bottom: 0.5rem;">
-    <div style="font-size: 0.78rem; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.7rem;">Explore Articles by Topic:</div>
+  <div style="margin-top:1.5rem;margin-bottom:0.5rem;">
+    <div style="font-size:0.78rem;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.7rem;">Explore Articles by Topic:</div>
     <div class="cat-pills">
       <a href="/" class="cat-pill <%= !locals.activeCat ? 'active' : '' %>">🔥 All Topics (<%= totalArticles || '85+' %>)</a>
-      <% categories.slice(0, 10).forEach(cat => { %>
-      <a href="/category/<%= cat.slug %>" class="cat-pill" style="--cat-color: <%= cat.color %>">
-        <span><%= cat.icon %></span> <span><%= cat.name %></span>
-      </a>
+      <% categories.slice(0,10).forEach(cat => { %>
+      <a href="/category/<%= cat.slug %>" class="cat-pill"><span><%= cat.icon %></span> <span><%= cat.name %></span></a>
       <% }); %>
-      <a href="/articles" class="cat-pill" style="border-color: var(--indigo); color: var(--indigo-400);">📚 View All Topics →</a>
+      <a href="/articles" class="cat-pill" style="border-color:var(--indigo);color:var(--indigo-400);">📚 View All →</a>
     </div>
   </div>
 </div>
 
-<!-- ② Trending Article Carousel (mobile order 2) -->
-<div class="container order-mobile-2" style="margin-top: 1rem; margin-bottom: 2rem;">
-  <div class="glance-section" id="articleCarousel" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); padding: 2rem; border-radius: var(--radius-lg);">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;">
-      <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; margin: 0; color: var(--white); display: flex; align-items: center; gap: 0.5rem;">
-        <span style="display: inline-block; width: 8px; height: 24px; background: var(--amber); border-radius: 4px;"></span> 🔥 Most Read & Trending Articles
+<!-- ② "Hottest News" Swipe Carousel (mobile order 1) -->
+<div class="container order-mobile-2" style="margin-top:1rem;margin-bottom:2rem;">
+
+  <!-- Mobile-only: Topic pill row -->
+  <div class="mobile-topic-scroll" style="display:none;">
+    <a href="/" class="cat-pill">All</a>
+    <% categories.slice(0,8).forEach(cat => { %>
+    <a href="/category/<%= cat.slug %>" class="cat-pill"><%= cat.name %></a>
+    <% }); %>
+  </div>
+
+  <div class="glance-section" id="articleCarousel" style="background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);padding:2rem;border-radius:var(--radius-lg);">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.5rem;">
+      <h2 style="font-family:var(--font-display);font-size:1.5rem;font-weight:800;margin:0;color:var(--white);display:flex;align-items:center;gap:0.5rem;">
+        <span style="display:inline-block;width:8px;height:24px;background:var(--amber);border-radius:4px;"></span> 🔥 Most Read &amp; Trending
       </h2>
-      <a href="/articles" style="color: var(--indigo-400); font-weight: 700; font-size: 0.9rem; transition: var(--transition);">View Complete Archive →</a>
+      <a href="/articles" style="color:var(--indigo-400);font-weight:700;font-size:0.9rem;">View All →</a>
     </div>
     <div class="swipe-hint">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      Swipe sideways to explore more popular reads
+      Swipe to explore more
     </div>
     <div class="carousel-wrapper" id="newsCarouselWrapper">
       <button class="scroll-btn prev hidden" id="newsPrev" aria-label="Previous">&#8249;</button>
       <button class="scroll-btn next" id="newsNext" aria-label="Next">&#8250;</button>
       <div class="glance-track" id="newsTrack">
-        <% articles.slice(0, 8).forEach((article, i) => { %>
+        <% articles.slice(0,8).forEach((article, i) => { %>
           <div class="glance-card">
-            <a href="/article/<%= article.slug %>" style="display: block; position: relative;">
+            <a href="/article/<%= article.slug %>" style="display:block;position:relative;">
               <div class="glance-card-img-wrapper">
                 <% if (article.featured_image) { %>
                   <% const imgPath = article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image; %>
-                <img src="<%= imgPath %>" class="glance-card-img" alt="<%= article.title %>" loading="lazy"
-                  onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;\'><%= article.category_icon || '📋' %></div>'">
+                  <img src="<%= imgPath %>" class="glance-card-img" alt="<%= article.title %>" loading="lazy"
+                    onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;\'><%= article.category_icon || "📋" %></div>'">
                 <% } else { %>
-                  <div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;"><%= article.category_icon || '📋' %></div>
+                  <div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:3rem;"><%= article.category_icon || '📋' %></div>
                 <% } %>
-                <div class="glance-card-num"><%= (i + 1).toString().padStart(2, '0') %></div>
+                <div class="glance-card-num"><%= (i+1).toString().padStart(2,'0') %></div>
               </div>
             </a>
             <div class="glance-card-body">
-              <div style="margin-bottom: 0.5rem;">
-                <span style="color:<%= article.category_color %>; font-size: 0.72rem; font-weight: 700; background: <%= article.category_color %>22; padding: 0.2rem 0.5rem; border-radius: 4px;"><%= article.category_name || 'General' %></span>
+              <div style="margin-bottom:0.5rem;">
+                <span style="color:<%= article.category_color %>;font-size:0.72rem;font-weight:700;background:<%= article.category_color %>22;padding:0.2rem 0.5rem;border-radius:4px;"><%= article.category_name || 'General' %></span>
               </div>
-              <h3 style="font-size: 1rem; line-height: 1.4; margin: 0 0 0.5rem 0; flex: 1;">
-                <a href="/article/<%= article.slug %>" style="color: var(--white); text-decoration: none;"><%= article.title %></a>
+              <h3 style="font-size:1rem;line-height:1.4;margin:0 0 0.5rem 0;flex:1;">
+                <a href="/article/<%= article.slug %>" style="color:var(--white);text-decoration:none;"><%= article.title %></a>
               </h3>
-              <div style="font-size: 0.78rem; color: var(--gray-400);">
-                <span><%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric'}) %></span>
+              <div style="font-size:0.78rem;color:var(--gray-400);">
+                <%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) %>
+                &nbsp;·&nbsp; <%= article.reading_time || Math.max(2,Math.ceil((article.content||'').length/1000)) %> min read
               </div>
             </div>
           </div>
@@ -469,95 +519,90 @@
       </div>
     </div>
     <div class="scroll-dots" id="newsDots">
-      <% articles.slice(0, 8).forEach((_, i) => { %>
-        <div class="scroll-dot <%= i === 0 ? 'active' : '' %>" data-track="newsTrack" data-index="<%= i %>"></div>
+      <% articles.slice(0,8).forEach((_,i) => { %>
+        <div class="scroll-dot <%= i===0?'active':'' %>" data-track="newsTrack" data-index="<%= i %>"></div>
       <% }); %>
     </div>
   </div>
 </div>
 
-<!-- ③ Main Article Feed (mobile order 3 - COMPACT LIST for mobile readers!) -->
-<div class="container order-mobile-3" style="margin-top: 1.5rem;">
+<!-- ③ Latest Articles Feed (mobile order 2 — vertical scroll) -->
+<div class="container order-mobile-3" style="margin-top:1.5rem;">
   <div class="home-layout">
-    <!-- Article Feed -->
     <main class="article-feed">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
-        <h2 style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--white); margin: 0; display: flex; align-items: center; gap: 0.6rem;">
-          <span style="display: inline-block; width: 8px; height: 26px; background: var(--indigo); border-radius: 4px; box-shadow: 0 0 12px var(--indigo);"></span>
-          Latest Published Articles
+      <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:0.8rem;flex-wrap:wrap;gap:0.5rem;">
+        <h2 style="font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:var(--white);margin:0;display:flex;align-items:center;gap:0.6rem;">
+          <span style="display:inline-block;width:8px;height:26px;background:var(--indigo);border-radius:4px;box-shadow:0 0 12px var(--indigo);"></span>
+          Latest Articles
         </h2>
-        <span style="font-size: 0.85rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--gray-300); padding: 0.3rem 0.8rem; border-radius: var(--radius-full); font-weight: 600;">
-          Showing newest <%= articles.length %> of <strong style="color: var(--indigo-400);"><%= totalArticles || '85+' %></strong> articles
+        <span style="font-size:0.85rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--gray-300);padding:0.3rem 0.8rem;border-radius:var(--radius-full);font-weight:600;">
+          <%= articles.length %> of <strong style="color:var(--indigo-400);"><%= totalArticles || '85+' %></strong>
         </span>
       </div>
 
       <% if (articles && articles.length > 0) { %>
         <% articles.forEach(article => { %>
         <% const feedImg = article.featured_image ? (article.featured_image.startsWith('/') || article.featured_image.startsWith('http') ? article.featured_image : '/images/' + article.featured_image) : null; %>
-        <article class="article-card reveal" style="background: var(--navy-800); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); border: 1px solid rgba(255,255,255,0.1); transition: transform 0.25s ease, border-color 0.25s ease; display: flex; flex-direction: column;">
+        <article class="article-card reveal" style="background:var(--navy-800);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,0.1);transition:transform 0.25s ease,border-color 0.25s ease;display:flex;flex-direction:column;">
           <% if (feedImg) { %>
-          <a href="/article/<%= article.slug %>" class="article-card-img" style="display: block; height: 240px; overflow: hidden; position: relative; flex-shrink: 0; background: var(--navy-700);">
-            <img src="<%= feedImg %>" alt="<%= article.title %>" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
-              onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3.5rem;\'><%= article.category_icon || '📋' %></div>'">
-            <div class="article-card-cat-badge" style="position: absolute; top: 1rem; left: 1rem; z-index: 2;">
-              <span style="background:<%= article.category_color || '#6366f1' %>ee; color: #fff; font-size: 0.75rem; padding: 0.3rem 0.8rem; border-radius: var(--radius-full); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
+          <a href="/article/<%= article.slug %>" class="article-card-img" style="display:block;height:240px;overflow:hidden;position:relative;flex-shrink:0;background:var(--navy-700);">
+            <img src="<%= feedImg %>" alt="<%= article.title %>" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;"
+              onerror="this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:3.5rem;\'><%= article.category_icon || "📋" %></div>'">
+            <div class="article-card-cat-badge" style="position:absolute;top:1rem;left:1rem;z-index:2;">
+              <span style="background:<%= article.category_color || '#6366f1' %>ee;color:#fff;font-size:0.75rem;padding:0.3rem 0.8rem;border-radius:var(--radius-full);font-weight:800;text-transform:uppercase;letter-spacing:0.5px;box-shadow:0 2px 8px rgba(0,0,0,0.4);">
                 <%= article.category_name || 'General Tax' %>
               </span>
             </div>
           </a>
           <% } %>
-          <div class="article-card-body" style="padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+          <div class="article-card-body" style="padding:1.5rem;flex:1;display:flex;flex-direction:column;justify-content:space-between;">
             <div>
-              <div class="article-card-meta" style="margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.8rem; font-size: 0.8rem; color: var(--gray-400);">
-                <span>📅 <%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) %></span>
+              <div class="article-card-meta" style="margin-bottom:0.6rem;display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;color:var(--gray-400);">
+                <span>📅 <%= new Date(article.publish_date || article.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) %></span>
                 <span class="meta-separator">•</span>
-                <span class="meta-time">⏱️ <%= article.reading_time || Math.max(2, Math.ceil((article.content || '').length / 1000)) %> min read</span>
+                <span class="meta-time">⏱️ <%= article.reading_time || Math.max(2,Math.ceil((article.content||'').length/1000)) %> min read</span>
                 <% if (article.author_name) { %>
                 <span class="meta-separator">•</span>
-                <span class="meta-author">✍️ by <strong style="color: var(--gray-300);"><%= article.author_name %></strong></span>
+                <span class="meta-author">✍️ by <strong style="color:var(--gray-300);"><%= article.author_name %></strong></span>
                 <% } %>
               </div>
-              <h2 style="font-size: 1.35rem; font-weight: 800; line-height: 1.35; margin: 0 0 0.75rem 0;">
-                <a href="/article/<%= article.slug %>" style="color: var(--white); text-decoration: none; transition: color 0.2s;"><%= article.title %></a>
+              <h2 style="font-size:1.35rem;font-weight:800;line-height:1.35;margin:0 0 0.75rem 0;">
+                <a href="/article/<%= article.slug %>" style="color:var(--white);text-decoration:none;transition:color 0.2s;"><%= article.title %></a>
               </h2>
               <% if (article.excerpt) { %>
-              <p class="article-card-excerpt" style="font-size: 0.95rem; color: var(--gray-300); line-height: 1.65; margin: 0 0 1.25rem 0;"><%= article.excerpt %></p>
+              <p class="article-card-excerpt" style="font-size:0.95rem;color:var(--gray-300);line-height:1.65;margin:0 0 1.25rem 0;"><%= article.excerpt %></p>
               <% } %>
             </div>
             <div class="article-card-footer">
-              <a href="/article/<%= article.slug %>" class="btn btn-sm" style="background: rgba(99, 102, 241, 0.15); border: 1px solid var(--indigo); color: var(--indigo-400); font-weight: 700; padding: 0.5rem 1.2rem; border-radius: var(--radius-full); transition: var(--transition); display: inline-flex; align-items: center; gap: 0.4rem;">
-                <span>Read Complete Article</span> →
+              <a href="/article/<%= article.slug %>" class="btn btn-sm" style="background:rgba(99,102,241,0.15);border:1px solid var(--indigo);color:var(--indigo-400);font-weight:700;padding:0.5rem 1.2rem;border-radius:var(--radius-full);display:inline-flex;align-items:center;gap:0.4rem;">
+                <span>Read Article</span> →
               </a>
             </div>
           </div>
         </article>
         <% }); %>
       <% } else { %>
-        <p style="color: var(--gray-400); text-align: center; padding: 3rem;">No articles yet. Check back soon!</p>
+        <p style="color:var(--gray-400);text-align:center;padding:3rem;">No articles yet. Check back soon!</p>
       <% } %>
 
-      <!-- Massive Call-to-Action to browse ALL articles in the library -->
-      <div style="margin: 1.5rem 0; text-align: center; background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: var(--radius-lg); padding: 3rem 2rem; box-shadow: var(--shadow-lg); position: relative; overflow: hidden;">
-        <div style="position: relative; z-index: 2;">
-          <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📚</div>
-          <h3 style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--white); margin: 0 0 0.6rem 0;">Explore Over <%= totalArticles || '85' %>+ Published Tax Guides</h3>
-          <p style="color: var(--gray-300); font-size: 1rem; margin: 0 auto 1.8rem auto; max-width: 560px; line-height: 1.6;">
-            Our library covers everything from independent contractor taxes and LLC business structures to capital gains, crypto reporting, and IRS penalty avoidance.
-          </p>
-          <a href="/articles" class="btn btn-primary" style="padding: 1rem 3.2rem; font-size: 1.1rem; font-weight: 800; border-radius: var(--radius-full); box-shadow: 0 0 25px rgba(99, 102, 241, 0.5); display: inline-flex; align-items: center; gap: 0.8rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;">
-            <span>Browse Complete Article Archive (<%= totalArticles %>+ Articles)</span> →
-          </a>
-        </div>
+      <div style="margin:1.5rem 0;text-align:center;background:linear-gradient(135deg,rgba(30,41,59,0.9),rgba(15,23,42,0.95));border:1px solid rgba(99,102,241,0.4);border-radius:var(--radius-lg);padding:3rem 2rem;box-shadow:var(--shadow-lg);">
+        <div style="font-size:2.5rem;margin-bottom:0.5rem;">📚</div>
+        <h3 style="font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:var(--white);margin:0 0 0.6rem 0;">Explore <%= totalArticles || '85' %>+ Tax Guides</h3>
+        <p style="color:var(--gray-300);font-size:1rem;margin:0 auto 1.8rem auto;max-width:560px;line-height:1.6;">
+          IRS updates, deductions, crypto tax, LLC, retirement, and more.
+        </p>
+        <a href="/articles" class="btn btn-primary" style="padding:1rem 3.2rem;font-size:1.1rem;font-weight:800;border-radius:var(--radius-full);display:inline-flex;align-items:center;gap:0.8rem;">
+          <span>Browse Full Archive (<%= totalArticles %>+ Articles)</span> →
+        </a>
       </div>
     </main>
 
-    <!-- Sidebar -->
+    <!-- Sidebar (desktop only) -->
     <aside class="sidebar">
-      <!-- Newsletter -->
       <div class="sidebar-widget reveal newsletter-widget">
         <div class="newsletter-icon">📬</div>
         <h3 class="newsletter-title">Free Tax Intelligence</h3>
-        <p class="newsletter-sub">Get breaking IRS tax changes and weekly money-saving deduction tips delivered directly to your inbox.</p>
+        <p class="newsletter-sub">Get breaking IRS tax changes and weekly money-saving tips delivered to your inbox.</p>
         <form class="newsletter-form-vertical" id="sidebarNewsletter">
           <input type="text" name="name" placeholder="Your name" class="newsletter-input" style="margin-bottom:0.5rem;">
           <input type="email" name="email" placeholder="your@email.com" class="newsletter-input" required>
@@ -565,12 +610,9 @@
           <p style="font-size:0.72rem;color:var(--gray-500);text-align:center;margin-top:0.5rem;">No spam. Unsubscribe anytime.</p>
         </form>
       </div>
-
-      <!-- Categories -->
       <div class="sidebar-widget reveal">
         <div class="section-title" style="font-size:1.1rem;margin-bottom:1.2rem;font-weight:800;">
-          <div class="section-title-accent"></div>
-          Article Categories
+          <div class="section-title-accent"></div>Article Categories
         </div>
         <div class="sidebar-cats">
           <% categories.forEach(cat => { %>
@@ -580,7 +622,7 @@
             <span class="sidebar-cat-count"><%= cat.article_count || 0 %></span>
           </a>
           <% }); %>
-          <a href="/articles" class="sidebar-cat" style="margin-top: 0.5rem; background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3);">
+          <a href="/articles" class="sidebar-cat" style="margin-top:0.5rem;background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.3);">
             <span class="sidebar-cat-icon" style="background:var(--indigo);color:#fff;">📚</span>
             <span class="sidebar-cat-name" style="color:var(--indigo-400);">All Published Articles</span>
             <span class="sidebar-cat-count" style="background:var(--indigo);color:#fff;"><%= totalArticles || '85+' %></span>
@@ -591,49 +633,45 @@
   </div>
 </div>
 
-
-
-<!-- ④ Community Discussions & Q&A (mobile order 4) -->
-<div class="container order-mobile-4" style="margin-top: 1rem; margin-bottom: 2rem;">
+<!-- ④ Community Q&A (hidden on mobile) -->
+<div class="container order-mobile-4" style="margin-top:1rem;margin-bottom:2rem;">
   <div class="glance-section">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
-      <h2 style="font-size: 1.4rem; font-weight: 800; margin: 0; color: var(--white); display: flex; align-items: center; gap: 0.5rem;">
-        <span style="display: inline-block; width: 8px; height: 22px; background: var(--indigo); border-radius: 4px;"></span> Reader Questions & Community Discussions
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.5rem;">
+      <h2 style="font-size:1.4rem;font-weight:800;margin:0;color:var(--white);display:flex;align-items:center;gap:0.5rem;">
+        <span style="display:inline-block;width:8px;height:22px;background:var(--indigo);border-radius:4px;"></span> Reader Questions &amp; Community
       </h2>
-      <a href="/community" style="color: var(--indigo-400); font-weight: 600; font-size: 0.85rem;">Browse Q&A Forum →</a>
+      <a href="/community" style="color:var(--indigo-400);font-weight:600;font-size:0.85rem;">Browse Q&amp;A →</a>
     </div>
     <div class="swipe-hint">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      Swipe to browse reader Q&A
+      Swipe to browse Q&amp;A
     </div>
     <div class="carousel-wrapper" id="discCarouselWrapper">
       <button class="scroll-btn prev hidden" id="discPrev" aria-label="Previous">&#8249;</button>
       <button class="scroll-btn next" id="discNext" aria-label="Next">&#8250;</button>
       <div class="glance-track" id="discTrack">
-        <div class="glance-community-card" style="justify-content: center; align-items: center; text-align: center; border-left: 4px dashed var(--indigo-400); background: rgba(99,102,241,0.05);">
-          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">💬</div>
-          <h3 style="font-size: 1.1rem; color: var(--white); margin: 0; font-weight: 800;">Have a complex tax question?</h3>
-          <p style="font-size: 0.85rem; color: var(--gray-300); margin: 0.5rem 0 1.2rem 0;">Submit your question to our Enrolled Agents, CPAs, and community members for guidance.</p>
-          <a href="/questions/new" class="btn btn-primary btn-sm" style="width: 100%; padding: 0.6rem 1rem; font-weight: 700;">Ask a Question</a>
+        <div class="glance-community-card" style="justify-content:center;align-items:center;text-align:center;border-left:4px dashed var(--indigo-400);background:rgba(99,102,241,0.05);">
+          <div style="font-size:2.2rem;margin-bottom:0.5rem;">💬</div>
+          <h3 style="font-size:1.1rem;color:var(--white);margin:0;font-weight:800;">Have a tax question?</h3>
+          <p style="font-size:0.85rem;color:var(--gray-300);margin:0.5rem 0 1.2rem 0;">Submit your question to our Enrolled Agents and community members.</p>
+          <a href="/questions/new" class="btn btn-primary btn-sm" style="width:100%;padding:0.6rem 1rem;font-weight:700;">Ask a Question</a>
         </div>
         <% if (recentQuestions && recentQuestions.length > 0) { %>
-          <% recentQuestions.slice(0, 6).forEach(q => { %>
+          <% recentQuestions.slice(0,6).forEach(q => { %>
             <div class="glance-community-card">
-              <div style="display: flex; gap: 1rem; align-items: flex-start;">
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-sm); padding: 0.5rem; min-width: 50px;">
-                  <span style="font-size: 1.15rem; font-weight: 800; color: var(--indigo-400); line-height: 1;"><%= q.answer_count %></span>
-                  <span style="font-size: 0.62rem; color: var(--gray-400); text-transform: uppercase; font-weight: 700; margin-top: 0.25rem;">Ans</span>
+              <div style="display:flex;gap:1rem;align-items:flex-start;">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);padding:0.5rem;min-width:50px;">
+                  <span style="font-size:1.15rem;font-weight:800;color:var(--indigo-400);line-height:1;"><%= q.answer_count %></span>
+                  <span style="font-size:0.62rem;color:var(--gray-400);text-transform:uppercase;font-weight:700;margin-top:0.25rem;">Ans</span>
                 </div>
-                <div style="flex: 1; min-width: 0;">
-                  <div style="margin-bottom: 0.4rem;">
-                    <span style="background:<%= q.category_color || '#6366f1' %>22;color:<%= q.category_color || '#6366f1' %>; padding: 0.18rem 0.5rem; font-size: 0.7rem; border-radius: 4px; font-weight: 700;">
-                      <%= q.category_name || 'General Tax' %>
-                    </span>
+                <div style="flex:1;min-width:0;">
+                  <div style="margin-bottom:0.4rem;">
+                    <span style="background:<%= q.category_color || '#6366f1' %>22;color:<%= q.category_color || '#6366f1' %>;padding:0.18rem 0.5rem;font-size:0.7rem;border-radius:4px;font-weight:700;"><%= q.category_name || 'General Tax' %></span>
                   </div>
-                  <h3 style="font-size: 0.98rem; line-height: 1.4; margin: 0 0 0.5rem 0; font-weight: 700;">
-                    <a href="/question/<%= q.id %>" style="color: var(--white); text-decoration: none;"><%= q.title %></a>
+                  <h3 style="font-size:0.98rem;line-height:1.4;margin:0 0 0.5rem 0;font-weight:700;">
+                    <a href="/question/<%= q.id %>" style="color:var(--white);text-decoration:none;"><%= q.title %></a>
                   </h3>
-                  <div style="font-size: 0.78rem; color: var(--gray-400);">asked by <%= q.is_anonymous ? 'Anonymous Reader' : (q.author_name || 'Reader') %></div>
+                  <div style="font-size:0.78rem;color:var(--gray-400);">asked by <%= q.is_anonymous ? 'Anonymous Reader' : (q.author_name || 'Reader') %></div>
                 </div>
               </div>
             </div>
@@ -644,7 +682,7 @@
     <div class="scroll-dots" id="discDots">
       <div class="scroll-dot active" data-track="discTrack" data-index="0"></div>
       <% if (recentQuestions && recentQuestions.length > 0) { %>
-        <% recentQuestions.slice(0, 6).forEach((_, i) => { %>
+        <% recentQuestions.slice(0,6).forEach((_,i) => { %>
           <div class="scroll-dot" data-track="discTrack" data-index="<%= i+1 %>"></div>
         <% }); %>
       <% } %>
@@ -652,110 +690,63 @@
   </div>
 </div>
 
-<!-- ⑤ Quick Access Features (mobile order 5) -->
-<div class="container order-mobile-5" style="margin-top: 1rem; margin-bottom: 3rem;">
-  <div class="action-cards-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;">
-    <a href="/articles" class="action-card" style="background: var(--navy-800); padding: 1.2rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 0.8rem; text-decoration: none; transition: var(--transition);">
-      <img src="/images/card_read_articles.png" alt="Read Articles" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">All Articles</h3>
-        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;"><%= totalArticles || '85+' %> guides &amp; news</p>
-      </div>
+<!-- ⑤ Quick Access Features -->
+<div class="container order-mobile-5" style="margin-top:1rem;margin-bottom:3rem;">
+  <div class="action-cards-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;">
+    <a href="/articles" class="action-card" style="background:var(--navy-800);padding:1.2rem 1rem;border-radius:var(--radius-md);box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.8rem;text-decoration:none;transition:var(--transition);">
+      <img src="/images/card_read_articles.png" alt="Read Articles" style="width:44px;height:44px;object-fit:contain;flex-shrink:0;">
+      <div><h3 style="color:var(--white);font-size:0.95rem;margin:0 0 0.2rem 0;font-weight:700;">All Articles</h3><p style="color:var(--gray-400);font-size:0.75rem;margin:0;"><%= totalArticles || '85+' %> guides</p></div>
     </a>
-    <a href="/questions/new" class="action-card" style="background: var(--navy-800); padding: 1.2rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 0.8rem; text-decoration: none; transition: var(--transition);">
-      <img src="/images/card_ask_questions.png" alt="Ask Questions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Ask Q&amp;A</h3>
-        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Get expert answers</p>
-      </div>
+    <a href="/questions/new" class="action-card" style="background:var(--navy-800);padding:1.2rem 1rem;border-radius:var(--radius-md);box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.8rem;text-decoration:none;transition:var(--transition);">
+      <img src="/images/card_ask_questions.png" alt="Ask Questions" style="width:44px;height:44px;object-fit:contain;flex-shrink:0;">
+      <div><h3 style="color:var(--white);font-size:0.95rem;margin:0 0 0.2rem 0;font-weight:700;">Ask Q&amp;A</h3><p style="color:var(--gray-400);font-size:0.75rem;margin:0;">Expert answers</p></div>
     </a>
-    <a href="/community" class="action-card" style="background: var(--navy-800); padding: 1.2rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 0.8rem; text-decoration: none; transition: var(--transition);">
-      <img src="/images/card_join_discussions.png" alt="Join Discussions" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Discussions</h3>
-        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Join reader discussions</p>
-      </div>
+    <a href="/community" class="action-card" style="background:var(--navy-800);padding:1.2rem 1rem;border-radius:var(--radius-md);box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.8rem;text-decoration:none;transition:var(--transition);">
+      <img src="/images/card_join_discussions.png" alt="Discussions" style="width:44px;height:44px;object-fit:contain;flex-shrink:0;">
+      <div><h3 style="color:var(--white);font-size:0.95rem;margin:0 0 0.2rem 0;font-weight:700;">Discussions</h3><p style="color:var(--gray-400);font-size:0.75rem;margin:0;">Join readers</p></div>
     </a>
-    <a href="/experts" class="action-card" style="background: var(--navy-800); padding: 1.2rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 0.8rem; text-decoration: none; transition: var(--transition);">
-      <img src="/images/card_learn_experts.png" alt="Learn From Experts" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Verified Experts</h3>
-        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">EAs &amp; CPAs contributors</p>
-      </div>
+    <a href="/experts" class="action-card" style="background:var(--navy-800);padding:1.2rem 1rem;border-radius:var(--radius-md);box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.8rem;text-decoration:none;transition:var(--transition);">
+      <img src="/images/card_learn_experts.png" alt="Experts" style="width:44px;height:44px;object-fit:contain;flex-shrink:0;">
+      <div><h3 style="color:var(--white);font-size:0.95rem;margin:0 0 0.2rem 0;font-weight:700;">Experts</h3><p style="color:var(--gray-400);font-size:0.75rem;margin:0;">EAs &amp; CPAs</p></div>
     </a>
-    <a href="/education" class="action-card" style="background: var(--navy-800); padding: 1.2rem 1rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 0.8rem; text-decoration: none; transition: var(--transition);">
-      <img src="/images/card_tax_education.png" alt="Tax Education" style="width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; border-radius: 8px;">
-      <div>
-        <h3 style="color: var(--white); font-size: 0.95rem; margin: 0 0 0.2rem 0; font-weight: 700;">Tax Education</h3>
-        <p style="color: var(--gray-400); font-size: 0.75rem; margin: 0;">Master tax statutes</p>
-      </div>
+    <a href="/education" class="action-card" style="background:var(--navy-800);padding:1.2rem 1rem;border-radius:var(--radius-md);box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.8rem;text-decoration:none;transition:var(--transition);">
+      <img src="/images/card_tax_education.png" alt="Tax Education" style="width:44px;height:44px;object-fit:contain;flex-shrink:0;border-radius:8px;">
+      <div><h3 style="color:var(--white);font-size:0.95rem;margin:0 0 0.2rem 0;font-weight:700;">Education</h3><p style="color:var(--gray-400);font-size:0.75rem;margin:0;">Master taxes</p></div>
     </a>
   </div>
+</div>
 
 <%- include('partials/footer') %>
 <%- include('partials/scripts') %>
 
 <script>
-// ── Carousel scroll controls ──────────────────────────────────────
 function initCarousel(trackId, prevBtnId, nextBtnId, dotsId) {
   const track = document.getElementById(trackId);
   const prev  = document.getElementById(prevBtnId);
   const next  = document.getElementById(nextBtnId);
   const dotsEl = document.getElementById(dotsId);
   if (!track || !next) return;
-
   const dots = dotsEl ? Array.from(dotsEl.querySelectorAll('.scroll-dot')) : [];
-
   function getCardWidth() {
     const card = track.firstElementChild;
-    if (!card) return 280;
-    return card.offsetWidth + 20; // card + gap
+    return card ? card.offsetWidth + 16 : 280;
   }
-
   function updateButtons() {
     const atStart = track.scrollLeft <= 8;
     const atEnd   = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
     if (prev) prev.classList.toggle('hidden', atStart);
     if (next) next.classList.toggle('hidden', atEnd);
   }
-
   function updateDots() {
-    const cw = getCardWidth();
-    const idx = Math.round(track.scrollLeft / cw);
-    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    const idx = Math.round(track.scrollLeft / getCardWidth());
+    dots.forEach((d,i) => d.classList.toggle('active', i === idx));
   }
-
-  if (prev) prev.addEventListener('click', () => {
-    track.scrollBy({ left: -getCardWidth(), behavior: 'smooth' });
-  });
-  next.addEventListener('click', () => {
-    track.scrollBy({ left: getCardWidth(), behavior: 'smooth' });
-  });
-
+  if (prev) prev.addEventListener('click', () => track.scrollBy({left: -getCardWidth(), behavior:'smooth'}));
+  next.addEventListener('click', () => track.scrollBy({left: getCardWidth(), behavior:'smooth'}));
   track.addEventListener('scroll', () => { updateButtons(); updateDots(); });
-
-  dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => {
-      track.scrollTo({ left: getCardWidth() * i, behavior: 'smooth' });
-    });
-  });
-
+  dots.forEach((dot,i) => dot.addEventListener('click', () => track.scrollTo({left: getCardWidth()*i, behavior:'smooth'})));
   updateButtons();
 }
-
-// Also handle dot clicks via delegation (for dynamically rendered dots)
-document.querySelectorAll('.scroll-dot').forEach(dot => {
-  dot.addEventListener('click', function() {
-    const trackId = this.dataset.track;
-    const idx     = parseInt(this.dataset.index);
-    const track   = document.getElementById(trackId);
-    if (!track) return;
-    const card = track.firstElementChild;
-    const cw   = card ? card.offsetWidth + 20 : 280;
-    track.scrollTo({ left: cw * idx, behavior: 'smooth' });
-  });
-});
-
-initCarousel('newsTrack', 'newsPrev', 'newsNext', 'newsDots');
-initCarousel('discTrack', 'discPrev', 'discNext', 'discDots');
+initCarousel('newsTrack','newsPrev','newsNext','newsDots');
+initCarousel('discTrack','discPrev','discNext','discDots');
 </script>
