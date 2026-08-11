@@ -53,3 +53,61 @@
     <div class="search-results-live" id="searchResultsLive" style="display:none;"></div>
   </div>
 </div>
+
+<!-- Modern Mobile Bottom Navigation -->
+<style>
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(10, 14, 26, 0.98);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  z-index: 1000;
+  padding: 0.5rem 1rem;
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+}
+.bottom-nav-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--gray-400);
+  font-size: 0.7rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+.bottom-nav-item.active {
+  color: var(--indigo-400);
+}
+.bottom-nav-icon {
+  font-size: 1.25rem;
+}
+@media (max-width: 768px) {
+  .bottom-nav { display: block; }
+  body { padding-bottom: 70px; } /* Space for bottom nav */
+  .nav-search-btn { display: none; } /* Hide search in top nav on mobile, use bottom nav */
+}
+</style>
+<div class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <a href="/" class="bottom-nav-item <%= locals.page === 'home' ? 'active' : '' %>">
+      <span class="bottom-nav-icon">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="/articles" class="bottom-nav-item <%= locals.page === 'articles' ? 'active' : '' %>">
+      <span class="bottom-nav-icon">📚</span>
+      <span>Articles</span>
+    </a>
+    <div class="bottom-nav-item" onclick="document.getElementById('searchOverlay').classList.add('open'); document.getElementById('searchInput').focus();" style="cursor:pointer;">
+      <span class="bottom-nav-icon">🔍</span>
+      <span>Search</span>
+    </div>
+  </div>
+</div>
