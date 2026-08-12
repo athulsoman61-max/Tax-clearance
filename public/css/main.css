@@ -66,7 +66,7 @@
   --font-serif: 'Merriweather', Georgia, serif;
 
   --nav-height: 72px;
-  --max-width: 1400px;
+  --max-width: 1800px;
 }
 
 /* ─── Reset & Base ───────────────────────────────────────────────── */
@@ -894,7 +894,7 @@ ul, ol { list-style: none; }
 }
 
 /* ─── Utility classes ────────────────────────────────────────────── */
-.container { max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem; }
+.container { width: 96%; max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem; }
 .pt-nav { padding-top: var(--nav-height); }
 .text-gradient { background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .text-amber { color: var(--amber); }
