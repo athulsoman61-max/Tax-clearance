@@ -210,6 +210,95 @@ async function insertTrumpArticle() {
         ]);
         console.log('✅ Inserted Trump NYC Tax article on startup with current timestamp and 1500 views.');
       }
+
+      const slug2 = 'trump-legal-challenge-nyc-luxury-second-home-tax-guide';
+      const exists2 = await db.get("SELECT id FROM articles WHERE slug = ?", [slug2]);
+      if (!exists2) {
+        const content2 = `<p>New York City’s new tax on certain high-value non-primary residences has quickly become the center of a legal and political dispute.</p>
+<p>President Donald Trump said he was assessing whether the federal government could mount a legal challenge against the city’s new "pied-à-terre" surcharge, while a separate lawsuit by New York City homeowners has already resulted in a temporary court order affecting the rollout of the program.</p>
+<p>The controversy raises an important question for wealthy homeowners and real estate investors: <em>What happens when a local property tax becomes the subject of a federal legal challenge?</em></p>
+<p>Here is what taxpayers and property owners should understand about the new NYC surcharge, the current legal dispute, and what could happen next.</p>
+<h2>What Is the NYC Pied-à-Terre Tax?</h2>
+<p>The tax is an annual surcharge on certain residential properties in New York City that are not used as the owner's primary residence. The policy was designed to increase taxes on high-value secondary residences, particularly properties owned by people whose primary residence is outside New York City.</p>
+<p>According to New York City’s Department of Finance, the surcharge can apply during the 2026–27 and 2027–28 property tax years to:</p>
+<ul>
+  <li>One-, two-, and three-family homes valued at $5 million or more</li>
+  <li>Condominiums and cooperative units valued at $1 million or more</li>
+</ul>
+<p>The surcharge generally does not apply when the property qualifies as a primary residence under the applicable rules or falls within certain exemptions. The city estimates that the tax could generate substantial additional revenue, with earlier analysis from the NYC Comptroller estimating the program could potentially raise around $500 million annually.</p>
+<h2>Why Is Trump Considering a Legal Challenge?</h2>
+<p>Trump criticized the new surcharge and said his administration was examining whether the federal government could challenge it. That does not mean the federal government has already filed a lawsuit or that the tax has been declared unconstitutional. At this stage, the issue is whether the federal government has a legal basis to intervene against a tax created and administered at the state and local level.</p>
+<p>That distinction matters. A presidential statement about potentially challenging a tax is different from an actual federal lawsuit, injunction, or court ruling. For property owners, the practical question is therefore not simply whether Trump opposes the tax, but whether a court ultimately determines that the tax or its implementation violates applicable law.</p>
+<h2>A Separate Lawsuit Has Already Put the Rollout Under Pressure</h2>
+<p>The federal discussion comes as the NYC tax is already facing a separate legal challenge from property owners. A Staten Island judge temporarily blocked aspects of the city's rollout after homeowners challenged the way the program was being implemented. The lawsuit focuses on the city's process for identifying potentially affected properties and notifying owners.</p>
+<p>The dispute is significant because some property owners who say their homes are actually their primary residences received notices indicating that their properties could be subject to the surcharge. The temporary court action therefore concerns not only the tax itself, but also how the city identified properties and placed the burden on owners to establish that they qualified for an exemption.</p>
+<h2>Who Could Be Affected?</h2>
+<p>The tax is aimed at a relatively narrow group of property owners. A typical homeowner with an ordinary primary residence is generally outside the intended scope of the surcharge. For the 2026–27 and 2027–28 property tax years, NYC lists the following general thresholds:</p>
+<h3>One-, Two-, and Three-Family Homes</h3>
+<p>Properties valued by the Department of Finance at:</p>
+<ul>
+  <li>$5 million or more but less than $15 million — 0.8%</li>
+  <li>$15 million or more but less than $25 million — 1.05%</li>
+  <li>$25 million or more — 1.3%</li>
+</ul>
+<h3>Condominiums and Cooperatives</h3>
+<p>For the current property tax years, NYC states that the surcharge may apply to condominium and cooperative units with a Department of Finance value of $1 million or more. This distinction is important because the valuation methodology for different types of residential property is not identical.</p>
+<h2>Is Every Second Home Taxed?</h2>
+<p>No. Calling the measure a "second-home tax" can make the rule sound broader than it actually is. The key issue is whether the property is considered a non-primary residence under the applicable NYC rules.</p>
+<p>The city says the surcharge generally does not apply when the property is used as a primary residence by:</p>
+<ul>
+  <li>The owner</li>
+  <li>A qualifying tenant</li>
+  <li>An immediate family member of the owner</li>
+  <li>Certain individuals with a majority interest in an entity owning the property</li>
+</ul>
+<p>The exact exemption requirements matter, which means property owners should not assume that simply calling a property a primary residence is sufficient. Documentation can become important if the Department of Finance questions the property's status.</p>
+<h2>Why the Primary-Residence Question Matters</h2>
+<p>The current legal dispute highlights a broader issue in property taxation: <em>How does the government determine whether a luxury property is actually a primary residence?</em></p>
+<p>A property owner might own a high-value apartment but maintain another home elsewhere. Another owner might have a New York City property that is legitimately their primary residence but still receive a notice because the property appears on a potentially affected list. That is why documentation can become critical. Taxpayers may need records supporting where they actually live, how the property is used, and whether another property is treated as their primary residence.</p>
+<h2>What Should Property Owners Do Now?</h2>
+<p>The current legal uncertainty does not mean property owners should ignore notices from the NYC Department of Finance. The Department of Finance says owners who received a notice and believe they are exempt must respond by the deadline stated in the notice and provide information supporting the exemption.</p>
+<p>For the current cycle, NYC lists <strong>August 21, 2026</strong> as the deadline for residential homes and condos, and <strong>August 24, 2026</strong> for cooperative units.</p>
+<p>Property owners should therefore:</p>
+<ul>
+  <li>Review the notice carefully.</li>
+  <li>Determine how the property is classified.</li>
+  <li>Confirm the property's Department of Finance valuation.</li>
+  <li>Review whether a primary-residence or other exemption applies.</li>
+  <li>Gather supporting documentation.</li>
+  <li>Respond within the applicable deadline.</li>
+  <li>Monitor the ongoing court proceedings.</li>
+</ul>
+<h2>What Could Happen Next?</h2>
+<p>Several outcomes remain possible:</p>
+<ul>
+  <li>The courts could allow the NYC program to continue substantially as designed.</li>
+  <li>The city could be required to modify how it identifies properties or communicates with owners.</li>
+  <li>The litigation could produce additional guidance about exemptions and the government's burden of proof.</li>
+  <li>Separately, the federal government could decide whether to pursue its own legal challenge.</li>
+</ul>
+<p>At this point, it is important to distinguish between what has already happened and what remains hypothetical. The NYC surcharge exists, the rollout has faced a state-court challenge, and Trump has said he is considering possible federal action. But the ultimate legal outcome has not yet been determined.</p>
+<h2>Why This Matters Beyond New York</h2>
+<p>The dispute could become an important case study in how cities attempt to tax high-value residential property. If the program survives, other jurisdictions could look at similar approaches to raising revenue from expensive secondary residences.</p>
+<h2>Final Takeaway</h2>
+<p>New York City's luxury second-home tax is no longer just a tax-policy debate. It is now a developing legal dispute involving property owners, New York City officials, state courts, and potentially the federal government.</p>
+<p>For affected homeowners, the most important step is not to assume that the tax will disappear because of the current litigation. Instead, review the applicable rules, understand your property's classification, preserve supporting records, and pay attention to official notices and court developments.</p>`;
+
+        await db.run(`
+          INSERT INTO articles (title, slug, content, excerpt, author_id, category_id, status, featured_image, seo_title, seo_description, seo_keywords, reading_time, publish_date, views)
+          VALUES (?, ?, ?, ?, 1, 1, 'published', ?, ?, ?, ?, 5, CURRENT_TIMESTAMP, 1800)
+        `, [
+          "Trump Considers Legal Challenge to New York City’s Luxury Second-Home Tax: What Property Owners Need to Know",
+          slug2,
+          content2,
+          "New York City’s new tax on high-value non-primary residences has become the center of a legal and political dispute. Here is what taxpayers and property owners should understand about the NYC surcharge and what could happen next.",
+          "/images/nyc_luxury_condos.jpg",
+          "Trump Legal Challenge NYC Luxury Second-Home Tax Guide",
+          "A comprehensive guide for property owners on the NYC pied-à-terre tax, exemptions, deadlines, and the potential federal legal challenge being considered by Donald Trump.",
+          "NYC pied-a-terre tax guide, Trump NY luxury tax challenge, second home tax NYC exemptions, property tax NYC 2026, Zohran Mamdani tax"
+        ]);
+        console.log('✅ Inserted NYC Condos guide article.');
+      }
   } catch(e) {
     console.error('Error inserting Trump article:', e);
   }
