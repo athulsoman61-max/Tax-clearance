@@ -1,33 +1,10 @@
-const fs = require('fs');
+const sqlite3 = require('sqlite3');
+const db = new sqlite3.Database('database/taxclearance.db');
 
-async function publish() {
-  const base = "https://tax-clearance.onrender.com";
-  
-  // Login first
-  console.log("Logging in...");
-  const loginRes = await fetch(base + '/admin/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'username=admin&password=TaxClearance2024!',
-    redirect: 'manual'
-  });
-  
-  let cookie = loginRes.headers.get('set-cookie');
-  if (cookie) cookie = cookie.split(';')[0];
-  if (!cookie) { console.error("Login failed!"); return; }
-  console.log("Logged in successfully.");
-
-  const article = {
-    title: "Trump Explores Federal Legal Challenge Against New York's Luxury \"Pied-à-Terre\" Tax",
-    slug: "trump-federal-challenge-new-york-luxury-pied-a-terre-tax",
-    excerpt: "President Donald Trump is assessing whether the federal government can intervene to block New York City's controversial new \"pied-à-terre\" tax on luxury second homes, describing the policy as a \"dangerous political experiment.\"",
-    category_id: 1,
-    status: "published",
-    seo_title: "Trump Considers Federal Legal Challenge to NY Luxury Second Home Tax",
-    seo_description: "President Donald Trump announced he is evaluating federal legal action to block New York City's new pied-à-terre tax on non-primary luxury homes, citing economic concerns.",
-    seo_keywords: "Trump New York tax challenge, pied-a-terre tax NYC, luxury second home tax, federal intervention NY taxes, Zohran Mamdani, real estate tax news 2026, non-resident property tax",
-    img: "nyc_luxury_tax_gavel.jpg",
-    content: `<p>In a move that escalates the ongoing tension between federal and local policy, President Donald Trump has announced he is evaluating whether the federal government can mount a legal challenge against New York City's controversial new tax on luxury second homes.</p>
+const article = {
+  title: "Trump Explores Federal Legal Challenge Against New York's Luxury \"Pied-à-Terre\" Tax",
+  slug: "trump-federal-challenge-new-york-luxury-pied-a-terre-tax",
+  content: `<p>In a move that escalates the ongoing tension between federal and local policy, President Donald Trump has announced he is evaluating whether the federal government can mount a legal challenge against New York City's controversial new tax on luxury second homes.</p>
 
 <p>The policy, commonly known as the <strong>"pied-à-terre" tax</strong>, has sparked fierce debate since it was enacted into the state budget in May 2026. Officially taking effect on July 1, the measure imposes an annual surcharge on high-value residential properties—including single-family homes, condominiums, and co-ops—that are not used as an owner's primary residence.</p>
 
@@ -53,40 +30,29 @@ async function publish() {
 
 <p>The prospect of federal intervention adds a complex new layer to an already contentious issue. If the Trump administration finds a viable legal avenue to challenge the state tax, it could set a massive precedent regarding federal oversight of state and local taxation powers.</p>
 
-<p>For now, owners of luxury secondary homes in New York City remain in a state of limbo. Tax professionals and real estate advisors are closely monitoring the situation, as the outcome of both the state-level lawsuit and potential federal action will significantly impact property valuations and investment strategies in one of the world's most expensive real estate markets.</p>`
-  };
+<p>For now, owners of luxury secondary homes in New York City remain in a state of limbo. Tax professionals and real estate advisors are closely monitoring the situation, as the outcome of both the state-level lawsuit and potential federal action will significantly impact property valuations and investment strategies in one of the world's most expensive real estate markets.</p>`,
+  excerpt: "President Donald Trump is assessing whether the federal government can intervene to block New York City's controversial new \"pied-à-terre\" tax on luxury second homes, describing the policy as a \"dangerous political experiment.\"",
+  author_id: 1,
+  category_id: 1,
+  status: "published",
+  featured_image: "nyc_luxury_tax_gavel.jpg",
+  seo_title: "Trump Considers Federal Legal Challenge to NY Luxury Second Home Tax",
+  seo_description: "President Donald Trump announced he is evaluating federal legal action to block New York City's new pied-à-terre tax on non-primary luxury homes, citing economic concerns.",
+  seo_keywords: "Trump New York tax challenge, pied-a-terre tax NYC, luxury second home tax, federal intervention NY taxes, Zohran Mamdani, real estate tax news 2026, non-resident property tax",
+  reading_time: 3
+};
 
-  const payload = {
-    title: article.title,
-    slug: article.slug,
-    content: article.content,
-    excerpt: article.excerpt,
-    category_id: article.category_id,
-    seo_title: article.seo_title,
-    seo_description: article.seo_description,
-    seo_keywords: article.seo_keywords,
-    status: article.status,
-    featured_image: article.img,
-    author_id: 1
-  };
-
-  console.log("Publishing article...");
-  const pubRes = await fetch(base + '/admin/article/create', {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Cookie': cookie
-    },
-    body: JSON.stringify(payload)
-  });
-
-  const text = await pubRes.text();
-  if (pubRes.ok && pubRes.url.includes('/admin/articles')) {
-    console.log("SUCCESS! Article published.");
+db.run(`
+  INSERT INTO articles (title, slug, content, excerpt, author_id, category_id, status, featured_image, seo_title, seo_description, seo_keywords, reading_time)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`, [
+  article.title, article.slug, article.content, article.excerpt, article.author_id, article.category_id, article.status,
+  article.featured_image, article.seo_title, article.seo_description, article.seo_keywords, article.reading_time
+], function(err) {
+  if (err) {
+    console.error("Error inserting:", err);
   } else {
-    console.error("FAILED. Status:", pubRes.status);
-    console.error(text.substring(0, 500));
+    console.log("SUCCESS! Article inserted with ID:", this.lastID);
   }
-}
-
-publish().catch(console.error);
+  db.close();
+});
