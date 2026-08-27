@@ -349,6 +349,99 @@ async function insertTrumpArticle() {
         ]);
         console.log('✅ Inserted Maryland Digital Ad Tax article.');
       }
+
+      const slug4 = 'proposed-irs-rules-refundable-tax-credits-2026';
+      const exists4 = await db.get("SELECT id FROM articles WHERE slug = ?", [slug4]);
+      if (!exists4) {
+        const content4 = `<p><strong>What U.S. taxpayers and tax professionals need to know about the latest Treasury and IRS proposal.</strong></p>
+
+<p>A new U.S. tax proposal is putting refundable tax credits under the spotlight.</p>
+
+<p>On August 19, 2026, the U.S. Department of the Treasury and the Internal Revenue Service issued proposed regulations addressing eligibility for the refundable portions of certain individual tax credits. The proposal is intended to clarify how federal law governing public benefits applies to these refundable credits.</p>
+
+<p>Importantly, <strong>these are proposed regulations—not final rules</strong>. That distinction matters for taxpayers and tax professionals preparing for future filing seasons.</p>
+
+<h2>Which tax credits are involved?</h2>
+
+<p>The proposal focuses on the refundable portions of several major tax credits, including:</p>
+
+<ul>
+  <li>Earned Income Tax Credit (EITC)</li>
+  <li>Additional Child Tax Credit (ACTC)</li>
+  <li>American Opportunity Tax Credit (AOTC)</li>
+  <li>Saver's Match Credit</li>
+</ul>
+
+<p>The Treasury and the IRS say the proposed rules would clarify that the refundable portions of these credits are considered federal public benefits, making them subject to eligibility restrictions under the Personal Responsibility and Work Opportunity Reconciliation Act of 1996 (PRWORA).</p>
+
+<h2>Why does "refundable" matter?</h2>
+
+<p>A refundable tax credit can provide a taxpayer with a direct payment even when the credit exceeds the taxpayer's total federal income tax liability. This makes refundable credits fundamentally different from ordinary nonrefundable credits, which can only reduce tax liability down to zero.</p>
+
+<p>For example, if a taxpayer has a tax liability of $1,000 but qualifies for a $2,000 refundable credit, the refundable structure can potentially result in a $1,000 payment beyond the tax liability. Under the proposed framework, eligibility for that remaining refundable portion could depend on whether the taxpayer falls within the categories permitted under federal law.</p>
+
+<h2>Who could be affected?</h2>
+
+<p>The proposal is particularly important for taxpayers whose immigration or legal status does not fall within the categories recognized under the applicable federal public-benefit rules.</p>
+
+<p>The Treasury announcement states that the proposed regulations are intended to prevent individuals who are legally barred from receiving federal public benefits from receiving the refundable portions of these credits. At the same time, reporting on the proposal has highlighted that some <strong>lawfully present immigrants</strong> could also be affected depending on their specific status and whether they fall within the qualifying categories. This makes the determination far more complicated than simply asking whether someone is a U.S. citizen.</p>
+
+<h2>What does this mean for tax professionals?</h2>
+
+<p>For tax preparers, the issue goes well beyond calculating income and applying standard credit formulas. Tax professionals may need to pay much closer attention to several key areas:</p>
+
+<ul>
+  <li><strong>1. Immigration-status documentation:</strong> Taxpayer eligibility may require additional documentation or rigorous verification of the taxpayer's legal status.</li>
+  <li><strong>2. Refundable vs. nonrefundable benefits:</strong> A taxpayer's eligibility for a credit does not necessarily mean every portion of that credit will be refundable.</li>
+  <li><strong>3. Client communication:</strong> Preparers should clearly explain to clients that the current proposal is not the same as a final, binding rule.</li>
+  <li><strong>4. Future filing-season procedures:</strong> Tax software, IRS instructions, due-diligence procedures, and documentation requirements could change significantly if these regulations are finalized.</li>
+</ul>
+
+<h2>What should taxpayers do now?</h2>
+
+<p>There is no reason to assume that the proposed rules are already the final filing requirements. Instead, proactive taxpayers should take the following steps:</p>
+
+<ul>
+  <li>Keep their tax and immigration-related documentation highly organized.</li>
+  <li>Avoid relying on social-media headlines to determine their eligibility.</li>
+  <li>Discuss their individual circumstances with a qualified, licensed tax professional.</li>
+  <li>Watch closely for final Treasury and IRS guidance.</li>
+  <li>Review the rules again before filing a return affected by the new requirements.</li>
+</ul>
+
+<h2>The bigger picture</h2>
+
+<p>This development shows how U.S. tax administration is increasingly intersecting with <strong>immigration status, identity verification, and eligibility for refundable tax benefits</strong>.</p>
+
+<p>For tax professionals, the takeaway is simple:</p>
+
+<blockquote><strong>Tax eligibility is not always determined by income alone.</strong></blockquote>
+
+<p>As the proposed regulations move through the complex rulemaking process, tax preparers should watch carefully for changes to eligibility rules, documentation requirements, and IRS filing guidance.</p>
+
+<h3>Bottom Line</h3>
+
+<p>The Treasury and IRS proposal could significantly affect how certain refundable tax credits are claimed by taxpayers whose immigration status falls outside the categories recognized under federal public-benefit law. But remember, <strong>the rules are still proposed</strong>.</p>
+
+<p>For now, the most important step for tax professionals is to understand the proposal, identify potentially affected client groups, and monitor the final regulations before changing any standard filing practices.</p>
+
+<p><em>This article is for informational purposes only and should not be treated as professional tax or legal advice.</em></p>`;
+
+        await db.run(`
+          INSERT INTO articles (title, slug, content, excerpt, author_id, category_id, status, featured_image, seo_title, seo_description, seo_keywords, reading_time, publish_date, views)
+          VALUES (?, ?, ?, ?, 1, 1, 'published', ?, ?, ?, ?, 4, CURRENT_TIMESTAMP, 1400)
+        `, [
+          "Proposed IRS Rules Could Change Who Gets Refundable Tax Credits",
+          slug4,
+          content4,
+          "A new U.S. tax proposal is putting refundable tax credits under the spotlight. Here is what taxpayers and tax professionals need to know about the latest Treasury and IRS proposal.",
+          "/images/irs_refundable_credits_proposal.jpg",
+          "Proposed IRS Rules: Refundable Tax Credits Eligibility Changes 2026",
+          "The Treasury and IRS issued proposed regulations addressing eligibility for the refundable portions of certain individual tax credits, including EITC and ACTC. Learn who is affected.",
+          "IRS proposed rules, refundable tax credits 2026, EITC eligibility, ACTC changes, federal public benefits, tax professionals guide, IRS tax updates"
+        ]);
+        console.log('✅ Inserted IRS Refundable Credits article.');
+      }
   } catch(e) {
     console.error('Error inserting Trump article:', e);
   }
