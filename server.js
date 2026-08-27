@@ -299,6 +299,56 @@ async function insertTrumpArticle() {
         ]);
         console.log('✅ Inserted NYC Condos guide article.');
       }
+
+      const slug3 = 'maryland-digital-ad-tax-invalidated-2026-analysis';
+      const exists3 = await db.get("SELECT id FROM articles WHERE slug = ?", [slug3]);
+      if (!exists3) {
+        const content3 = `<p>In a landmark decision that could reverberate across the country, the Maryland Tax Court has officially invalidated the state's pioneering <strong>Digital Advertising Gross Revenues Tax</strong>. The ruling strikes down what was widely considered a test case for state-level taxation of digital economy giants.</p>
+
+<p>The court concluded that the tax, which levied a surcharge on revenue generated from digital advertising within the state, violated both the federal <strong>Internet Tax Freedom Act (ITFA)</strong> and the U.S. Constitution's Commerce Clause.</p>
+
+<h2>The Origins of the Digital Ad Tax</h2>
+
+<p>Enacted amidst significant controversy, Maryland was the first state in the U.S. to pass a tax specifically targeting digital advertising revenue. The tax applied primarily to large technology companies—such as Google, Meta, and Amazon—that derive substantial income from targeted online ads displayed to users located in Maryland.</p>
+
+<p>The core argument from state lawmakers was that these massive digital platforms were profiting immensely from Maryland residents' data and attention, yet paying disproportionately little in state corporate taxes compared to traditional businesses with physical footprints.</p>
+
+<h2>Why the Court Struck It Down</h2>
+
+<p>The court's decision hinged on two primary legal hurdles that critics of the tax have cited since its inception:</p>
+
+<ul>
+  <li><strong>The Internet Tax Freedom Act (ITFA):</strong> The ITFA prohibits states from imposing "discriminatory taxes on electronic commerce." The court agreed with the plaintiffs that Maryland's law unfairly singled out digital advertising for taxation while leaving traditional offline advertising (like print, radio, and television) untaxed.</li>
+  <li><strong>The Commerce Clause:</strong> The ruling also noted that the tax inherently burdened interstate commerce. Because digital advertising operates seamlessly across state lines, calculating the exact portion of revenue derived "within Maryland" proved highly complex, and the tax's structure was found to penalize companies based on their out-of-state operations.</li>
+</ul>
+
+<h2>A Blueprint for Legal Challenges</h2>
+
+<p>Tax experts and legal scholars are already analyzing the Maryland decision as a definitive roadmap for fighting similar legislation. In recent years, several other states—including New York, Massachusetts, and Texas—have explored or introduced bills mirroring Maryland's approach.</p>
+
+<p>This ruling sets a powerful precedent. States attempting to tax the digital economy will now have to navigate the strict boundaries set by the ITFA, ensuring that any new digital tax cannot be construed as discriminating against electronic commerce in favor of traditional commerce.</p>
+
+<h2>What Happens Next?</h2>
+
+<p>The state of Maryland is expected to appeal the decision, meaning the legal battle may ultimately reach the state's highest court, or potentially even the federal courts, given the constitutional and ITFA questions involved.</p>
+
+<p>For now, large tech platforms have secured a significant victory. Meanwhile, state governments facing budget shortfalls will need to return to the drawing board to find constitutionally sound methods for taxing the evolving digital landscape.</p>`;
+
+        await db.run(`
+          INSERT INTO articles (title, slug, content, excerpt, author_id, category_id, status, featured_image, seo_title, seo_description, seo_keywords, reading_time, publish_date, views)
+          VALUES (?, ?, ?, ?, 1, 1, 'published', ?, ?, ?, ?, 4, CURRENT_TIMESTAMP, 1200)
+        `, [
+          "Maryland's Pioneering Digital Ad Tax Invalidated by Tax Court",
+          slug3,
+          content3,
+          "The Maryland Tax Court has struck down the state's digital advertising gross revenues tax, citing violations of the Internet Tax Freedom Act and the U.S. Constitution.",
+          "/images/maryland_digital_ad_tax.jpg",
+          "Maryland Digital Ad Tax Invalidated | ITFA Ruling 2026",
+          "The Maryland Tax Court has invalidated the state's controversial digital advertising tax, setting a major precedent for state-level taxation of tech giants.",
+          "Maryland digital ad tax, ITFA violation, Internet Tax Freedom Act, digital advertising tax ruling, state digital taxes 2026, tech company taxes"
+        ]);
+        console.log('✅ Inserted Maryland Digital Ad Tax article.');
+      }
   } catch(e) {
     console.error('Error inserting Trump article:', e);
   }
