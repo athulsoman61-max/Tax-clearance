@@ -442,6 +442,140 @@ async function insertTrumpArticle() {
         ]);
         console.log('✅ Inserted IRS Refundable Credits article.');
       }
+
+      const slug5 = 'irs-going-digital-taxpayers-professionals-online-2026';
+      const exists5 = await db.get("SELECT id FROM articles WHERE slug = ?", [slug5]);
+      if (!exists5) {
+        const content5 = `<p><strong>August 28, 2026</strong></p>
+
+<p>The IRS is continuing its shift toward a more digital tax system, giving taxpayers, businesses, and tax professionals more ways to handle common tax tasks without calling the agency or sending paperwork by mail.</p>
+
+<p>In a new announcement on August 28, the IRS encouraged taxpayers to make greater use of its online services, highlighting tools for checking tax records, making payments, viewing notices, tracking refunds, managing payment plans, and handling certain authorization requests.</p>
+
+<p>For taxpayers who still associate the IRS with paper forms, long phone waits, and mailed notices, the change is significant.</p>
+
+<h2>What Can You Do Through an IRS Online Account?</h2>
+
+<p>The IRS Individual Online Account has become a central place for taxpayers to access their federal tax information.</p>
+
+<p>After signing in, eligible taxpayers can:</p>
+
+<ul>
+  <li>View tax balances by year</li>
+  <li>Make payments or schedule future payments</li>
+  <li>Review payment history</li>
+  <li>View important tax-return information, including adjusted gross income</li>
+  <li>Access tax transcripts</li>
+  <li>View available information returns, including certain Forms W-2 and 1099</li>
+  <li>Check refund and amended-return status</li>
+  <li>View digital IRS notices</li>
+  <li>Request an Identity Protection PIN</li>
+  <li>Review and electronically sign certain authorization requests from tax professionals</li>
+</ul>
+
+<p>This means taxpayers can now complete many routine tasks online instead of relying entirely on traditional IRS correspondence.</p>
+
+<h2>A New Way to Show Tax Compliance</h2>
+
+<p>One of the more notable recent developments is the IRS's digitally authenticated <strong>Tax Compliance Report</strong>.</p>
+
+<p>The report can be downloaded through the Individual Online Account and is designed to verify whether a taxpayer has filed returns and paid taxes on time. Organizations receiving the report can use its digital certificate to verify that the document is authentic.</p>
+
+<p>The report may be useful when a taxpayer needs to demonstrate federal tax compliance for purposes such as employment, loans, government benefits, or other services.</p>
+
+<p>This is different from simply downloading a tax transcript. A transcript provides specific tax information, while the compliance report is designed to communicate a taxpayer's compliance status in a digitally authenticated format.</p>
+
+<h2>Businesses Have Their Own Online Account</h2>
+
+<p>The digital expansion isn't limited to individual taxpayers.</p>
+
+<p>Eligible businesses can use the <strong>Business Tax Account</strong> to access certain federal tax information and perform tax-related tasks online.</p>
+
+<p>Depending on the business structure and the user's role, available features may include:</p>
+
+<ul>
+  <li>Viewing business information</li>
+  <li>Checking account balances</li>
+  <li>Reviewing payment history</li>
+  <li>Making federal tax deposits and other payments</li>
+  <li>Accessing tax transcripts</li>
+  <li>Obtaining an EIN verification letter</li>
+  <li>Viewing tax compliance reports</li>
+  <li>Reviewing certain IRS notices</li>
+  <li>Managing account access for authorized users</li>
+</ul>
+
+<p>The Business Tax Account is available to several types of entities, including sole proprietors, partnerships, S corporations, C corporations, governments, and certain tax-exempt organizations, although access can vary depending on the user's role.</p>
+
+<h2>What About Tax Professionals?</h2>
+
+<p>Tax professionals are also becoming part of the IRS's digital workflow.</p>
+
+<p>Through the <strong>Tax Pro Account</strong>, eligible practitioners can manage certain taxpayer authorizations online. Features include requesting powers of attorney and tax information authorizations, checking authorization status, viewing active authorizations, and withdrawing authorizations.</p>
+
+<p>When both the tax professional and taxpayer have IRS online accounts, certain authorization requests can be handled electronically.</p>
+
+<p>For tax firms, this can reduce the amount of administrative work associated with traditional authorization processes.</p>
+
+<h2>Refunds, Payments and Tax Records</h2>
+
+<p>The IRS also continues to provide separate online tools for some of the most common taxpayer questions.</p>
+
+<p>Taxpayers can use IRS tools to:</p>
+
+<ul>
+  <li><strong>Check a refund:</strong> The IRS refund tracker allows taxpayers to check refund status without signing into an account.</li>
+  <li><strong>Get tax records:</strong> The Get Transcript service provides access to tax transcripts and other tax-related records.</li>
+  <li><strong>Make payments:</strong> Direct Pay allows taxpayers to make payments directly from a bank account.</li>
+  <li><strong>Manage payment plans:</strong> Taxpayers who cannot pay their balance in full can use the IRS online payment-plan tools.</li>
+  <li><strong>Estimate withholding:</strong> The Tax Withholding Estimator can help employees and pension recipients determine whether their federal withholding is appropriate.</li>
+</ul>
+
+<h2>The Important Part: Security</h2>
+
+<p>More online access also means taxpayers need to be careful about where they enter their information.</p>
+
+<p>The IRS specifically advises taxpayers to use <strong>IRS.gov</strong> when accessing online services. The agency says it does not initiate contact through email, text messages, or social media to request personal or financial information.</p>
+
+<p>Taxpayers should also protect their usernames, passwords, and other account information and avoid clicking suspicious links claiming to provide IRS services.</p>
+
+<h2>What This Means for Taxpayers</h2>
+
+<p>The IRS's digital-first approach could make routine tax administration considerably easier.</p>
+
+<p>Instead of waiting for a mailed notice or calling the IRS for basic information, taxpayers can increasingly access their records, payments, notices, and account information themselves.</p>
+
+<p>For tax professionals, online authorization and account-management tools can also make client service more efficient.</p>
+
+<p>But taxpayers should remember that <strong>online access does not replace professional tax advice</strong>. Seeing information in an IRS account does not necessarily mean that a taxpayer's return is correct, that a tax position is valid, or that no additional action is required.</p>
+
+<h2>The Bigger Picture</h2>
+
+<p>The IRS is gradually moving from a tax agency built around paper correspondence toward a system where taxpayers and professionals can interact with the agency digitally.</p>
+
+<p>The latest announcement is another step in that direction.</p>
+
+<p>For taxpayers, the practical takeaway is simple: <strong>your IRS Online Account is becoming increasingly important.</strong></p>
+
+<p>Checking it periodically can help you stay informed about balances, notices, payments, tax records, and other important information—before a small issue becomes a bigger tax problem.</p>
+
+<p><strong>TaxClearance.Space</strong> will continue covering important U.S. tax developments and breaking them down into practical, easy-to-understand guidance for taxpayers and tax professionals.</p>`;
+
+        await db.run(`
+          INSERT INTO articles (title, slug, content, excerpt, author_id, category_id, status, featured_image, seo_title, seo_description, seo_keywords, reading_time, publish_date, views)
+          VALUES (?, ?, ?, ?, 1, 1, 'published', ?, ?, ?, ?, 5, CURRENT_TIMESTAMP, 1850)
+        `, [
+          "The IRS Is Going Digital: What Taxpayers and Tax Professionals Can Now Do Online",
+          slug5,
+          content5,
+          "The IRS is continuing its shift toward a more digital tax system, giving taxpayers, businesses, and tax professionals more ways to handle common tax tasks online.",
+          "/images/irs_digital_online_access.jpg",
+          "IRS Digital Services: What Taxpayers & Pros Can Do Online in 2026",
+          "The IRS continues its shift to a digital tax system. Learn about the new IRS online services, the Tax Compliance Report, and how you can manage your taxes online.",
+          "IRS online account, digital tax system, Tax Compliance Report, Business Tax Account, Tax Pro Account, IRS modernization 2026, track IRS refund"
+        ]);
+        console.log('✅ Inserted IRS Going Digital article.');
+      }
   } catch(e) {
     console.error('Error inserting Trump article:', e);
   }
